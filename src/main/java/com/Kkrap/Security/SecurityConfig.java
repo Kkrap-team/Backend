@@ -2,6 +2,7 @@ package com.Kkrap.Security;
 
 import com.Kkrap.Service.CustomOAuth2UserService;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,13 @@ public class SecurityConfig {
                     System.out.println("카카오 사용자 이메일: " + email);
                     System.out.println("카카오 사용자 프로필 이미지 URL: " + profileImage);
 
+                    // 사용자 정보를 각각 쿠키에 저장
+                    setCookie(response, "id", id, 7 * 24 * 60 * 60); // 쿠키 유효기간 7일
+                    setCookie(response, "nickname", nickname, 7 * 24 * 60 * 60);
+                    setCookie(response, "profileImage", profileImage, 7 * 24 * 60 * 60);
+                    setCookie(response, "email", email, 7 * 24 * 60 * 60);
+
+
                     //DB 로직 추가
 
 
@@ -112,6 +120,13 @@ public class SecurityConfig {
                 }
             }
         };
+    }
+    private void setCookie(HttpServletResponse response, String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+//        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(maxAge);
+        response.addCookie(cookie);
     }
 
 }
