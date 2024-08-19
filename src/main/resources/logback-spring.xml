@@ -1,0 +1,36 @@
+<configuration>
+    <!-- 로깅 파일이 저장될 위치를 지정하는 속성 -->
+    <property name="LOGS" value="D:/logs" />
+
+    <!-- 콘솔에 로그를 출력하는 appender 설정 -->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%yellow(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %magenta(%C{1}): %msg%n%throwable</pattern>
+        </layout>
+    </appender>
+
+    <!-- 특정 패키지에 대한 로그 레벨과 appender 설정 -->
+    <logger name="com.spring.jpa" level="trace" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+
+    <!-- Hibernate SQL 로그 설정 -->
+    <logger name="org.hibernate.SQL" level="DEBUG">
+        <appender-ref ref="Console" />
+    </logger>
+
+    <!-- Hibernate SQL 바인딩 파라미터 로그 설정 -->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE">
+        <appender-ref ref="Console" />
+    </logger>
+
+    <!-- HikariCP 로그 설정 (비활성화) -->
+    <logger name="com.zaxxer.hikari" level="DEBUG">
+        <!-- 비활성화 -->
+    </logger>
+
+    <!-- 기본 로그 레벨과 appender 설정 -->
+    <root level="INFO">
+        <appender-ref ref="Console" />
+    </root>
+</configuration>

@@ -8,6 +8,5 @@ public class KkrapApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(KkrapApplication.class, args);
-		System.out.println("Hello World");
 	}
 }
