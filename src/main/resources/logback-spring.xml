@@ -9,24 +9,19 @@
         </layout>
     </appender>
 
-    <!-- 특정 패키지에 대한 로그 레벨과 appender 설정 -->
+    <!-- 특정 패키지에 대한 로그 레벨과 appender 설정 (중복 방지) -->
     <logger name="com.spring.jpa" level="trace" additivity="false">
         <appender-ref ref="Console" />
     </logger>
 
-    <!-- Hibernate SQL 로그 설정 -->
-    <logger name="org.hibernate.SQL" level="DEBUG">
+    <!-- Hibernate SQL 로그 설정 (중복 방지) -->
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
         <appender-ref ref="Console" />
     </logger>
 
-    <!-- Hibernate SQL 바인딩 파라미터 로그 설정 -->
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE">
+    <!-- Hibernate SQL 바인딩 파라미터 로그 설정 (중복 방지) -->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
         <appender-ref ref="Console" />
-    </logger>
-
-    <!-- HikariCP 로그 설정 (비활성화) -->
-    <logger name="com.zaxxer.hikari" level="DEBUG">
-        <!-- 비활성화 -->
     </logger>
 
     <!-- 기본 로그 레벨과 appender 설정 -->
