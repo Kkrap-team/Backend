@@ -1,16 +1,21 @@
 package com.Kkrap.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Entity
+@Table(name = "users")
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    private Long userId;
 
     @Setter
     @Column(nullable = false)
@@ -26,16 +31,23 @@ public class Users {
 
     @Setter
     @Column(nullable = false)
-    private Long kakao_id;
+    private Long kakaoId;
+
+    // Links와의 관계 추가
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+//    @JsonIgnore // 순환 참조 방지
+    private List<Links> links;
 
     @Builder
-    public Users(String email, String nickname, String profile, Long kakao_id)
+    public Users(String email, String nickname, String profile, Long kakaoId)
     {
         this.email = email;
         this.nickname = nickname;
         this.profile = profile;
-        this.kakao_id = kakao_id;
+        this.kakaoId = kakaoId;
     }
 
-
+    public Users() {
+        // 기본 생성자
+    }
 }
