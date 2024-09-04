@@ -11,5 +11,4 @@ import java.util.List;
 public interface LinksRepository extends JpaRepository <Links, Long> {
 
     List<Links> findByUsers_UserId(Long userId);
-
 }
