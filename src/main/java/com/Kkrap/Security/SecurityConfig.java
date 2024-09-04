@@ -89,7 +89,7 @@ public class SecurityConfig {
                     // 카카오 사용자 정보 추출
                     Map<String, Object> attributes = defaultOAuth2User.getAttributes();
 
-                    String id = attributes.get("id").toString(); // 사용자 ID
+                    String kaka_id = attributes.get("id").toString(); // 사용자 ID
                     Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
                     Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
@@ -98,24 +98,32 @@ public class SecurityConfig {
                     String email = kakaoAccount.get("email").toString(); // 이메일
 
                     // 디버그용 로그 출력
-                    System.out.println("카카오 사용자 ID: " + id);
+                    System.out.println("카카오 사용자 ID: " + kaka_id);
                     System.out.println("카카오 사용자 닉네임: " + nickname);
                     System.out.println("카카오 사용자 이메일: " + email);
                     System.out.println("카카오 사용자 프로필 이미지 URL: " + profileImage);
 
                     // 사용자 정보를 각각 쿠키에 저장
-                    setCookie(response, "id", id, 7 * 24 * 60 * 60); // 쿠키 유효기간 7일
+                    setCookie(response, "kaka_id", kaka_id, 7 * 24 * 60 * 60); // 쿠키 유효기간 7일
                     setCookie(response, "nickname", nickname, 7 * 24 * 60 * 60);
                     setCookie(response, "profileImage", profileImage, 7 * 24 * 60 * 60);
                     setCookie(response, "email", email, 7 * 24 * 60 * 60);
 
 
                     //DB 로직 추가
-                    Optional<Users> CheckUser = usersRepository.findByKaKaoId(Long.valueOf(id));
+                    Optional<Users> CheckUser = usersRepository.findByKaKaoId(Long.valueOf(kaka_id));
+                    System.out.println("CheckUser : " + CheckUser);
                     if (CheckUser.isEmpty()){
-                        Users newUser = new Users(email, nickname, profileImage, Long.valueOf(id));
+                        Users newUser = new Users(email, nickname, profileImage, Long.valueOf(kaka_id));
                         usersRepository.save(newUser);
+                        setCookie(response, "userId", String.valueOf(newUser.getUserId()), 7 * 24 * 60 * 60);
                     }
+                    else
+                    {
+                        Users existingUser = CheckUser.get();
+                        setCookie(response, "userId", String.valueOf(existingUser.getUserId()), 7 * 24 * 60 * 60);
+                    }
+
 
                     //-----------
                     // DB에서 유저 존재 여부 확인
