@@ -104,7 +104,7 @@ public class SecurityConfig {
                     System.out.println("카카오 사용자 프로필 이미지 URL: " + profileImage);
 
                     // 사용자 정보를 각각 쿠키에 저장
-                    setCookie(response, "kaka_id", kaka_id, 7 * 24 * 60 * 60); // 쿠키 유효기간 7일
+                    setCookie(response, "kakao_id", kaka_id, 7 * 24 * 60 * 60); // 쿠키 유효기간 7일
                     setCookie(response, "nickname", nickname, 7 * 24 * 60 * 60);
                     setCookie(response, "profileImage", profileImage, 7 * 24 * 60 * 60);
                     setCookie(response, "email", email, 7 * 24 * 60 * 60);
