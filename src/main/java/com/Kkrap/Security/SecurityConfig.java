@@ -23,6 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -111,17 +112,20 @@ public class SecurityConfig {
 
 
                     //DB 로직 추가
+                    String userId;
                     Optional<Users> CheckUser = usersRepository.findByKaKaoId(Long.valueOf(kaka_id));
                     System.out.println("CheckUser : " + CheckUser);
                     if (CheckUser.isEmpty()){
                         Users newUser = new Users(email, nickname, profileImage, Long.valueOf(kaka_id));
                         usersRepository.save(newUser);
                         setCookie(response, "userId", String.valueOf(newUser.getUserId()), 7 * 24 * 60 * 60);
+                        userId = String.valueOf(newUser.getUserId());
                     }
                     else
                     {
                         Users existingUser = CheckUser.get();
                         setCookie(response, "userId", String.valueOf(existingUser.getUserId()), 7 * 24 * 60 * 60);
+                        userId = String.valueOf(existingUser.getUserId());
                     }
 
 
@@ -162,7 +166,23 @@ public class SecurityConfig {
 
                     // 로그인 성공 후 프론트엔드 경로로 리디렉션
 //                    String redirectUrl = String.format("http://localhost:3000/login/success?token=%s&email=%s", jwtToken, email);
-                    response.sendRedirect("http://172.20.10.12:3000/login/success");
+//                    response.sendRedirect("http://172.20.10.12:3000/login/success");
+//                    response.sendRedirect("http://localhost:3000/login/success");
+////                    43.203.234.0
+
+                    // 사용자 정보를 URL 인코딩
+                    String redirectUrl = String.format(
+                            "http://localhost:3000/login/success?kakao_id=%s&nickname=%s&profileImage=%s&email=%s&userId=%s",
+                            URLEncoder.encode(kaka_id, StandardCharsets.UTF_8.toString()),
+                            URLEncoder.encode(nickname, StandardCharsets.UTF_8.toString()),
+                            URLEncoder.encode(profileImage, StandardCharsets.UTF_8.toString()),
+                            URLEncoder.encode(email, StandardCharsets.UTF_8.toString()),
+                            URLEncoder.encode(userId, StandardCharsets.UTF_8.toString())
+                    );
+
+                    // 리디렉션
+                    response.sendRedirect(redirectUrl);
+
                 } else {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid user principal type");
                 }
@@ -180,7 +200,8 @@ public class SecurityConfig {
         cookie.setMaxAge(maxAge);
         cookie.setHttpOnly(false); // JavaScript에서 접근 가능하도록 설정
         cookie.setSecure(false); // HTTPS가 아닌 경우에도 전송되도록 설정
-        cookie.setDomain("172.20.10.12"); // 도메인을 프론트엔드 주소로 설정
+//        cookie.setDomain("172.20.10.12"); // 도메인을 프론트엔드 주소로 설정
+        cookie.setDomain("43.203.234.0"); // 도메인을 프론트엔드 주소로 설정
         response.addCookie(cookie);
     }
 
