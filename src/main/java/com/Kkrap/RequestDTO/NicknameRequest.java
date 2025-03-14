@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FolderCreateRequestDTO {
-    private Long userId;
+public class NicknameRequest {
 
-    private String folderName;
+    private String nickname;
 
 }

@@ -22,7 +22,7 @@
 
  - PL : 송진우
  - Backend : 정재윤
- - Frontend : 강보면, 강보민
+ - Frontend : 이호진, 김상우, 윤정환
 
 <div align=center><h2> 🚀 개발 환경 </h2></div>
 
@@ -31,4 +31,21 @@
     <br>
 <img src="https://img.shields.io/badge/Language-%23121011?style=for-the-badge"><img src="https://img.shields.io/badge/java-%23ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"><img src="https://img.shields.io/badge/22-515151?style=for-the-badge">
   <br>
+</div>
+<div>
+<h2> 🚀 코딩 컨벤션 </h2>
 
+- feat 새로운 기능 추가
+- fix 버그 수정
+- docs 문서 수정 (README.md, 주석 등)
+- style	코드 스타일 변경 (포맷팅, 세미콜론 수정 등)
+- refactor 코드 리팩토링 (기능 변경 없음)
+- perf 성능 개선 
+- test 테스트 코드 추가/수정 
+- chore	빌드, 패키지 매니저 설정 변경 (의존성 업데이트 등)
+- ci CI/CD 설정 변경 (GitHub Actions, Jenkins 등)
+- build	빌드 시스템 변경 (Webpack, Rollup 등)
+- revert	이전 커밋 되돌리기 
+- temp	임시 변경 사항 (이후 삭제될 가능성 있음)
+
+</div>

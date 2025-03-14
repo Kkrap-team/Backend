@@ -24,17 +24,23 @@ public class Users {
     private String nickname;
 
     @Setter
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2048)
     private String profile;
 
     @Setter
     @Column(nullable = false)
     private Long kakaoId;
 
-    // Links와의 관계 추가
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-//    @JsonIgnore // 순환 참조 방지
-    private List<Links> links;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Folders> folders;
+
+//    // Links와의 관계 추가
+//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+////    @JsonIgnore // 순환 참조 방지
+//    private List<Links> links;
+
+
 
     @Builder
     public Users(String email, String nickname, String profile, Long kakaoId)
