@@ -10,8 +10,8 @@ import java.util.List;
 @Repository
 public interface LinksRepository extends JpaRepository <Links, Long> {
 
-    List<Links> findByUsers_UserId(Long userId);
+//    List<Links> findByUsers_UserId(Long userId);
 
     // linkId 목록으로 Links 조회
-    List<Links> findByLinkIdIn(List<Long> linkIds);
+//    List<Links> findByLinkIdIn(List<Long> linkIds);
 }

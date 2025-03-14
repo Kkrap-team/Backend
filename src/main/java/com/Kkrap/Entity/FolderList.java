@@ -9,18 +9,18 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "folderlist")
+@Table(name = "folders_links")
 public class FolderList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long folderListId;
+    private Long foldersLinksId;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "folder_id")
-    private Folders folder;
+    private Folders folders;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "link_id")
-    private Links link;
+    private Links links;
 
 }
