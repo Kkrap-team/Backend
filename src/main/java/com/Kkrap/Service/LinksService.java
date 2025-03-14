@@ -1,17 +1,21 @@
 package com.Kkrap.Service;
 
+import com.Kkrap.Entity.Folders;
+import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
+import com.Kkrap.Repository.FoldersLinksRepository;
+import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.LinksRepository;
 import com.Kkrap.Repository.UsersRepository;
-import com.Kkrap.RequestDTO.LinksDeleteDTO;
-import com.Kkrap.ResponseDto.LinksResponseDTO;
-import org.apache.catalina.User;
+import com.Kkrap.RequestDTO.LinksCreateRequest;
+import com.Kkrap.ResponseDto.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class LinksService {
@@ -20,6 +24,12 @@ public class LinksService {
     private UsersRepository usersRepository;
     @Autowired
     private LinksRepository linksRepository;
+
+    @Autowired
+    private FoldersRepository foldersRepository;
+
+    @Autowired
+    private FoldersLinksRepository foldersLinksRepository;
 
 
     //유저별 링크 조회
@@ -30,17 +40,45 @@ public class LinksService {
 //                .collect(Collectors.toList());
 //    }
 
-    //유저별 링크 만들기
-    public void createLink(Long user_id, String linkUrl){
-        System.out.println(user_id);
-        Users user = usersRepository.findById(user_id).orElseThrow(() -> new IllegalArgumentException("Invalid user ID: " + user_id));
-        // Links 엔티티 생성
-        Links link = Links.builder()
-                .users(user)
-                .link_url(linkUrl)
-                .build();
+
+    public ResponseEntity<Object> CreateLink(Long userId, LinksCreateRequest linksCreateRequest){
+        Optional<Users> optionalUsers = usersRepository.findById(userId);
+        if (optionalUsers.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse(404, "사용자를 찾을 수 없음"));
+        }
+
+        //폴더가 있는지 체크
+        Optional<Folders> optionalFolders = foldersRepository.findById(linksCreateRequest.getFoldersId());
+        if (optionalFolders.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse(404, "폴더를 찾을 수 없음"));
+        }
+
+        //기본 폴더가 있는지 체크
+        Optional<Folders> optionalDefaultFolders = foldersRepository.findById(linksCreateRequest.getDefaultFoldersId());
+        if (optionalDefaultFolders.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse(404, "기본 폴더를 찾을 수 없음"));
+        }
+
         // 링크 저장
+        String linkUrl = linksCreateRequest.getLinkUrl();
+        String linkName = linksCreateRequest.getLinkName();
+        Links link = new Links(linkUrl,linkName);
         linksRepository.save(link);
+
+        //폴더 링크에 삽입 -> folders_links에 넣어야 됨
+        FoldersLinks foldersLinks = new FoldersLinks(optionalFolders.get(), link, userId);
+        foldersLinksRepository.save(foldersLinks);
+
+        //모든 링크 폴더에도 추가를 해주어야함
+        //만약 foldersId랑 deafultFoldersId랑 같으면 삽입이 필요없고 다르면 넣어야됨
+        if (linksCreateRequest.getFoldersId() != linksCreateRequest.getDefaultFoldersId()){
+            FoldersLinks foldersDefaultLinks = new FoldersLinks(optionalDefaultFolders.get(), link, userId);
+            foldersLinksRepository.save(foldersDefaultLinks);
+        }
+        return ResponseEntity.ok(linksCreateRequest);
     }
 
 //    public void deleteLink(LinksDeleteDTO linksDeleteDTO){
