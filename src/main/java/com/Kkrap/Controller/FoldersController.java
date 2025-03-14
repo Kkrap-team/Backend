@@ -1,8 +1,8 @@
 package com.Kkrap.Controller;
 
-import com.Kkrap.RequestDTO.FolderCreateRequest;
+import com.Kkrap.RequestDTO.FoldersCreateRequest;
+import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
 import com.Kkrap.ResponseDto.FoldersResponse;
-import com.Kkrap.ResponseDto.MessageResponseDTO;
 import com.Kkrap.Service.FoldersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,26 +19,18 @@ public class FoldersController {
     private FoldersService foldersService;
 
     //Selected
-    //사용자가 가지고 있는 모든 폴더 조회
+    //사용자가 가지고 있는 모든 폴더와 내안 있는 링크들 같이 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<List<FoldersResponse>> getFoldersAll(@PathVariable("userId") Long userId){
-        return ResponseEntity.ok(foldersService.getFoldersAll(userId));
+    public ResponseEntity<List<FoldersLinksAllResponse>> getFoldersAll(@PathVariable("userId") Long userId){
+        return foldersService.getFoldersAll(userId);
     }
-
-    //folders 상세
-//    @PostMapping("/folderurl")
-//    public ResponseEntity<List<FolderUrlResponseDTO>> SelectedFolderUrl(@RequestBody FolderUrlRequestDTO folderUrlRequestDTO)
-//    {
-//        List<FolderUrlResponseDTO> responseDto =  foldersService.SelectedFolderUrl(folderUrlRequestDTO.getFolderId(), folderUrlRequestDTO.getUserId());
-//        return ResponseEntity.ok(responseDto);
-//    }
 
 //    //Create
 //    //1. 폴더를 만드는 api
     @PostMapping("/{userId}/create")
-    public ResponseEntity<MessageResponseDTO> CreateFolder(@RequestBody FolderCreateRequest foldersCreateRequest)
+    public ResponseEntity<Object> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest)
     {
-        return  foldersService.CreateFolder(foldersCreateRequest);
+        return  foldersService.CreateFolder(userId, foldersCreateRequest);
     }
 //
 //    //Delete
@@ -50,6 +42,11 @@ public class FoldersController {
 
 
     //Update
+    //1. 폴더에 링크 추가
+//    @PostMapping
+//    public ResponseEntity<Object> InsertLink(@PathVariable("userId") Long userId, @RequestBody )
+
+
     //폴더의 이름을 변경
 
 

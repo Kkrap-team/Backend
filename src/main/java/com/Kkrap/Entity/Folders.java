@@ -2,8 +2,8 @@ package com.Kkrap.Entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 @Table(name = "folders")
 @AllArgsConstructor
+@NoArgsConstructor
 public class Folders {
 
     @Id
@@ -43,11 +44,11 @@ public class Folders {
 
 
     @OneToMany(mappedBy = "folders", cascade = CascadeType.ALL)
-    private List<FolderList> folderList;
+    private List<FoldersLinks> foldersLinks;
 
 
-    public Folders(Long userId, String folderName, String folderDescription, boolean isPublic) {
-//        this.userId = userId;
+    public Folders(Users user, String folderName, String folderDescription, boolean isPublic) {
+        this.user = user;
         this.folderName = folderName;
         this.folderDescription = folderDescription;
         this.isPublic = isPublic;
