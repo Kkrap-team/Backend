@@ -1,6 +1,7 @@
 package com.Kkrap.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,40 +14,42 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "folders")
+@AllArgsConstructor
 public class Folders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long folderId;
 
-    @Column(nullable = false)
-    private Long userId;
-
-    @Column(nullable = true)
-    private String FolderUrl;
+//    @Column(nullable = false)
+//    private Long userId;
 
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime createTime;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String folderName;
 
-    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    @Column(nullable = false, length = 500)
+    private String folderDescription;
+
+    @Column(nullable = false)
+    private boolean isPublic;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
+
+
+    @OneToMany(mappedBy = "folders", cascade = CascadeType.ALL)
     private List<FolderList> folderList;
 
-    @Builder
-    public Folders(Long userId){
-        this.userId = userId;
-    }
 
-    public Folders(Long userId, String folderName){
-        this.userId = userId;
+    public Folders(Long userId, String folderName, String folderDescription, boolean isPublic) {
+//        this.userId = userId;
         this.folderName = folderName;
+        this.folderDescription = folderDescription;
+        this.isPublic = isPublic;
     }
-
-    public Folders()
-    {}
-
-
 }

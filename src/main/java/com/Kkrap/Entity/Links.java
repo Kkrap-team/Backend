@@ -22,26 +22,26 @@ public class Links {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long linkId;
 
-    @ManyToOne
-    @JoinColumn(nullable = false, name = "user_id")
-//    @JsonBackReference // 순환 참조 방지
-    private Users users;
+//    @ManyToOne
+//    @JoinColumn(nullable = false, name = "user_id")
+////    @JsonBackReference // 순환 참조 방지
+//    private Users users;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2084)
     private String linkUrl;
 
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime createTime;
 
-    @OneToMany(mappedBy = "link", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "links", cascade = CascadeType.ALL)
     private List<FolderList> folderList;
 
 
     @Builder
     public Links(Users users, String link_url)
     {
-        this.users = users;
+//        this.users = users;
         this.linkUrl = link_url;
     }
 
