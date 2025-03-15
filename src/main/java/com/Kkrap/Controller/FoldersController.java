@@ -1,8 +1,10 @@
 package com.Kkrap.Controller;
 
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
+
+import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
-import com.Kkrap.ResponseDto.FoldersResponse;
+import com.Kkrap.ResponseDto.MessageResponse;
 import com.Kkrap.Service.FoldersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,21 +30,20 @@ public class FoldersController {
 //    //Create
 //    //1. 폴더를 만드는 api
     @PostMapping("/{userId}/create")
-    public ResponseEntity<Object> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest)
-    {
-        return  foldersService.CreateFolder(userId, foldersCreateRequest);
+    public ResponseEntity<Object> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest) {
+        return foldersService.CreateFolder(userId, foldersCreateRequest);
     }
-//
-//    //Delete
-//    @PostMapping("/delete")
-//    public ResponseEntity<MessageResponseDTO> DeleteFolder(@RequestBody FolderDeleteDTO folderDeleteDTO)
-//    {
-//        return foldersService.DeleteFolder(folderDeleteDTO);
-//    }
+
+    //Delete
+    @PostMapping("/{userId}/delete")
+    public ResponseEntity<Object> DeleteFolder(@PathVariable("userId") Long userId, @RequestBody FoldersDeleteRequest foldersDeleteRequest)
+    {
+        return foldersService.DeleteFolder(userId, foldersDeleteRequest);
+    }
 
 
     //Update
-    //1. 폴더에 링크 추가
+    //폴더 제목, 설명 바꾸기
 //    @PostMapping
 //    public ResponseEntity<Object> InsertLink(@PathVariable("userId") Long userId, @RequestBody )
 

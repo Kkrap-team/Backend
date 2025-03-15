@@ -9,9 +9,10 @@ import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.LinksRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
-import com.Kkrap.RequestDTO.FolderDeleteDTO;
+import com.Kkrap.RequestDTO.FoldersDeleteRequest;
+import com.Kkrap.ResponseDto.FoldersDeleteResponse;
+import com.Kkrap.ResponseDto.LinksDeleteAllResponse;
 import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
-import com.Kkrap.ResponseDto.FoldersResponse;
 import com.Kkrap.ResponseDto.MessageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -109,28 +110,50 @@ public class FoldersService {
 
     //Delete
     //폴더 삭제
-    public ResponseEntity<MessageResponse> DeleteFolder(FolderDeleteDTO folderDeleteDTO)
+    public ResponseEntity<Object> DeleteFolder(Long userId,FoldersDeleteRequest foldersDeleteRequest)
     {
-        Long folderId = folderDeleteDTO.getFolderId();
-
-        Optional<Folders> folder = foldersRepository.findById(folderId);
-        if (folder.isPresent())
-        {
-            foldersRepository.deleteById(folderId);
-            MessageResponse message = new MessageResponse(404, "delete Folder Success");
-            return ResponseEntity.ok(message);
+        Optional<Users> optionalUsers = usersRepository.findById(userId);
+        if (optionalUsers.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(404, "사용자를 찾을 수 없음"));
         }
-        else
-        {
-            return new ResponseEntity("Folder does not exist", HttpStatus.NOT_FOUND);
+        Long folderId = foldersDeleteRequest.getFolderId();
+        Optional<Folders> optionalFolders = foldersRepository.findById(folderId);
+        if (optionalFolders.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(404, "존재하지 않는 폴더"));
         }
 
+        //FolderLinks에 해당 folderId에 속한 FolderLinks 리스트 조회
+        Folders folder = optionalFolders.get();
+        List<FoldersLinks> folderLinksList = foldersLinksRepository.findByFolders(folder);
 
+
+//        List<Long> linkIds = folderLinksList.stream()
+//                .map(folderLink -> folderLink.getLinks().getLinkId())
+//                .distinct()
+//                .collect(Collectors.toList());
+
+        //응답을 해주기 위한 데이터
+//        List<Links> deletedLinks = linksRepository.findAllById(linkIds);
+//        List<LinksResponse> deletedLinksResponse = deletedLinks.stream()
+//                .map(LinksResponse::new)
+//                .collect(Collectors.toList());
+
+        // Links 테이블에서 해당 linkId를 가진 링크 삭제
+//        if (!linkIds.isEmpty()){
+//            linksRepository.deleteAllById(linkIds);
+//        }
+
+        // FoldersLinks 테이블에서 해당 folderId를 가진 데이터 삭제
+        foldersLinksRepository.deleteAll(folderLinksList);
+
+        // folders 삭제
+        foldersRepository.deleteById(folderId);
+
+        //응답 데이터를 삭제된 링크들까지 포함 시켜서 해주어야함
+        FoldersDeleteResponse response = new FoldersDeleteResponse(
+                folderId, userId, folder.getFolderName(), folder.getFolderDescription(), folder.isPublic()
+        );
+
+        return ResponseEntity.ok(response);
     }
-
-
-
-
-
-
 }
