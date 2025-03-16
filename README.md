@@ -42,7 +42,7 @@
 - refactor 코드 리팩토링 (기능 변경 없음)
 - perf 성능 개선 
 - test 테스트 코드 추가/수정 
-- chore	빌드, 패키지 매니저 설정 변경 (의존성 업데이트 등)
+- chore	빌드, 패키지 매니저 설정 변경 (의존성 업데이트 등), 자잘한 수정
 - ci CI/CD 설정 변경 (GitHub Actions, Jenkins 등)
 - build	빌드 시스템 변경 (Webpack, Rollup 등)
 - revert	이전 커밋 되돌리기 
