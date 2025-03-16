@@ -32,7 +32,7 @@ public class Folders {
     @Column(nullable = false, length = 500)
     private String folderName;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = true, length = 500)
     private String folderDescription;
 
     @Column(nullable = false)
