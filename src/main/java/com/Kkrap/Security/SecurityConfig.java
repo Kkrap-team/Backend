@@ -1,6 +1,8 @@
 package com.Kkrap.Security;
 
+import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
+import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.Service.CustomOAuth2UserService;
 import jakarta.servlet.ServletException;
@@ -36,6 +38,9 @@ import java.util.Optional;
 public class SecurityConfig {
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private FoldersRepository foldersRepository;
 
     private final CustomOAuth2UserService oAuth2UserService;
 
@@ -120,6 +125,10 @@ public class SecurityConfig {
                         usersRepository.save(newUser);
                         setCookie(response, "userId", String.valueOf(newUser.getUserId()), 7 * 24 * 60 * 60);
                         userId = String.valueOf(newUser.getUserId());
+
+                        // 처음 로그인 한 사람은 모든 링크 보기 폴더가 없음 만들어주어야함
+                        Folders folder = new Folders(newUser, "모든 링크", "모든 링크가 저장된 폴더입니다.", false);
+                        foldersRepository.save(folder);
                     }
                     else
                     {

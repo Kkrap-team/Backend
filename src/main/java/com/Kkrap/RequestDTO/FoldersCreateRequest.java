@@ -2,12 +2,14 @@ package com.Kkrap.RequestDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class FolderCreateRequest {
+public class FoldersCreateRequest {
     private Long userId;
 
     private String folderName;
@@ -19,4 +21,5 @@ public class FolderCreateRequest {
     public boolean getisPublic(){
         return isPublic;
     }
+
 }

@@ -1,16 +1,18 @@
 package com.Kkrap.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "folders_links")
-public class FolderList {
+@AllArgsConstructor
+@NoArgsConstructor
+public class FoldersLinks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long foldersLinksId;
@@ -22,5 +24,14 @@ public class FolderList {
     @ManyToOne
     @JoinColumn(nullable = false, name = "link_id")
     private Links links;
+
+    @Column(nullable = false)
+    private Long userId;
+
+    public FoldersLinks(Folders folders, Links links, Long userId){
+        this.folders = folders;
+        this.links = links;
+        this.userId = userId;
+    }
 
 }

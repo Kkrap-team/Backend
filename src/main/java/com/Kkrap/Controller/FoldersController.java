@@ -1,8 +1,10 @@
 package com.Kkrap.Controller;
 
-import com.Kkrap.RequestDTO.FolderCreateRequest;
-import com.Kkrap.ResponseDto.FoldersResponse;
-import com.Kkrap.ResponseDto.MessageResponseDTO;
+import com.Kkrap.RequestDTO.FoldersCreateRequest;
+
+import com.Kkrap.RequestDTO.FoldersDeleteRequest;
+import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
+import com.Kkrap.ResponseDto.MessageResponse;
 import com.Kkrap.Service.FoldersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,37 +21,33 @@ public class FoldersController {
     private FoldersService foldersService;
 
     //Selected
-    //사용자가 가지고 있는 모든 폴더 조회
+    //사용자가 가지고 있는 모든 폴더와 내안 있는 링크들 같이 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<List<FoldersResponse>> getFoldersAll(@PathVariable("userId") Long userId){
-        return ResponseEntity.ok(foldersService.getFoldersAll(userId));
+    public ResponseEntity<List<FoldersLinksAllResponse>> getFoldersAll(@PathVariable("userId") Long userId){
+        return foldersService.getFoldersAll(userId);
     }
-
-    //folders 상세
-//    @PostMapping("/folderurl")
-//    public ResponseEntity<List<FolderUrlResponseDTO>> SelectedFolderUrl(@RequestBody FolderUrlRequestDTO folderUrlRequestDTO)
-//    {
-//        List<FolderUrlResponseDTO> responseDto =  foldersService.SelectedFolderUrl(folderUrlRequestDTO.getFolderId(), folderUrlRequestDTO.getUserId());
-//        return ResponseEntity.ok(responseDto);
-//    }
 
 //    //Create
 //    //1. 폴더를 만드는 api
     @PostMapping("/{userId}/create")
-    public ResponseEntity<MessageResponseDTO> CreateFolder(@RequestBody FolderCreateRequest foldersCreateRequest)
-    {
-        return  foldersService.CreateFolder(foldersCreateRequest);
+    public ResponseEntity<Object> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest) {
+        return foldersService.CreateFolder(userId, foldersCreateRequest);
     }
-//
-//    //Delete
-//    @PostMapping("/delete")
-//    public ResponseEntity<MessageResponseDTO> DeleteFolder(@RequestBody FolderDeleteDTO folderDeleteDTO)
-//    {
-//        return foldersService.DeleteFolder(folderDeleteDTO);
-//    }
+
+    //Delete
+    @PostMapping("/{userId}/delete")
+    public ResponseEntity<Object> DeleteFolder(@PathVariable("userId") Long userId, @RequestBody FoldersDeleteRequest foldersDeleteRequest)
+    {
+        return foldersService.DeleteFolder(userId, foldersDeleteRequest);
+    }
 
 
     //Update
+    //폴더 제목, 설명 바꾸기
+//    @PostMapping
+//    public ResponseEntity<Object> InsertLink(@PathVariable("userId") Long userId, @RequestBody )
+
+
     //폴더의 이름을 변경
 
 

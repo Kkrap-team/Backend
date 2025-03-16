@@ -2,9 +2,8 @@ package com.Kkrap.RequestDTO;
 
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
-public class FolderDeleteDTO {
+public class FoldersDeleteRequest {
+    private Long userId;
     private Long folderId;
 }
