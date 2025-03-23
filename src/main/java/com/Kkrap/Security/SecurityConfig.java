@@ -75,6 +75,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 //        configuration.setAllowedOrigins(Collections.singletonList("http://192.168.1.193:3000")); // 프론트엔드 주소 허용
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://43.203.234.0:3000"
+        ));
+
+
         configuration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name()));
         configuration.setAllowCredentials(true); // 쿠키 및 인증 정보 허용
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
@@ -210,8 +217,8 @@ public class SecurityConfig {
         cookie.setHttpOnly(false); // JavaScript에서 접근 가능하도록 설정
         cookie.setSecure(false); // HTTPS가 아닌 경우에도 전송되도록 설정
 //        cookie.setDomain("172.20.10.12"); // 도메인을 프론트엔드 주소로 설정
-//        cookie.setDomain("43.203.234.0"); // 도메인을 프론트엔드 주소로 설정
-        cookie.setDomain("192.168.1.193"); // 도메인을 프론트엔드 주소로 설정
+        cookie.setDomain("43.203.234.0"); // 도메인을 프론트엔드 주소로 설정
+//        cookie.setDomain("192.168.1.193"); // 도메인을 프론트엔드 주소로 설정
         response.addCookie(cookie);
     }
 
