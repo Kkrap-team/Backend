@@ -10,6 +10,7 @@ import com.Kkrap.Repository.LinksRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.ResponseDto.MessageResponse;
+import com.Kkrap.Util.LinkMetadataExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,10 +63,22 @@ public class LinksService {
                     .body(new MessageResponse(404, "기본 폴더를 찾을 수 없음"));
         }
 
-        // 링크 저장
+        //1. 링크 URL 추출
         String linkUrl = linksCreateRequest.getLinkUrl();
-        String linkName = linksCreateRequest.getLinkName();
-        Links link = new Links(linkUrl,linkName);
+
+        //2. Jsoup 기반 메타 정보 추출
+        LinkMetadataExtractor.Metadata meta = LinkMetadataExtractor.extract(linkUrl);
+
+        String linkName = (meta.title != null && !meta.title.isBlank()) ? meta.title : null;
+        String thumbnailUrl = (meta.thumbnailUrl != null && !meta.thumbnailUrl.isBlank()) ? meta.thumbnailUrl : null;
+        String faviconUrl = (meta.faviconUrl != null && !meta.faviconUrl.isBlank()) ? meta.faviconUrl : null;
+
+        //3. 링크 저장
+        Links link = new Links();
+        link.setLinkUrl(linkUrl);
+        link.setLinkName(linkName);
+        link.setThumbnailUrl(thumbnailUrl);
+        link.setFaviconUrl(faviconUrl);
         linksRepository.save(link);
 
         //폴더 링크에 삽입 -> folders_links에 넣어야 됨

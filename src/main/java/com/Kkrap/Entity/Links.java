@@ -28,8 +28,15 @@ public class Links {
     @CreationTimestamp
     private LocalDateTime createTime;
 
-    @Column(nullable = false, length = 500)
+    @Column(nullable = true, length = 500)
     private String linkName;
+
+    @Column(length = 2084)
+    private String thumbnailUrl;
+
+    @Column(length = 2084)
+    private String faviconUrl;
+
 
     @OneToMany(mappedBy = "links", cascade = CascadeType.ALL)
     private List<FoldersLinks> foldersLinks;
