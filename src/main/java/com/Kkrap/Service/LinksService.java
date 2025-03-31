@@ -9,6 +9,7 @@ import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.LinksRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
+import com.Kkrap.RequestDTO.LinksDeleteRequest;
 import com.Kkrap.ResponseDto.MessageResponse;
 import com.Kkrap.Util.LinkMetadataExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Service
 public class LinksService {
@@ -94,24 +98,69 @@ public class LinksService {
         return ResponseEntity.ok(linksCreateRequest);
     }
 
-//    public void deleteLink(LinksDeleteDTO linksDeleteDTO){
-//        List<Links> userLinks = linksRepository.findByUsers_UserId(linksDeleteDTO.getUserId());
-//        if (userLinks == null || userLinks.isEmpty())
-//        {
-//            throw new IllegalArgumentException("해당 사용자에 대한 링크가 없습니다.");
-//        }
-//
-//
-//        List<Links> linksToDelete = userLinks.stream() //userLinks는 Link 객체들의 리스트이다. 여기서 .stream() 메서드는 리스트를 스트림(Stream)으로 변환한다. 스트림을 사용하면 컬렉션에 대해 여러 가지 처리를 더 간결하고 효율적으로 할 수 있다
-//                .filter(links -> linksDeleteDTO.getLinkId().contains(links.getLinkId()))//
-//                .collect(Collectors.toList());
-//
-//        if (linksToDelete.isEmpty()){
-//            throw new IllegalArgumentException("삭제할 링크 ID 값이 존재하지 않습니다.");
-//        }
-//
-//        linksRepository.deleteAll(linksToDelete);
-//    }
+    public ResponseEntity<Object> DeleteLink(Long userId, LinksDeleteRequest linksDeleteRequest) {
+        // 1. 사용자 확인
+        Optional<Users> optionalUsers = usersRepository.findById(userId);
+        if (optionalUsers.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new MessageResponse(404, "사용자를 찾을 수 없음"));
+        }
+
+        // 2. 없는 link일 경우
+        List<Long> deleteLinkIdList = linksDeleteRequest.getLinkId();
+        for (Long linkId : deleteLinkIdList){
+            Optional<Links> link = linksRepository.findById(linkId);
+            if (link.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new MessageResponse(404, "링크를 찾을 수 없음"));
+            }
+        }
+
+
+        Long defaultFodersId = linksDeleteRequest.getDefaultFoldersId();
+        Long foldersId = linksDeleteRequest.getFoldersId();
+
+        if (defaultFodersId == foldersId) //defaultFoldersId가 foldersId랑 같으면 다른 폴더에 있는 것들도 전부 삭제해야함.
+        {
+            //사용자가 가진 folderId다 들고 오기
+            List<Folders> folders = foldersRepository.findByUserUserId(userId);
+
+            for (Folders folder : folders){
+                List<FoldersLinks> foldersLinksList = foldersLinksRepository.findByFolders(folder);
+
+                //삭제 대상만 필터링
+                List<FoldersLinks> toDelete = foldersLinksList.stream()
+                        .filter(fl -> deleteLinkIdList.contains(fl.getLinks().getLinkId()))
+                        .collect(Collectors.toList());
+                foldersLinksRepository.deleteAll(toDelete);
+            }
+
+            //링크들 삭제
+            for (Long linkId : deleteLinkIdList){
+                linksRepository.deleteById(linkId);
+            }
+
+            return ResponseEntity.ok(new LinksDeleteRequest(defaultFodersId, foldersId, deleteLinkIdList));
+        }
+        else // 다를 경우 foldersId에 있는
+        {
+            Optional<Folders> folders = foldersRepository.findById(foldersId);
+            Folders folder = folders.get();
+
+            // 해당 폴더에 연결된 folders_links 모두 조회
+            List<FoldersLinks> folderLinksList = foldersLinksRepository.findByFolders(folder);
+
+
+            for (FoldersLinks fl : folderLinksList){
+                Long linkId = fl.getLinks().getLinkId();
+                if (deleteLinkIdList.contains(linkId)) {
+                    foldersLinksRepository.delete(fl); // folders_links 삭제
+                }
+            }
+            return ResponseEntity.ok(new LinksDeleteRequest(defaultFodersId, foldersId, deleteLinkIdList));
+        }
+
+    }
 
 
 }
