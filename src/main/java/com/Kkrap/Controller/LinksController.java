@@ -1,6 +1,7 @@
 package com.Kkrap.Controller;
 
 import com.Kkrap.RequestDTO.LinksCreateRequest;
+import com.Kkrap.RequestDTO.LinksDeleteRequest;
 import com.Kkrap.Service.LinksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,14 @@ public class LinksController {
     public ResponseEntity<Object> createLink(@PathVariable("userId") Long userId, @RequestBody LinksCreateRequest linksCreateRequest){
         return linksService.CreateLink(userId, linksCreateRequest);
     }
+
+    //Delete
+    //링크 삭제
+    @DeleteMapping("/{userId}/delete")
+    public ResponseEntity<Object> deleteLink(@PathVariable("userId") Long userId, @RequestBody LinksDeleteRequest linksDeleteRequest){
+        return linksService.DeleteLink(userId, linksDeleteRequest);
+    }
+
 
 //    @PostMapping("/links/delete")
 //    public ResponseEntity<LinksDeleteDTO> deleteLink(@RequestBody LinksDeleteDTO linksDeleteDTO) {
