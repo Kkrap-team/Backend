@@ -15,7 +15,7 @@ import java.util.List;
 
 @Controller
 @RestController
-@RequestMapping("/v2/folders")
+@RequestMapping("/folders")
 public class FoldersController {
     @Autowired
     private FoldersService foldersService;
@@ -29,13 +29,13 @@ public class FoldersController {
 
 //    //Create
 //    //1. 폴더를 만드는 api
-    @PostMapping("/{userId}/create")
+    @PostMapping("/{userId}")
     public ResponseEntity<Object> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest) {
         return foldersService.CreateFolder(userId, foldersCreateRequest);
     }
 
     //Delete
-    @PostMapping("/{userId}/delete")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Object> DeleteFolder(@PathVariable("userId") Long userId, @RequestBody FoldersDeleteRequest foldersDeleteRequest)
     {
         return foldersService.DeleteFolder(userId, foldersDeleteRequest);
