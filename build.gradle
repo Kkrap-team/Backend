@@ -40,6 +40,9 @@ dependencies {
 
 	//링크 추출
 	implementation 'org.jsoup:jsoup:1.17.2'
+
+	//스웨거
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 }
 
 tasks.named('test') {
