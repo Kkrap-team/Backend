@@ -1,9 +1,15 @@
 package com.Kkrap.Service;
 
 import com.Kkrap.Entity.Users;
+import com.Kkrap.Exception.ErrorCode;
+import com.Kkrap.Exception.UsersNotFoundException;
 import com.Kkrap.Repository.UsersRepository;
-import com.Kkrap.ResponseDto.UserProfileResponse;
+import com.Kkrap.RequestDTO.UsersCreateRequest;
+import com.Kkrap.ResponseDto.MessageResponse;
+import com.Kkrap.ResponseDto.UserProfileDefaultFolderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,16 +20,12 @@ public class UsersService {
     @Autowired
     private UsersRepository usersRepository;
 
-    public UserProfileResponse getUserProfile(Long userId){
-        Optional<Users> optionalUsers = usersRepository.findById(userId);
-
-        if (optionalUsers.isPresent()){
-            Users user = optionalUsers.get();
-            return new UserProfileResponse(user.getUserId(),user.getEmail(), user.getNickname(), user.getProfile(), user.getKakaoId());
+    public ResponseEntity<Object> getUserProfile(Long userId){
+        Users users = get(userId);
+        if (users == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MessageResponse.of(404,"사용자를 찾을 수 없음"));
         }
-        else {
-            return  null;
-        }
+        return ResponseEntity.ok(UserProfileDefaultFolderResponse.of(users.getUserId(),users.getEmail(), users.getNickname(), users.getProfile(), users.getKakaoId()));
     }
 
     public boolean updateNickName(Long userId, String newNickname){
@@ -37,4 +39,21 @@ public class UsersService {
         }
         return false;
     }
+
+    //DB에서 카카오으로 로그인한 유저 조회
+    public boolean isKakaoUserExists(Long kakaoId) {
+        return usersRepository.findByKaKaoId(kakaoId).isPresent();
+    }
+
+    public Users save(UsersCreateRequest usersCreateRequest){
+        Users users = Users.from(usersCreateRequest);
+        usersRepository.save(users);
+        return users;
+    }
+
+    public Users get(Long userId) {
+        return usersRepository.findById(userId)
+                .orElseThrow(() -> new UsersNotFoundException("해당 사용자를 찾을 수 없습니다.", ErrorCode.USER_NOT_FOUND));
+    }
+
 }

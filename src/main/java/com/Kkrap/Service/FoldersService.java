@@ -151,9 +151,18 @@ public class FoldersService {
 
         //응답 데이터를 삭제된 링크들까지 포함 시켜서 해주어야함
         FoldersDeleteResponse response = new FoldersDeleteResponse(
-                folderId, userId, folder.getFolderName(), folder.getFolderDescription(), folder.isPublic()
+                folderId, userId, folder.getFolderName(), folder.getFolderDescription(), folder.getIsPublic()
         );
 
         return ResponseEntity.ok(response);
     }
+
+    //save
+    public Folders save(FoldersCreateRequest foldersCreateRequest, Users users){
+        Folders folders = Folders.of(foldersCreateRequest, users);
+        foldersRepository.save(folders);
+        return folders;
+    }
+
+
 }

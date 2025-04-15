@@ -4,7 +4,7 @@ import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.NicknameRequest;
 import com.Kkrap.ResponseDto.MessageResponse;
-import com.Kkrap.ResponseDto.UserProfileResponse;
+import com.Kkrap.ResponseDto.UserProfileDefaultFolderResponse;
 import com.Kkrap.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -31,15 +31,9 @@ public class UsersController {
     //users 프로필 조회
     @GetMapping("/{userId}")
     @ResponseBody
-    public ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable("userId") Long userId)
+    public ResponseEntity<Object> getUserProfile(@PathVariable("userId") Long userId)
     {
-        UserProfileResponse userProfile = usersService.getUserProfile(userId);
-        if (userProfile != null) {
-            return ResponseEntity.ok(userProfile);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(null);
-        }
+        return usersService.getUserProfile(userId);
     }
 
     //닉네임 변경
