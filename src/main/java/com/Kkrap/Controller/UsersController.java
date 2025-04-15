@@ -3,8 +3,7 @@ package com.Kkrap.Controller;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.NicknameRequest;
-import com.Kkrap.ResponseDto.MessageResponse;
-import com.Kkrap.ResponseDto.UserProfileDefaultFolderResponse;
+import com.Kkrap.ResponseDto.UsersProfileResponse;
 import com.Kkrap.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -31,7 +30,7 @@ public class UsersController {
     //users 프로필 조회
     @GetMapping("/{userId}")
     @ResponseBody
-    public ResponseEntity<Object> getUserProfile(@PathVariable("userId") Long userId)
+    public ResponseEntity<UsersProfileResponse> getUserProfile(@PathVariable("userId") Long userId)
     {
         return usersService.getUserProfile(userId);
     }
@@ -39,17 +38,9 @@ public class UsersController {
     //닉네임 변경
     @PostMapping("/{userId}/nickname")
     @ResponseBody
-    public ResponseEntity<MessageResponse> updateNickname(@PathVariable("userId") Long userId, @RequestBody NicknameRequest request)
+    public ResponseEntity<UsersProfileResponse> updateNickname(@PathVariable("userId") Long userId, @RequestBody NicknameRequest request)
     {
-
-        boolean updated = usersService.updateNickName(userId, request.getNickname());
-        if (updated) {
-            MessageResponse message = new MessageResponse(404,"닉네임 변경 완료");
-            return ResponseEntity.ok(message);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new MessageResponse(404,"해당 ID의 사용자를 찾을 수 없습니다."));
-        }
+        return usersService.updateNickName(userId, request.getNickname());
     }
 
 }

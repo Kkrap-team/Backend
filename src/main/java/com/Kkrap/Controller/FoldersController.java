@@ -3,8 +3,8 @@ package com.Kkrap.Controller;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
+import com.Kkrap.ResponseDto.FoldersResponse;
 import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
-import com.Kkrap.ResponseDto.MessageResponse;
 import com.Kkrap.Service.FoldersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +30,13 @@ public class FoldersController {
 //    //Create
 //    //1. 폴더를 만드는 api
     @PostMapping("/{userId}")
-    public ResponseEntity<Object> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest) {
+    public ResponseEntity<FoldersResponse> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest) {
         return foldersService.CreateFolder(userId, foldersCreateRequest);
     }
 
     //Delete
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> DeleteFolder(@PathVariable("userId") Long userId, @RequestBody FoldersDeleteRequest foldersDeleteRequest)
+    public ResponseEntity<FoldersResponse> DeleteFolder(@PathVariable("userId") Long userId, @RequestBody FoldersDeleteRequest foldersDeleteRequest)
     {
         return foldersService.DeleteFolder(userId, foldersDeleteRequest);
     }

@@ -1,6 +1,5 @@
 package com.Kkrap.Service;
 
-import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
@@ -8,7 +7,7 @@ import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
 import com.Kkrap.ResponseDto.MessageResponse;
-import com.Kkrap.ResponseDto.UserProfileDefaultFolderResponse;
+import com.Kkrap.ResponseDto.UsersProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -72,14 +71,14 @@ public class AuthService {
             // 처음 로그인 한 사람은 모든 링크 보기 폴더가 없음 만들어주어야함
             FoldersCreateRequest foldersCreateRequest = FoldersCreateRequest.of(newUser.getUserId(), "모든 링크", "모든 링크가 저장된 폴더입니다.", false);
             foldersService.save(foldersCreateRequest, newUser);
-            UserProfileDefaultFolderResponse userProfileDefaultFolderResponse = UserProfileDefaultFolderResponse.of(newUser.getUserId(), newUser.getEmail(), newUser.getNickname(), newUser.getProfile(), newUser.getKakaoId());
-            return ResponseEntity.ok(userProfileDefaultFolderResponse);
+            UsersProfileResponse usersProfileResponse = UsersProfileResponse.of(newUser.getUserId(), newUser.getEmail(), newUser.getNickname(), newUser.getProfile(), newUser.getKakaoId());
+            return ResponseEntity.ok(usersProfileResponse);
         }
         else
         {
             Users existingUser = CheckUser.get();
-            UserProfileDefaultFolderResponse userProfileDefaultFolderResponse = UserProfileDefaultFolderResponse.of(existingUser.getUserId(), existingUser.getEmail(), existingUser.getNickname(), existingUser.getProfile(), existingUser.getKakaoId());
-            return ResponseEntity.ok(userProfileDefaultFolderResponse);
+            UsersProfileResponse usersProfileResponse = UsersProfileResponse.of(existingUser.getUserId(), existingUser.getEmail(), existingUser.getNickname(), existingUser.getProfile(), existingUser.getKakaoId());
+            return ResponseEntity.ok(usersProfileResponse);
         }
     }
 

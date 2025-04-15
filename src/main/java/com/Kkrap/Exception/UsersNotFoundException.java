@@ -12,4 +12,8 @@ public class UsersNotFoundException extends RuntimeException {
         super(message);
         this.errorCode = errorCode;
     }
+
+    public static UsersNotFoundException of(String message, ErrorCode errorCode) {
+        return new UsersNotFoundException(message, errorCode);
+    }
 }
