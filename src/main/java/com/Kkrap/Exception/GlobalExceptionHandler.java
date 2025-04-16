@@ -29,5 +29,11 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(NotValidTokenException.class)
+    public ResponseEntity<ErrorResponse> notValidTokenException(NotValidTokenException ex) {
+        ErrorResponse response = ErrorResponse.from(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 
 }

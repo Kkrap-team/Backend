@@ -31,14 +31,18 @@ public class AuthService {
     @Autowired
     FoldersService foldersService;
 
-    @Autowired
-    FoldersRepository foldersRepository;
-    public ResponseEntity<?> kakaoLogin(@RequestBody KaKaoTokenRequest request){
+    public boolean isAccessToken(String token) {
+        if(token.equals("")){
+            throw new NotValidTokenException("토큰이 없습니다.", ErrorCode.TOKEN_NOT_VALID);
+        }
+        return false;
+    }
+
+    public UsersProfileResponse kakaoLogin(@RequestBody KaKaoTokenRequest request){
         String accessToken = request.getAccesstoken();
 
         if (accessToken.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new MessageResponse(404, "토큰 없음"));
+            isAccessToken(accessToken);
         }
 
         //1. 카카오 유저 정보 요청
