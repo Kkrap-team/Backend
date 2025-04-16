@@ -27,8 +27,8 @@ public class FoldersController {
         return foldersService.getFoldersAll(userId);
     }
 
-//    //Create
-//    //1. 폴더를 만드는 api
+    //Create
+    // 1. 폴더를 만드는 api
     @PostMapping("/{userId}")
     public ResponseEntity<FoldersResponse> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest) {
         return foldersService.CreateFolder(userId, foldersCreateRequest);
@@ -40,28 +40,5 @@ public class FoldersController {
     {
         return foldersService.DeleteFolder(userId, foldersDeleteRequest);
     }
-
-
-    //Update
-    //폴더 제목, 설명 바꾸기
-//    @PostMapping
-//    public ResponseEntity<Object> InsertLink(@PathVariable("userId") Long userId, @RequestBody )
-
-
-    //폴더의 이름을 변경
-
-
-
-
-
-
-
-    //폴더 전체 조회 -> 이거는 최악으 상황일 때 사용,,
-    //요청은 사용자 id
-//    @GetMapping("/all")
-//    public List<> SelectedMemberFolders()
-//    {}
-
-
 
 }

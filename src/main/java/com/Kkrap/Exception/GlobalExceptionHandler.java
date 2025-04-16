@@ -35,5 +35,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(LinksNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleLinksNotFound(LinksNotFoundException ex){
+        log.error("handleLinksNotFoundException", ex);
+
+        ErrorResponse response =  ErrorResponse.from(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
+    }
 
 }

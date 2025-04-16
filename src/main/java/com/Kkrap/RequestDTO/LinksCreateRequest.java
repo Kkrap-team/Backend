@@ -7,10 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class LinksCreateRequest {
-    private Long userId;
 
     private String linkUrl;
 

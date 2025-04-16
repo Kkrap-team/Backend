@@ -38,9 +38,9 @@ public class FoldersService {
 
     public ResponseEntity<List<FoldersLinksAllResponse>> getFoldersAll(Long userId){
         //중간에 있는 사용자 인지 검사
-        usersService.get(userId);
+        usersService.findById(userId);
         // userId를 통해 전부 가져오기
-        List<Folders> folders = getAllFolders(userId);
+        List<Folders> folders = findByUserUserId(userId);
         List<FoldersLinksAllResponse> responseList = folders.stream().map(folder -> {
             // 해당 폴더의 FoldersLinks 조회 (folder_id 기준)
             // 특정 폴더(folder_id)에 해당하는 FoldersLinks를 조회
@@ -63,7 +63,7 @@ public class FoldersService {
     public ResponseEntity<FoldersResponse> CreateFolder(Long userId, FoldersCreateRequest foldersCreateRequest)
     {
         //사용자 조회
-        Users users = usersService.get(userId);
+        Users users = usersService.findById(userId);
         Folders folders = save(foldersCreateRequest, users);
 
         return ResponseEntity.ok(FoldersResponse.from(folders));
@@ -74,11 +74,11 @@ public class FoldersService {
     public ResponseEntity<FoldersResponse> DeleteFolder(Long userId, FoldersDeleteRequest foldersDeleteRequest)
     {
         //사용자 체크
-        usersService.get(userId);
+        usersService.findById(userId);
 
         //FolderLinks에 해당 folderId에 속한 FolderLinks 리스트 조회
         Long folderId = foldersDeleteRequest.getFolderId();
-        Folders folders = get(folderId);
+        Folders folders = findById(folderId);
         List<FoldersLinks> folderLinksList = foldersLinksRepository.findByFolders(folders);
 
         // FoldersLinks 테이블에서 해당 folderId를 가진 데이터 삭제 ---------------> 이거 해야됨
@@ -97,7 +97,7 @@ public class FoldersService {
     }
 
     //사용자가 가진 모든 폴더 조회
-    public List<Folders> getAllFolders(Long userId){
+    public List<Folders> findByUserUserId(Long userId){
         List<Folders> folders = foldersRepository.findByUserUserId(userId);
         if (folders.isEmpty()){
             throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.", ErrorCode.FOLDERS_NOT_FOUND);
@@ -106,9 +106,10 @@ public class FoldersService {
     }
 
     //하나 폴더 조회
-    public Folders get(Long folderId){
+    public Folders findById(Long folderId){
         return foldersRepository.findById(folderId).orElseThrow(() -> FoldersNotFoundException.of("폴더가 존재하지 않습니다.", ErrorCode.FOLDERS_NOT_FOUND));
     }
+
 
     public void deleteById(Long folderId){
         foldersRepository.deleteById(folderId);

@@ -1,6 +1,5 @@
 package com.Kkrap.Exception;
 
-import com.nimbusds.oauth2.sdk.ErrorResponse;
 import lombok.Getter;
 
 @Getter
