@@ -10,7 +10,8 @@ public enum ErrorCode {
 //    FOLDERS_NOT_FOUND(404, "FOLDERS-ERR-404", "존재하지 않는 폴더입니다.");
 
     USER_NOT_FOUND(404,"USERS-ERR-404","USERS NOT FOUND"),
-    FOLDERS_NOT_FOUND(404, "FOLDERS-ERR-404", "FOLDERS NOT FOUND");
+    FOLDERS_NOT_FOUND(404, "FOLDERS-ERR-404", "FOLDERS NOT FOUND"),
+    TOKEN_NOT_VALID(404, "TOKEN_NOT_VALID", "TOKEN NOT VALID");
 
     private int code;
     private String errorCode;

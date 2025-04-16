@@ -1,6 +1,7 @@
 package com.Kkrap.Controller;
 
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
+import com.Kkrap.ResponseDto.UsersProfileResponse;
 import com.Kkrap.Service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    AuthService authService;
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     //토큰 관리 방식
     @PostMapping("/kakao-login")
-    public ResponseEntity<?> kakaoLogin(@RequestBody KaKaoTokenRequest request){
-        return authService.kakaoLogin(request);
+    public ResponseEntity<UsersProfileResponse> kakaoLogin(@RequestBody KaKaoTokenRequest request){
+        var response = authService.kakaoLogin(request);
+        return ResponseEntity.ok(response);
     }
 }
