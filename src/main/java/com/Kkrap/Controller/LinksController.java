@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v2/links")
+@RequestMapping("/links")
 public class LinksController {
     @Autowired
     private LinksService linksService;
@@ -20,7 +20,7 @@ public class LinksController {
 
     //Create
     //링크 저장
-    @PostMapping("/{userId}/create")
+    @PostMapping("/{userId}")
     @ResponseBody
     public ResponseEntity<Object> createLink(@PathVariable("userId") Long userId, @RequestBody LinksCreateRequest linksCreateRequest){
         return linksService.CreateLink(userId, linksCreateRequest);
@@ -28,7 +28,7 @@ public class LinksController {
 
     //Delete
     //링크 삭제
-    @DeleteMapping("/{userId}/delete")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteLink(@PathVariable("userId") Long userId, @RequestBody LinksDeleteRequest linksDeleteRequest){
         return linksService.DeleteLink(userId, linksDeleteRequest);
     }

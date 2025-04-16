@@ -1,16 +1,18 @@
 package com.Kkrap.ResponseDto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class MessageResponse {
     private Integer code;
     private String message;
+    private MessageResponse() { }
 
-    public MessageResponse(Integer code, String message) {
-        this.code = code;
-        this.message = message;
+    public static MessageResponse of(Integer code, String message){
+        return new MessageResponse(code, message);
     }
 }

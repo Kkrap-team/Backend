@@ -1,11 +1,17 @@
 package com.Kkrap.Exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import lombok.Getter;
 
-@ResponseStatus(HttpStatus.NOT_FOUND) // 404 Not Found 상태 코드 반환
+@Getter
 public class FoldersNotFoundException extends RuntimeException {
-    public FoldersNotFoundException(String message) {
+    private ErrorCode errorCode;
+
+    public FoldersNotFoundException(String message, ErrorCode errorCode) {
         super(message);
+        this.errorCode = errorCode;
     }
+    public static FoldersNotFoundException of(String message, ErrorCode errorCode) {
+        return new FoldersNotFoundException(message, errorCode);
+    }
+
 }

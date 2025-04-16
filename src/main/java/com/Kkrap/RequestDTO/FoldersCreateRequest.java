@@ -22,4 +22,10 @@ public class FoldersCreateRequest {
         return isPublic;
     }
 
+    public static FoldersCreateRequest of(Long userId, String folderName, String folderDescription, boolean isPublic){
+        return new FoldersCreateRequest(userId, folderName, folderDescription, isPublic);
+
+    }
+
+
 }

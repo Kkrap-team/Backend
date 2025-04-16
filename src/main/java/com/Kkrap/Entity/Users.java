@@ -1,5 +1,6 @@
 package com.Kkrap.Entity;
 
+import com.Kkrap.RequestDTO.UsersCreateRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,15 +36,16 @@ public class Users {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Folders> folders;
 
-//    // Links와의 관계 추가
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-////    @JsonIgnore // 순환 참조 방지
-//    private List<Links> links;
 
+    private Users() { } // 외부에서 new 사용 못하게 보호
 
+    //정적 팩토리 메서드
+    public static Users from(UsersCreateRequest usersCreateRequest) {
+        return new Users(usersCreateRequest.getEmail(), usersCreateRequest.getNickname(), usersCreateRequest.getProfileImage(), usersCreateRequest.getKakaoId());
+    }
 
     @Builder
-    public Users(String email, String nickname, String profile, Long kakaoId)
+    private Users(String email, String nickname, String profile, Long kakaoId)
     {
         this.email = email;
         this.nickname = nickname;
@@ -51,7 +53,4 @@ public class Users {
         this.kakaoId = kakaoId;
     }
 
-    public Users() {
-        // 기본 생성자
-    }
 }
