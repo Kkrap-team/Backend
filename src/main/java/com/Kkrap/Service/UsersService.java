@@ -17,18 +17,18 @@ public class UsersService {
     private UsersRepository usersRepository;
 
     public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId){
-        Users users = get(userId);
+        Users users = findById(userId);
         return ResponseEntity.ok(UsersProfileResponse.of(users.getUserId(),users.getEmail(), users.getNickname(), users.getProfile(), users.getKakaoId()));
     }
 
     public ResponseEntity<UsersProfileResponse> updateNickName(Long userId, String newNickname){
-        Users users = get(userId);
+        Users users = findById(userId);
         users.setNickname(newNickname);
         save(users);
         return ResponseEntity.ok(UsersProfileResponse.from(users));
     }
 
-    public Users get(Long userId) {
+    public Users findById(Long userId) {
         return usersRepository.findById(userId)
                 .orElseThrow(() ->UsersNotFoundException.of("해당 사용자를 찾을 수 없습니다.", ErrorCode.USER_NOT_FOUND));
     }

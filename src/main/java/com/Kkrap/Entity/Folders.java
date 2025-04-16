@@ -19,9 +19,6 @@ public class Folders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long folderId;
 
-//    @Column(nullable = false)
-//    private Long userId;
-
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime createTime;

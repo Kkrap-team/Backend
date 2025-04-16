@@ -1,7 +1,5 @@
 package com.Kkrap.Controller;
 
-import com.Kkrap.Repository.FoldersRepository;
-import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.NicknameRequest;
 import com.Kkrap.ResponseDto.UsersProfileResponse;
 import com.Kkrap.Service.UsersService;
@@ -15,12 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class UsersController {
     @Autowired
     UsersService usersService;
-
-    @Autowired
-    UsersRepository usersRepository;
-
-    @Autowired
-    FoldersRepository foldersRepository;
 
     @GetMapping("/login")
     public String login(){

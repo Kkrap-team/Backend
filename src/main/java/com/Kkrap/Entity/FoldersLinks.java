@@ -3,7 +3,6 @@ package com.Kkrap.Entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -11,7 +10,6 @@ import lombok.Setter;
 @Setter
 @Table(name = "folders_links")
 @AllArgsConstructor
-@NoArgsConstructor
 public class FoldersLinks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +26,16 @@ public class FoldersLinks {
     @Column(nullable = false)
     private Long userId;
 
-    public FoldersLinks(Folders folders, Links links, Long userId){
+    private FoldersLinks(Folders folders, Links links, Long userId){
         this.folders = folders;
         this.links = links;
         this.userId = userId;
+    }
+
+    private FoldersLinks() {}
+
+    public static FoldersLinks of(Folders folders, Links links, Long userId){
+        return new FoldersLinks(folders, links, userId);
     }
 
 }
