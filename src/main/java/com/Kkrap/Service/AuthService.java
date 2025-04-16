@@ -1,6 +1,8 @@
 package com.Kkrap.Service;
 
 import com.Kkrap.Entity.Users;
+import com.Kkrap.Exception.ErrorCode;
+import com.Kkrap.Exception.NotValidTokenException;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
@@ -31,14 +33,18 @@ public class AuthService {
     @Autowired
     FoldersService foldersService;
 
-    @Autowired
-    FoldersRepository foldersRepository;
-    public ResponseEntity<?> kakaoLogin(@RequestBody KaKaoTokenRequest request){
+    public boolean isAccessToken(String token) {
+        if(token.equals("")){
+            throw new NotValidTokenException("토큰이 없습니다.", ErrorCode.TOKEN_NOT_VALID);
+        }
+        return false;
+    }
+
+    public UsersProfileResponse kakaoLogin(@RequestBody KaKaoTokenRequest request){
         String accessToken = request.getAccesstoken();
 
         if (accessToken.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new MessageResponse(404, "토큰 없음"));
+            isAccessToken(accessToken);
         }
 
         //1. 카카오 유저 정보 요청
@@ -72,13 +78,13 @@ public class AuthService {
             FoldersCreateRequest foldersCreateRequest = FoldersCreateRequest.of(newUser.getUserId(), "모든 링크", "모든 링크가 저장된 폴더입니다.", false);
             foldersService.save(foldersCreateRequest, newUser);
             UsersProfileResponse usersProfileResponse = UsersProfileResponse.of(newUser.getUserId(), newUser.getEmail(), newUser.getNickname(), newUser.getProfile(), newUser.getKakaoId());
-            return ResponseEntity.ok(usersProfileResponse);
+            return usersProfileResponse;
         }
         else
         {
             Users existingUser = CheckUser.get();
             UsersProfileResponse usersProfileResponse = UsersProfileResponse.of(existingUser.getUserId(), existingUser.getEmail(), existingUser.getNickname(), existingUser.getProfile(), existingUser.getKakaoId());
-            return ResponseEntity.ok(usersProfileResponse);
+            return usersProfileResponse;
         }
     }
 
