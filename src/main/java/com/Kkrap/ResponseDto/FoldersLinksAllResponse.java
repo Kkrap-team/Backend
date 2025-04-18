@@ -15,7 +15,7 @@ public class FoldersLinksAllResponse {
     private Long folderId;
     private String folderName;
     private String folderDescription;
-    private boolean isPublic;
+    private boolean visible;
     private LocalDateTime createTime;
     private List<LinksResponse> links;
 
@@ -25,11 +25,11 @@ public class FoldersLinksAllResponse {
         Long folderId = folder.getFolderId();
         String folderName = folder.getFolderName();
         String folderDescription = folder.getFolderDescription();
-        boolean isPublic = folder.getIsPublic();
+        boolean visible = folder.isVisible();
         LocalDateTime createTime = folder.getCreateTime();
         List<LinksResponse> links = linksList.stream()
                 .map(LinksResponse::new)
                 .collect(Collectors.toList());
-        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, isPublic, createTime, links);
+        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, visible, createTime, links);
     }
 }

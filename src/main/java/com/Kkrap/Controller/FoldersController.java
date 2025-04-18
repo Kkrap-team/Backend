@@ -30,15 +30,15 @@ public class FoldersController {
     //Create
     // 1. 폴더를 만드는 api
     @PostMapping("/{userId}")
-    public ResponseEntity<FoldersResponse> CreateFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest) {
-        return foldersService.CreateFolder(userId, foldersCreateRequest);
+    public ResponseEntity<FoldersResponse> createFolder(@PathVariable("userId") Long userId, @RequestBody FoldersCreateRequest foldersCreateRequest) {
+        return foldersService.createFolder(userId, foldersCreateRequest);
     }
 
     //Delete
     @DeleteMapping("/{userId}")
-    public ResponseEntity<FoldersResponse> DeleteFolder(@PathVariable("userId") Long userId, @RequestBody FoldersDeleteRequest foldersDeleteRequest)
+    public ResponseEntity<FoldersResponse> deleteFolder(@PathVariable("userId") Long userId, @RequestBody FoldersDeleteRequest foldersDeleteRequest)
     {
-        return foldersService.DeleteFolder(userId, foldersDeleteRequest);
+        return foldersService.deleteFolder(userId, foldersDeleteRequest);
     }
 
 }

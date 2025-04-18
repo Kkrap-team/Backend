@@ -60,7 +60,7 @@ public class FoldersService {
 
     //Create
     //폴더를 만드는 것
-    public ResponseEntity<FoldersResponse> CreateFolder(Long userId, FoldersCreateRequest foldersCreateRequest)
+    public ResponseEntity<FoldersResponse> createFolder(Long userId, FoldersCreateRequest foldersCreateRequest)
     {
         //사용자 조회
         Users users = usersService.findById(userId);
@@ -71,7 +71,7 @@ public class FoldersService {
 
     //Delete
     //폴더 삭제
-    public ResponseEntity<FoldersResponse> DeleteFolder(Long userId, FoldersDeleteRequest foldersDeleteRequest)
+    public ResponseEntity<FoldersResponse> deleteFolder(Long userId, FoldersDeleteRequest foldersDeleteRequest)
     {
         //사용자 체크
         usersService.findById(userId);

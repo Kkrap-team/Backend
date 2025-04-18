@@ -17,13 +17,13 @@ public class FoldersResponse {
     private String folderName;
     private String folderDescription;
     private LocalDateTime createTime;
-    private boolean isPublic;
+    private boolean visible;
 
     private FoldersResponse() {}
 
 
     public static FoldersResponse from(Folders folders){
-        return new FoldersResponse(folders.getFolderId(), folders.getFolderId(), folders.getFolderName(), folders.getFolderDescription(), folders.getCreateTime(), folders.getIsPublic());
+        return new FoldersResponse(folders.getFolderId(), folders.getFolderId(), folders.getFolderName(), folders.getFolderDescription(), folders.getCreateTime(), folders.isVisible());
     }
 
 }
