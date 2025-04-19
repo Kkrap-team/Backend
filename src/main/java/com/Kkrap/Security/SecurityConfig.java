@@ -4,7 +4,9 @@ import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
+import com.Kkrap.RequestDTO.UsersCreateRequest;
 import com.Kkrap.Service.CustomOAuth2UserService;
+import com.Kkrap.Service.UsersService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +26,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -41,6 +42,9 @@ public class SecurityConfig {
 
     @Autowired
     private FoldersRepository foldersRepository;
+
+    @Autowired
+    private UsersService usersService;
 
     private final CustomOAuth2UserService oAuth2UserService;
 
@@ -75,6 +79,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 //        configuration.setAllowedOrigins(Collections.singletonList("http://192.168.1.193:3000")); // 프론트엔드 주소 허용
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "http://43.203.234.0:3000"
+        ));
+
+
         configuration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name()));
         configuration.setAllowCredentials(true); // 쿠키 및 인증 정보 허용
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
@@ -95,7 +106,7 @@ public class SecurityConfig {
                     // 카카오 사용자 정보 추출
                     Map<String, Object> attributes = defaultOAuth2User.getAttributes();
 
-                    String kaka_id = attributes.get("id").toString(); // 사용자 ID
+                    String kakao_id = attributes.get("id").toString(); // 사용자 ID
                     Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
                     Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
@@ -104,13 +115,13 @@ public class SecurityConfig {
                     String email = kakaoAccount.get("email").toString(); // 이메일
 
                     // 디버그용 로그 출력
-                    System.out.println("카카오 사용자 ID: " + kaka_id);
+                    System.out.println("카카오 사용자 ID: " + kakao_id);
                     System.out.println("카카오 사용자 닉네임: " + nickname);
                     System.out.println("카카오 사용자 이메일: " + email);
                     System.out.println("카카오 사용자 프로필 이미지 URL: " + profileImage);
 
                     // 사용자 정보를 각각 쿠키에 저장
-                    setCookie(response, "kakao_id", kaka_id, 7 * 24 * 60 * 60); // 쿠키 유효기간 7일
+                    setCookie(response, "kakao_id", kakao_id, 7 * 24 * 60 * 60); // 쿠키 유효기간 7일
                     setCookie(response, "nickname", nickname, 7 * 24 * 60 * 60);
                     setCookie(response, "profileImage", profileImage, 7 * 24 * 60 * 60);
                     setCookie(response, "email", email, 7 * 24 * 60 * 60);
@@ -118,11 +129,12 @@ public class SecurityConfig {
 
                     //DB 로직 추가
                     String userId;
-                    Optional<Users> CheckUser = usersRepository.findByKaKaoId(Long.valueOf(kaka_id));
+                    Optional<Users> CheckUser = usersRepository.findByKaKaoId(Long.valueOf(kakao_id));
                     System.out.println("CheckUser : " + CheckUser);
                     if (CheckUser.isEmpty()){
-                        Users newUser = new Users(email, nickname, profileImage, Long.valueOf(kaka_id));
-                        usersRepository.save(newUser);
+                        UsersCreateRequest usersCreateRequest = UsersCreateRequest.of(email, nickname, profileImage, Long.valueOf(kakao_id));
+                        Users newUser = usersService.save(usersCreateRequest);
+
                         setCookie(response, "userId", String.valueOf(newUser.getUserId()), 7 * 24 * 60 * 60);
                         userId = String.valueOf(newUser.getUserId());
 
@@ -182,7 +194,7 @@ public class SecurityConfig {
                     // 사용자 정보를 URL 인코딩
                     String redirectUrl = String.format(
                             "http://localhost:3000/login/success?kakao_id=%s&nickname=%s&profileImage=%s&email=%s&userId=%s",
-                            URLEncoder.encode(kaka_id, StandardCharsets.UTF_8.toString()),
+                            URLEncoder.encode(kakao_id, StandardCharsets.UTF_8.toString()),
                             URLEncoder.encode(nickname, StandardCharsets.UTF_8.toString()),
                             URLEncoder.encode(profileImage, StandardCharsets.UTF_8.toString()),
                             URLEncoder.encode(email, StandardCharsets.UTF_8.toString()),
@@ -210,8 +222,8 @@ public class SecurityConfig {
         cookie.setHttpOnly(false); // JavaScript에서 접근 가능하도록 설정
         cookie.setSecure(false); // HTTPS가 아닌 경우에도 전송되도록 설정
 //        cookie.setDomain("172.20.10.12"); // 도메인을 프론트엔드 주소로 설정
-//        cookie.setDomain("43.203.234.0"); // 도메인을 프론트엔드 주소로 설정
-        cookie.setDomain("192.168.1.193"); // 도메인을 프론트엔드 주소로 설정
+        cookie.setDomain("43.203.234.0"); // 도메인을 프론트엔드 주소로 설정
+//        cookie.setDomain("192.168.1.193"); // 도메인을 프론트엔드 주소로 설정
         response.addCookie(cookie);
     }
 

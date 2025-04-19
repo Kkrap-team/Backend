@@ -8,11 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LinksCreateRequest {
-
-    private String linkUrl;
-
-    private Long foldersId;
-
-    private Long defaultFoldersId;
+@NoArgsConstructor
+public class KaKaoTokenRequest {
+    private String accesstoken;
 }

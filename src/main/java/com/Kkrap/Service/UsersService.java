@@ -1,12 +1,14 @@
 package com.Kkrap.Service;
 
 import com.Kkrap.Entity.Users;
+import com.Kkrap.Exception.ErrorCode;
+import com.Kkrap.Exception.UsersNotFoundException;
 import com.Kkrap.Repository.UsersRepository;
-import com.Kkrap.ResponseDto.UserProfileResponse;
+import com.Kkrap.RequestDTO.UsersCreateRequest;
+import com.Kkrap.ResponseDto.UsersProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UsersService {
@@ -14,27 +16,33 @@ public class UsersService {
     @Autowired
     private UsersRepository usersRepository;
 
-    public UserProfileResponse getUserProfile(Long userId){
-        Optional<Users> optionalUsers = usersRepository.findById(userId);
-
-        if (optionalUsers.isPresent()){
-            Users user = optionalUsers.get();
-            return new UserProfileResponse(user.getUserId(),user.getEmail(), user.getNickname(), user.getProfile(), user.getKakaoId());
-        }
-        else {
-            return  null;
-        }
+    public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId){
+        Users users = findById(userId);
+        return ResponseEntity.ok(UsersProfileResponse.of(users.getUserId(),users.getEmail(), users.getNickname(), users.getProfile(), users.getKakaoId()));
     }
 
-    public boolean updateNickName(Long userId, String newNickname){
-        Optional<Users> optionalUsers = usersRepository.findById(userId);
-
-        if (optionalUsers.isPresent()){
-            Users user = optionalUsers.get();
-            user.setNickname(newNickname);
-            usersRepository.save(user);
-            return true;
-        }
-        return false;
+    public ResponseEntity<UsersProfileResponse> updateNickName(Long userId, String newNickname){
+        Users users = findById(userId);
+        users.setNickname(newNickname);
+        save(users);
+        return ResponseEntity.ok(UsersProfileResponse.from(users));
     }
+
+    public Users findById(Long userId) {
+        return usersRepository.findById(userId)
+                .orElseThrow(() ->UsersNotFoundException.of("해당 사용자를 찾을 수 없습니다.", ErrorCode.USER_NOT_FOUND));
+    }
+
+    //유저 만들기
+    public Users save(UsersCreateRequest usersCreateRequest){
+        Users users = Users.from(usersCreateRequest);
+        usersRepository.save(users);
+        return users;
+    }
+
+    //유저 이미 있는데 저장
+    public Users save(Users users){
+        return usersRepository.save(users);
+    }
+
 }

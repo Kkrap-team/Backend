@@ -10,16 +10,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FoldersCreateRequest {
-    private Long userId;
 
     private String folderName;
 
     private String folderDescription;
 
-    private boolean isPublic;
+    private boolean visible;
 
-    public boolean getisPublic(){
-        return isPublic;
+    public static FoldersCreateRequest of(String folderName, String folderDescription, boolean visible){
+        return new FoldersCreateRequest(folderName, folderDescription, visible);
+
     }
+
 
 }

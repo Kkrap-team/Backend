@@ -1,11 +1,13 @@
 package com.Kkrap.Service;
 
+import com.Kkrap.Entity.Folders;
+import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Repository.FoldersLinksRepository;
 import com.Kkrap.Repository.FoldersRepository;
-import com.Kkrap.Repository.LinksRepository;
-import com.Kkrap.Repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FoldersLinksService {
@@ -13,55 +15,23 @@ public class FoldersLinksService {
     private FoldersLinksRepository foldersLinksRepository;
 
     @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
     private FoldersRepository foldersRepository;
 
-    @Autowired
-    private LinksRepository linksRepository;
+    public FoldersLinks save(FoldersLinks foldersLinks){
+        return foldersLinksRepository.save(foldersLinks);
+    }
 
-    //폴더에 url을 넣는 api
-//    public ResponseEntity<FolderInsertUrlRequestDTO> InsertUrlFolder(FolderInsertUrlRequestDTO folderInsertUrlRequestDTO)
-//    {
-//        System.out.println(folderInsertUrlRequestDTO.getFolderId()+ " " + folderInsertUrlRequestDTO.getUserId());
-////        //먼저 folderId와 userId를 가진 folder가 있는지 체크
-////        Optional<Folders> folder = foldersRepository.findById(folderInsertUrlRequestDTO.getFolderId());
-////        if (folder.isEmpty())
-////        {
-////            return new ResponseEntity("Folder does not exist", HttpStatus.NOT_FOUND);
-////        }
-//        //사용자가 있는지 검사
-//        Optional<Users> user = usersRepository.findById(
-//                folderInsertUrlRequestDTO.getUserId());
-//
-//        if (user.isEmpty())
-//        {
-//            return new ResponseEntity("User does not exist", HttpStatus.NOT_FOUND);
-//        }
-//
-//        //사용자가 폴더를 가지고 있는지 검사
-//        Optional<Folders> folder = foldersRepository.findByFolderIdAndUserId(
-//                folderInsertUrlRequestDTO.getFolderId(),
-//                folderInsertUrlRequestDTO.getUserId());
-//        if (folder.isEmpty())
-//        {
-//            return new ResponseEntity("Folder does not exist", HttpStatus.NOT_FOUND);
-//        }
-//
-//        List<Long> linkIds = folderInsertUrlRequestDTO.getLinkId();
-//        linkIds.stream()
-//                .map(linkId -> {
-//                    FolderList folderList = new FolderList();
-//                    folderList.setFolder(folder.get());
-//                    Optional<Links> links = linksRepository.findById(linkId);
-//                    if (links.isPresent()) {
-//                        folderList.setLink(links.get());
-//                        return folderListRepository.save(folderList);
-//                    } else {
-//                        return new ResponseEntity<>("Url does not exist", HttpStatus.NOT_FOUND);
-//                    }
-//                }).collect(Collectors.toList());
-//        return ResponseEntity.ok(folderInsertUrlRequestDTO);
-//    }
+    //폴더에 대해 연결된 모든 링크다 주기
+    public List<FoldersLinks> findByFolders(Folders folders){
+        return foldersLinksRepository.findByFolders(folders);
+    }
+
+    public void deleteAll(List<FoldersLinks> toDelete){
+        foldersLinksRepository.deleteAll(toDelete);
+    }
+
+    public void delete(FoldersLinks fl){
+        foldersLinksRepository.delete(fl);
+    }
+
 }

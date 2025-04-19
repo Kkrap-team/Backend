@@ -1,29 +1,23 @@
 package com.Kkrap.Entity;
 
+import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "folders")
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class Folders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long folderId;
-
-//    @Column(nullable = false)
-//    private Long userId;
 
     @Column(nullable = false)
     @CreationTimestamp
@@ -36,7 +30,7 @@ public class Folders {
     private String folderDescription;
 
     @Column(nullable = false)
-    private boolean isPublic;
+    private boolean visible;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -46,11 +40,16 @@ public class Folders {
     @OneToMany(mappedBy = "folders", cascade = CascadeType.ALL)
     private List<FoldersLinks> foldersLinks;
 
-
-    public Folders(Users user, String folderName, String folderDescription, boolean isPublic) {
+    public Folders(Users user, String folderName, String folderDescription, boolean visible) {
         this.user = user;
         this.folderName = folderName;
         this.folderDescription = folderDescription;
-        this.isPublic = isPublic;
+        this.visible = visible;
+    }
+
+    private Folders() {} //외부에서 new 사용 못하게 보호
+
+    public static Folders of(FoldersCreateRequest foldersCreateRequest, Users user){
+        return new Folders(user, foldersCreateRequest.getFolderName(), foldersCreateRequest.getFolderDescription(), foldersCreateRequest.isVisible());
     }
 }
