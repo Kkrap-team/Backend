@@ -12,9 +12,10 @@ public class UsersCreateRequest {
     private String nickname;
     private String profileImage;
     private Long kakaoId;
+    private String bio;
 
 
-    public static UsersCreateRequest of(String email, String nickname, String profileImage, Long kakaoId){
-        return new UsersCreateRequest(email, nickname, profileImage, kakaoId);
+    public static UsersCreateRequest of(String email, String nickname, String profileImage, Long kakaoId, String bio){
+        return new UsersCreateRequest(email, nickname, profileImage, kakaoId, bio);
     }
 }

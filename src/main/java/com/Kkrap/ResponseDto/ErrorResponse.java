@@ -20,4 +20,9 @@ public class ErrorResponse {
     public static ErrorResponse from(ErrorCode errorCode){
         return new ErrorResponse(errorCode.getCode(), errorCode.getErrorCode(), errorCode.getMessage());
     }
+
+    public static ErrorResponse from(ErrorCode errorCode, String customMessage) {
+        return new ErrorResponse(errorCode.getCode(), errorCode.getErrorCode(), customMessage);
+    }
+
 }

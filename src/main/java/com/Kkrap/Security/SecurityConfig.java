@@ -60,7 +60,9 @@ public class SecurityConfig {
 //                )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .csrf(csrf -> csrf.disable()) //
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll()
+                .authorizeHttpRequests(authorize -> authorize
+                                .requestMatchers("/profile/**").permitAll() // 정적 리소스 허용
+                                .anyRequest().permitAll()
 //                        .requestMatchers("/login", "/oauth2/**").permitAll()
 //                        .anyRequest().authenticated()
                 )
@@ -132,7 +134,7 @@ public class SecurityConfig {
                     Optional<Users> CheckUser = usersRepository.findByKaKaoId(Long.valueOf(kakao_id));
                     System.out.println("CheckUser : " + CheckUser);
                     if (CheckUser.isEmpty()){
-                        UsersCreateRequest usersCreateRequest = UsersCreateRequest.of(email, nickname, profileImage, Long.valueOf(kakao_id));
+                        UsersCreateRequest usersCreateRequest = UsersCreateRequest.of(email, nickname, profileImage, Long.valueOf(kakao_id), null);
                         Users newUser = usersService.save(usersCreateRequest);
 
                         setCookie(response, "userId", String.valueOf(newUser.getUserId()), 7 * 24 * 60 * 60);

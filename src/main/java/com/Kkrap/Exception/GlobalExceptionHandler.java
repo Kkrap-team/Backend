@@ -39,8 +39,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleLinksNotFound(LinksNotFoundException ex){
         log.error("handleLinksNotFoundException", ex);
 
-        ErrorResponse response =  ErrorResponse.from(ex.getErrorCode());
+        ErrorResponse response = ErrorResponse.from(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
     }
 
+    @ExceptionHandler(DuplicateNickNameException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateNickName(DuplicateNickNameException ex){
+        log.error("handleDuplicateNickName", ex);
+
+        ErrorResponse response = ErrorResponse.from(ex.getErrorCode(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
+    }
+
+    @ExceptionHandler(SaveFileErrorException.class)
+    public ResponseEntity<ErrorResponse> handleSaveFileErrorException(SaveFileErrorException ex){
+        log.error("handleSaveFileErrorException", ex);
+        ErrorResponse response = ErrorResponse.from(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
+    }
 }
