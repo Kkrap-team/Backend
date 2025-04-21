@@ -66,7 +66,7 @@ public class FoldersService {
         Users users = usersService.findById(userId);
         Folders folders = save(foldersCreateRequest, users);
 
-        return ResponseEntity.ok(FoldersResponse.from(folders));
+        return ResponseEntity.ok(FoldersResponse.from(folders, users.getUserId()));
     }
 
     //Delete
@@ -86,7 +86,7 @@ public class FoldersService {
         // folders 삭제
         deleteById(folderId);
         //응답 데이터를 삭제된 링크들까지 포함 시켜서 해주어야함
-        return ResponseEntity.ok(FoldersResponse.from(folders));
+        return ResponseEntity.ok(FoldersResponse.from(folders, userId));
     }
 
     //save
