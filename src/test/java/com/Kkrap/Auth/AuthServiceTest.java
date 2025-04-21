@@ -25,6 +25,7 @@ public class AuthServiceTest {
         String id = "hello123";
         String emptyToken = "";
         String validToken = Base64.getEncoder().encodeToString(id.getBytes());
+        String nullToken = null;
         System.out.println(validToken);
 
         assertThrows(NotValidTokenException.class, () -> {
@@ -32,9 +33,11 @@ public class AuthServiceTest {
         });
 
         var result = authService.isAccessToken(validToken);
+        var result2 = authService.isAccessToken(nullToken);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result).isEqualTo(false);
+        Assertions.assertThat(result2).isNotNull();
     }
 
 }
