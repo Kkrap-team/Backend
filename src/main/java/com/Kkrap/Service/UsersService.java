@@ -29,7 +29,6 @@ public class UsersService {
     }
 
     public ResponseEntity<UsersProfileResponse> updateProfile(Long userId, String newNickname, String bio){
-        findByNickname(newNickname);
         Users users = findById(userId);
         users.setNickname(newNickname);
         users.setBio(bio);
