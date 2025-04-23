@@ -17,12 +17,16 @@ public class LinksResponse {
     private String linkUrl;
     private LocalDateTime createTime;
     private String linkName;
+    private String thumbnailUrl;
+    private String faviconUrl;
 
     public LinksResponse(Links links) {
         this.linkId = links.getLinkId();
         this.linkUrl = links.getLinkUrl();
         this.createTime = links.getCreateTime();
         this.linkName = links.getLinkName();
+        this.thumbnailUrl = links.getThumbnailUrl();
+        this.faviconUrl = links.getFaviconUrl();
     }
 
 

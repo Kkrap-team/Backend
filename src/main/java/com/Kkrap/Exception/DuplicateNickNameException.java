@@ -7,14 +7,12 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class DuplicateNickNameException extends RuntimeException{
-    private ErrorCode errorCode;
 
-    public DuplicateNickNameException(String message, ErrorCode errorCode){
+    public DuplicateNickNameException(String message){
         super(message);
-        this.errorCode = errorCode;
     }
 
-    public static DuplicateNickNameException of(String message, ErrorCode errorCode){
-        return new DuplicateNickNameException(message, errorCode);
+    public static DuplicateNickNameException from(String message){
+        return new DuplicateNickNameException(message);
     }
 }

@@ -1,7 +1,6 @@
 package com.Kkrap.Service;
 
 import com.Kkrap.Entity.Users;
-import com.Kkrap.Exception.ErrorCode;
 import com.Kkrap.Exception.NotValidTokenException;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
@@ -35,9 +34,28 @@ public class AuthService {
 
     public boolean isAccessToken(String token) {
         if(token.equals("")){
-            throw new NotValidTokenException("토큰이 없습니다.", ErrorCode.TOKEN_NOT_VALID);
+            throw NotValidTokenException.from("토큰이 없습니다.");
         }
         return false;
+    }
+
+    private Map<String, Object> getKakaoUserInfo(String accessToken){
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(accessToken);
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<Map> response = new RestTemplate().exchange(
+                    KAKAO_USER_INFO_URL,
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw NotValidTokenException.from("유효하지 않은 카카오 액세스 토큰입니다.");
+        }
     }
 
     public UsersProfileResponse kakaoLogin(@RequestBody KaKaoTokenRequest request){
@@ -48,19 +66,7 @@ public class AuthService {
         }
 
         //1. 카카오 유저 정보 요청
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<Map> response = new RestTemplate().exchange(
-                KAKAO_USER_INFO_URL,
-                HttpMethod.GET,
-                entity,
-                Map.class
-        );
-
-
-        Map<String, Object> userInfo = response.getBody();
+        Map<String, Object> userInfo = getKakaoUserInfo(accessToken);
         Long kakaoId = Long.valueOf(userInfo.get("id").toString());
         Map<String, Object> kakaoAccount = (Map<String, Object>) userInfo.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
