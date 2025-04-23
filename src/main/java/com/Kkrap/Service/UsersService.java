@@ -2,7 +2,6 @@ package com.Kkrap.Service;
 
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Exception.DuplicateNickNameException;
-import com.Kkrap.Exception.ErrorCode;
 import com.Kkrap.Exception.UsersNotFoundException;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
@@ -58,12 +57,12 @@ public class UsersService {
 
     public Users findById(Long userId) {
         return usersRepository.findById(userId)
-                .orElseThrow(() ->UsersNotFoundException.of("해당 사용자를 찾을 수 없습니다.", ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() ->UsersNotFoundException.from("해당 사용자를 찾을 수 없습니다."));
     }
 
     public void findByNickname(String nickname){
         if(usersRepository.findByNickname(nickname).isPresent()){
-            throw DuplicateNickNameException.of("중복되는 닉네임이 있습니다.", ErrorCode.DUPLICATE_NICKNAME);
+            throw DuplicateNickNameException.from("중복되는 닉네임이 있습니다.");
         }
     }
 

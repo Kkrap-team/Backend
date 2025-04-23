@@ -1,9 +1,9 @@
 package com.Kkrap.ResponseDto;
 
-import com.Kkrap.Exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
 
 @Getter
 @Setter
@@ -11,14 +11,13 @@ import lombok.Setter;
 public class ErrorResponse {
 
     private int code;
-    private String errorCode;
     private String message;
 
 
     private ErrorResponse(){}
 
-    public static ErrorResponse from(ErrorCode errorCode, String customMessage) {
-        return new ErrorResponse(errorCode.getCode(), errorCode.getErrorCode(), customMessage);
+    public static ErrorResponse from(int code, String customMessage) {
+        return new ErrorResponse(code, customMessage);
     }
 
 }

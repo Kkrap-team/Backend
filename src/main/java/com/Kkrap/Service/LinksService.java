@@ -4,7 +4,6 @@ import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
-import com.Kkrap.Exception.ErrorCode;
 import com.Kkrap.Exception.LinksNotFoundException;
 import com.Kkrap.Repository.LinksRepository;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
@@ -117,7 +116,7 @@ public class LinksService {
         return linksRepository.save(links);
     }
     public Links findById(Long linkId){
-        return linksRepository.findById(linkId).orElseThrow(() -> LinksNotFoundException.of("링크를 찾을 수 없습니다", ErrorCode.LINKS_NOT_FOUND));
+        return linksRepository.findById(linkId).orElseThrow(() -> LinksNotFoundException.of("링크를 찾을 수 없습니다"));
     }
     public void deleteById(Long linkId){
         linksRepository.deleteById(linkId);

@@ -4,15 +4,13 @@ import lombok.Getter;
 
 @Getter
 public class LinksNotFoundException extends RuntimeException{
-    private ErrorCode errorCode;
 
-    public LinksNotFoundException(String message, ErrorCode errorCode){
+    public LinksNotFoundException(String message){
         super(message);
-        this.errorCode = errorCode;
     }
 
-    public static FoldersNotFoundException of(String message, ErrorCode errorCode){
-        return new FoldersNotFoundException(message, errorCode);
+    public static FoldersNotFoundException of(String message){
+        return new FoldersNotFoundException(message);
     }
 
 }

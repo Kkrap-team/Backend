@@ -1,6 +1,5 @@
 package com.Kkrap.Util;
 
-import com.Kkrap.Exception.ErrorCode;
 import com.Kkrap.Exception.SaveFileErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +16,7 @@ public class FileStorageUtil {
             //MultipartFile 객체에서 원래 업로드한 파일 이름을 가져옴 null이면 예외처리
             String originalFilename = file.getOriginalFilename();
             if (originalFilename == null) {
-                throw SaveFileErrorException.of("파일 이름 없음", ErrorCode.SAVE_FILE_ERROR);
+                throw SaveFileErrorException.of("파일 이름 없음");
             }
 
             //파일 확장자만 추출
@@ -29,7 +28,7 @@ public class FileStorageUtil {
                 extension = originalFilename.substring(dotIndex);
             } else {
                 // 확장자가 없는 경우 예외 발생
-                throw SaveFileErrorException.of("확장자가 없는 파일입니다.", ErrorCode.SAVE_FILE_ERROR);
+                throw SaveFileErrorException.of("확장자가 없는 파일입니다.");
             }
 
             //이름이 중복되지 않도록 UUID를 사용 또한 실제 파일명을 저장하면 URL 추측 가능
@@ -48,7 +47,7 @@ public class FileStorageUtil {
             return savedFileName;
         } catch (IOException e) {
             e.printStackTrace();
-            throw SaveFileErrorException.of("파일 저장 실패", ErrorCode.SAVE_FILE_ERROR);
+            throw SaveFileErrorException.of("파일 저장 실패");
         }
     }
 }

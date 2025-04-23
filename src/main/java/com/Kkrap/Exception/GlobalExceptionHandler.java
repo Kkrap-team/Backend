@@ -15,43 +15,42 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsersNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUsersNotFound(UsersNotFoundException ex) {
         log.error("handleUsersNotFoundException", ex);
-        ErrorResponse response =  ErrorResponse.from(ex.getErrorCode(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(FoldersNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleFoldersNotFound(FoldersNotFoundException ex){
         log.error("handleFoldersNotFoundException", ex);
-        ErrorResponse response =  ErrorResponse.from(ex.getErrorCode(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
-
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotValidTokenException.class)
     public ResponseEntity<ErrorResponse> notValidTokenException(NotValidTokenException ex) {
         log.error("notValidTokenException", ex);
-        ErrorResponse response = ErrorResponse.from(ex.getErrorCode(), ex.getMessage());
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(LinksNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleLinksNotFound(LinksNotFoundException ex){
         log.error("handleLinksNotFoundException", ex);
-        ErrorResponse response = ErrorResponse.from(ex.getErrorCode(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DuplicateNickNameException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateNickName(DuplicateNickNameException ex){
         log.error("handleDuplicateNickName", ex);
-        ErrorResponse response = ErrorResponse.from(ex.getErrorCode(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
+        ErrorResponse response = ErrorResponse.from(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(SaveFileErrorException.class)
     public ResponseEntity<ErrorResponse> handleSaveFileErrorException(SaveFileErrorException ex){
         log.error("handleSaveFileErrorException", ex);
-        ErrorResponse response = ErrorResponse.from(ex.getErrorCode(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getCode()));
+        ErrorResponse response = ErrorResponse.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

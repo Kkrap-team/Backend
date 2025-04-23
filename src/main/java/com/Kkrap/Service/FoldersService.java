@@ -4,7 +4,6 @@ import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
-import com.Kkrap.Exception.ErrorCode;
 import com.Kkrap.Exception.FoldersNotFoundException;
 import com.Kkrap.Repository.FoldersLinksRepository;
 import com.Kkrap.Repository.FoldersRepository;
@@ -100,14 +99,14 @@ public class FoldersService {
     public List<Folders> findByUserUserId(Long userId){
         List<Folders> folders = foldersRepository.findByUserUserId(userId);
         if (folders.isEmpty()){
-            throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.", ErrorCode.FOLDERS_NOT_FOUND);
+            throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.");
         }
         return folders;
     }
 
     //하나 폴더 조회
     public Folders findById(Long folderId){
-        return foldersRepository.findById(folderId).orElseThrow(() -> FoldersNotFoundException.of("폴더가 존재하지 않습니다.", ErrorCode.FOLDERS_NOT_FOUND));
+        return foldersRepository.findById(folderId).orElseThrow(() -> FoldersNotFoundException.of("폴더가 존재하지 않습니다."));
     }
 
 
