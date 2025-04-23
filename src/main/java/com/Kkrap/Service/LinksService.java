@@ -9,6 +9,7 @@ import com.Kkrap.Exception.LinksNotFoundException;
 import com.Kkrap.Repository.LinksRepository;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
+import com.Kkrap.ResponseDto.LinksCreateResponse;
 import com.Kkrap.Util.LinkMetadataExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class LinksService {
 
 
 
-    public ResponseEntity<LinksCreateRequest> createLink(Long userId, LinksCreateRequest linksCreateRequest){
+    public ResponseEntity<LinksCreateResponse> createLink(Long userId, LinksCreateRequest linksCreateRequest){
         Users users = usersService.findById(userId);
         //폴더가 있는지 체크
         Folders folders = foldersService.findById(linksCreateRequest.getFoldersId());
@@ -61,7 +62,8 @@ public class LinksService {
         if (linksCreateRequest.getFoldersId() != linksCreateRequest.getDefaultFoldersId()){
             foldersLinksService.save(FoldersLinks.of(defaultfolders, links, userId));
         }
-        return ResponseEntity.ok(linksCreateRequest);
+
+        return ResponseEntity.ok(LinksCreateResponse.of(links, linksCreateRequest.getDefaultFoldersId(), linksCreateRequest.getFoldersId()));
     }
 
     public ResponseEntity<LinksDeleteRequest> DeleteLink(Long userId, LinksDeleteRequest linksDeleteRequest) {

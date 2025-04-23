@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class LinksCreateRequest {
 
     @Schema(description = "저장할 링크 URL", example = "https://~~~~", required = true)
@@ -19,4 +20,5 @@ public class LinksCreateRequest {
 
     @Schema(description = "모든 링크 폴더 Id", example = "4", required = true)
     private Long defaultFoldersId;
+
 }
