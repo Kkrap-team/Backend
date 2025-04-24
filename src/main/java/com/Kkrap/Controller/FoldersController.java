@@ -32,6 +32,15 @@ public class FoldersController {
         return foldersService.getFoldersAll(userId);
     }
 
+    @GetMapping("/{folderId}/links")
+    @Operation(summary = "하나의 폴더 링크 전체 조회", description = "하나의 폴더와 모든 링크 조회")
+    public ResponseEntity<FoldersLinksAllResponse> getOneFolderLinksAll(
+            @Parameter(name = "folderId", description = "폴더 ID", required = true, example = "10")
+            @PathVariable("folderId") Long folderId
+    ){
+        return foldersService.getOneFolderLinksAll(folderId);
+    }
+
     //Create
     // 1. 폴더를 만드는 api
     @PostMapping("/{userId}")
