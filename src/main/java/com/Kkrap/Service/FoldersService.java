@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -49,12 +50,37 @@ public class FoldersService {
             List<Links> linksList = folderLinksList.stream()
                     .map(folderLink -> linksRepository.findById(folderLink.getLinks().getLinkId()).orElse(null))
                     .filter(Objects::nonNull) // 존재하는 Links만 리스트에 추가
+                    .sorted(Comparator.comparing(Links::getCreateTime).reversed()) // 최신순 정렬
                     .collect(Collectors.toList());
             // Folder + Links 리스트를 Response DTO로 변환
             return FoldersLinksAllResponse.of(folder, linksList);
         }).collect(Collectors.toList());
         return ResponseEntity.ok(responseList);
     }
+
+    public ResponseEntity<List<FoldersLinksAllResponse>> getFoldersAllthumbnailUrl(Long userId){
+        //중간에 있는 사용자 인지 검사
+        usersService.findById(userId);
+        // userId를 통해 전부 가져오기
+        List<Folders> folders = findByUserUserId(userId);
+        List<FoldersLinksAllResponse> responseList = folders.stream().map(folder -> {
+            // 해당 폴더의 FoldersLinks 조회 (folder_id 기준)
+            // 특정 폴더(folder_id)에 해당하는 FoldersLinks를 조회
+            List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+
+            // 각 FoldersLinks에서 link_id 추출하여 Links 조회
+            List<Links> linksList = folderLinksList.stream()
+                    .map(folderLink -> linksRepository.findById(folderLink.getLinks().getLinkId()).orElse(null))
+                    .filter(Objects::nonNull) // 존재하는 Links만 리스트에 추가
+                    .sorted(Comparator.comparing(Links::getCreateTime).reversed()) // 최신순 정렬
+                    .limit(4) // 상위 4개만 추출
+                    .collect(Collectors.toList());
+            // Folder + Links 리스트를 Response DTO로 변환
+            return FoldersLinksAllResponse.of(folder, linksList);
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(responseList);
+    }
+
 
     public ResponseEntity<FoldersLinksAllResponse> getOneFolderLinksAll(Long folderId){
         //폴더가 있는지 검사
@@ -65,6 +91,7 @@ public class FoldersService {
         List<Links> linksList = folderLinksList.stream()
                 .map(folderLink -> linksRepository.findById(folderLink.getLinks().getLinkId()).orElse(null))
                 .filter(Objects::nonNull) // 존재하는 Links만 리스트에 추가
+                .sorted(Comparator.comparing(Links::getCreateTime).reversed()) // 최신순 정렬
                 .collect(Collectors.toList());
         // Folder + Links 리스트를 Response DTO로 변환
         return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));

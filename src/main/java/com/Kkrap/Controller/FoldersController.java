@@ -32,6 +32,15 @@ public class FoldersController {
         return foldersService.getFoldersAll(userId);
     }
 
+    //사용자 가지고 있는 모든 폴더 안에 있는 링크 4개만 -> 썸네일 전용
+    @GetMapping("/{userId}/thumbnailUrl")
+    @Operation(summary = "사용자의 모든 폴더 및 링크 최신순 4개", description = "보관함에서 보여줄 썸네일 전용")
+    public ResponseEntity<List<FoldersLinksAllResponse>> getFoldersAllthumbnailUrl(
+            @Parameter(name = "userId", description = "사용자 ID", required = true, example = "1")
+            @PathVariable("userId") Long userId){
+        return foldersService.getFoldersAllthumbnailUrl(userId);
+    }
+
     @GetMapping("/{folderId}/links")
     @Operation(summary = "하나의 폴더 링크 전체 조회", description = "하나의 폴더와 모든 링크 조회")
     public ResponseEntity<FoldersLinksAllResponse> getOneFolderLinksAll(
