@@ -3,6 +3,7 @@ package com.Kkrap.Auth;
 import com.Kkrap.Exception.NotValidTokenException;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
 import com.Kkrap.Service.AuthService;
+import org.antlr.v4.runtime.Token;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,11 @@ import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-public class AuthServiceTest {
+public class TokenTest {
 
-    @Autowired AuthService authService;
-
+    TokenStubFunction tokenStubFunction;
 
     // 연동 로그인 종류에 맞춰서 확장성을 고려한 추상화가 필요할 수 있음
-
     @Test
     void isAccessToken() {
         String id = "hello123";
@@ -29,15 +27,17 @@ public class AuthServiceTest {
         System.out.println(validToken);
 
         assertThrows(NotValidTokenException.class, () -> {
-            authService.isAccessToken(emptyToken);
+            tokenStubFunction.isAccessToken(emptyToken);
         });
 
-        var result = authService.isAccessToken(validToken);
-        var result2 = authService.isAccessToken(nullToken);
+        assertThrows(NotValidTokenException.class, () -> {
+            tokenStubFunction.isAccessToken(nullToken);
+        });
+
+        var result = tokenStubFunction.isAccessToken(validToken);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result).isEqualTo(false);
-        Assertions.assertThat(result2).isNotNull();
     }
 
 }
