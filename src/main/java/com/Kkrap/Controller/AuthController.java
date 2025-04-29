@@ -26,7 +26,7 @@ public class AuthController {
     @PostMapping("/kakao-login")
     @Operation(summary = "카카오 로그인", description = "카카오 서버에서 인가 코드를 통해 로그인 진행하시고 토큰 요청을 보내 받은 걸 이 api에 던져주시면 됩니다")
     public ResponseEntity<UsersProfileResponse> kakaoLogin(@RequestBody KaKaoTokenRequest request){
-        var response = authService.kakaoLogin(request);
+        var response = authService.prepare(request);
         return ResponseEntity.ok(response);
     }
 }
