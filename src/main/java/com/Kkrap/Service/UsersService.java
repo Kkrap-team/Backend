@@ -13,15 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 
 @Service
 public class UsersService {
 
     @Autowired
     private UsersRepository usersRepository;
-
-
-
 
     public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId){
         Users users = findById(userId);
@@ -75,6 +74,10 @@ public class UsersService {
     //유저 이미 있는데 저장
     public Users save(Users users){
         return usersRepository.save(users);
+    }
+
+    public Optional<Users> findByKakaoId(Long id) {
+        return usersRepository.findByKaKaoId(id);
     }
 
 }
