@@ -1,17 +1,17 @@
-package com.Kkrap.Service;
+package com.Kkrap.Service.FolderLink;
 
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Exception.FoldersNotFoundException;
-import com.Kkrap.Repository.FoldersLinksRepository;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.LinksRepository;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.ResponseDto.FoldersResponse;
 import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
+import com.Kkrap.Service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

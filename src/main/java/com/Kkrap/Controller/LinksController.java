@@ -3,7 +3,7 @@ package com.Kkrap.Controller;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
 import com.Kkrap.ResponseDto.LinksCreateResponse;
-import com.Kkrap.Service.LinksService;
+import com.Kkrap.Service.FolderLink.LinksService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
