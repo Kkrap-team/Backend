@@ -32,6 +32,9 @@ public class Folders {
     @Column(nullable = false)
     private boolean visible;
 
+    @Column(nullable = false)
+    private boolean defaultFolder;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
@@ -40,16 +43,17 @@ public class Folders {
     @OneToMany(mappedBy = "folders", cascade = CascadeType.ALL)
     private List<FoldersLinks> foldersLinks;
 
-    public Folders(Users user, String folderName, String folderDescription, boolean visible) {
+    public Folders(Users user, String folderName, String folderDescription, boolean visible, boolean defaultFolder) {
         this.user = user;
         this.folderName = folderName;
         this.folderDescription = folderDescription;
         this.visible = visible;
+        this.defaultFolder = defaultFolder;
     }
 
     private Folders() {} //외부에서 new 사용 못하게 보호
 
     public static Folders of(FoldersCreateRequest foldersCreateRequest, Users user){
-        return new Folders(user, foldersCreateRequest.getFolderName(), foldersCreateRequest.getFolderDescription(), foldersCreateRequest.isVisible());
+        return new Folders(user, foldersCreateRequest.getFolderName(), foldersCreateRequest.getFolderDescription(), foldersCreateRequest.isVisible(), foldersCreateRequest.isDefaultFolder());
     }
 }

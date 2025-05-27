@@ -120,8 +120,9 @@ public class FoldersService {
         Folders folders = findById(folderId);
         List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folders);
 
-        // FoldersLinks 테이블에서 해당 folderId를 가진 데이터 삭제 ---------------> 이거 해야됨
+        // FoldersLinks 테이블에서 해당 folderId를 가진 데이터 삭제
         foldersLinksService.deleteAll(folderLinksList);
+        
         // folders 삭제
         deleteById(folderId);
         //응답 데이터를 삭제된 링크들까지 포함 시켜서 해주어야함

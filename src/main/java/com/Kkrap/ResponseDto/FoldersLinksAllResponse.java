@@ -16,6 +16,7 @@ public class FoldersLinksAllResponse {
     private String folderName;
     private String folderDescription;
     private boolean visible;
+    private boolean defaultFolder;
     private LocalDateTime createTime;
     private List<LinksResponse> links;
 
@@ -26,10 +27,11 @@ public class FoldersLinksAllResponse {
         String folderName = folder.getFolderName();
         String folderDescription = folder.getFolderDescription();
         boolean visible = folder.isVisible();
+        boolean defaultFolder = folder.isDefaultFolder();
         LocalDateTime createTime = folder.getCreateTime();
         List<LinksResponse> links = linksList.stream()
                 .map(LinksResponse::new)
                 .collect(Collectors.toList());
-        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, visible, createTime, links);
+        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, visible, defaultFolder ,createTime, links);
     }
 }

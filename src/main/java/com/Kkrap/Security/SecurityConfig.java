@@ -141,7 +141,7 @@ public class SecurityConfig {
                         userId = String.valueOf(newUser.getUserId());
 
                         // 처음 로그인 한 사람은 모든 링크 보기 폴더가 없음 만들어주어야함
-                        Folders folder = new Folders(newUser, "모든 링크", "모든 링크가 저장된 폴더입니다.", false);
+                        Folders folder = new Folders(newUser, "모든 링크", "모든 링크가 저장된 폴더입니다.", false, true);
                         foldersRepository.save(folder);
                     }
                     else
