@@ -1,4 +1,4 @@
-package com.Kkrap.Service;
+package com.Kkrap.Service.SocialLogin;
 
 import java.util.Map;
 

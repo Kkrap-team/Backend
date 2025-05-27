@@ -1,4 +1,4 @@
-package com.Kkrap.Service;
+package com.Kkrap.Service.FolderLink;
 
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.FoldersLinks;

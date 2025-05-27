@@ -5,7 +5,7 @@ import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.ResponseDto.FoldersResponse;
 import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
-import com.Kkrap.Service.FoldersService;
+import com.Kkrap.Service.FolderLink.FoldersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;

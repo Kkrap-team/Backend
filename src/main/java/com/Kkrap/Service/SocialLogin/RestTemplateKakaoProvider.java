@@ -1,15 +1,17 @@
-package com.Kkrap.Service;
+package com.Kkrap.Service.SocialLogin;
 
 import com.Kkrap.Exception.NotValidTokenException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-public class KakaoClientProvider implements ClientProvider{
+@Component
+public class RestTemplateKakaoProvider implements ClientProvider {
 
     public static final String KAKAO_USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
 
