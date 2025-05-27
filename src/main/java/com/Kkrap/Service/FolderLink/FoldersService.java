@@ -35,6 +35,9 @@ public class FoldersService {
     @Autowired
     private LinksRepository linksRepository;
 
+    @Autowired
+    private LinksService linksService;
+
 
     public ResponseEntity<List<FoldersLinksAllResponse>> getFoldersAll(Long userId){
         //중간에 있는 사용자 인지 검사
@@ -120,6 +123,11 @@ public class FoldersService {
         Folders folders = findById(folderId);
         List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folders);
 
+        for (FoldersLinks folderLink : folderLinksList) {
+            Links link = folderLink.getLinks();
+            linksService.deleteById(link.getLinkId());
+        }
+
         // FoldersLinks 테이블에서 해당 folderId를 가진 데이터 삭제
         foldersLinksService.deleteAll(folderLinksList);
         
@@ -144,8 +152,6 @@ public class FoldersService {
         }
         return folders;
     }
-
-
 
     //하나 폴더 조회
     public Folders findById(Long folderId){
