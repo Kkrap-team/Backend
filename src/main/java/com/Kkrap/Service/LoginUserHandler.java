@@ -5,6 +5,7 @@ import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
 import com.Kkrap.ResponseDto.UsersProfileResponse;
 import com.Kkrap.Service.FolderLink.FoldersService;
+import com.Kkrap.Service.Users.UsersService;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

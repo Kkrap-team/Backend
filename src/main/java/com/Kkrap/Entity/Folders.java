@@ -35,6 +35,9 @@ public class Folders {
     @Column(nullable = false)
     private boolean defaultFolder;
 
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long viewCount = 0L;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;

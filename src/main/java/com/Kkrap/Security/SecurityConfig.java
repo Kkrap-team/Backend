@@ -6,7 +6,7 @@ import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
 import com.Kkrap.Service.CustomOAuth2UserService;
-import com.Kkrap.Service.UsersService;
+import com.Kkrap.Service.Users.UsersService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

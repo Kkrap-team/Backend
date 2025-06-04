@@ -3,19 +3,18 @@ package com.Kkrap.Service.FolderLink;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Repository.FoldersLinksRepository;
-import com.Kkrap.Repository.FoldersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class FoldersLinksService {
-    @Autowired
-    private FoldersLinksRepository foldersLinksRepository;
 
-    @Autowired
-    private FoldersRepository foldersRepository;
+    private final FoldersLinksRepository foldersLinksRepository;
+
+    public FoldersLinksService(FoldersLinksRepository foldersLinksRepository){
+        this.foldersLinksRepository = foldersLinksRepository;
+    }
 
     public FoldersLinks save(FoldersLinks foldersLinks){
         return foldersLinksRepository.save(foldersLinks);

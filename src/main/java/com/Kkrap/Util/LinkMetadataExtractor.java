@@ -1,5 +1,6 @@
 package com.Kkrap.Util;
 
+import com.Kkrap.Entity.Links;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -70,4 +71,15 @@ public class LinkMetadataExtractor {
             return new Metadata(null, null, null);
         }
     }
+
+    public static Links extractAndBuildLink(String url) {
+        Metadata meta = extract(url);
+
+        String linkName = (meta.title != null && !meta.title.isBlank()) ? meta.title : null;
+        String thumbnailUrl = (meta.thumbnailUrl != null && !meta.thumbnailUrl.isBlank()) ? meta.thumbnailUrl : null;
+        String faviconUrl = (meta.faviconUrl != null && !meta.faviconUrl.isBlank()) ? meta.faviconUrl : null;
+
+        return Links.of(url, linkName, thumbnailUrl, faviconUrl);
+    }
+
 }
