@@ -3,6 +3,7 @@ package com.Kkrap.Controller;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
+import com.Kkrap.RequestDTO.FoldersUpdateRequest;
 import com.Kkrap.ResponseDto.FoldersResponse;
 import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
 import com.Kkrap.Service.FolderLink.FoldersManagerService;
@@ -81,6 +82,12 @@ public class FoldersController {
             @PathVariable("folderId") Long folderId
     ){
         return foldersManagerService.getMyOneFolderWithLinks(folderId);
+    }
+
+    @PatchMapping("/{folderId}") // 폴더 제목, 설명, 공개비공개 수정
+    @Operation(summary = "폴더 제목, 설명, 공개비공개 수정", description = "userId와 folderId가 필요")
+    public ResponseEntity<FoldersResponse> updateFolderMetadata(@RequestBody FoldersUpdateRequest request){
+        return foldersManagerService.updateFolderMetadata(request);
     }
 
 

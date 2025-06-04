@@ -4,6 +4,7 @@ import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "folders")
 @Getter
+@Setter
 @AllArgsConstructor
 public class Folders {
 
@@ -58,5 +60,9 @@ public class Folders {
 
     public static Folders of(FoldersCreateRequest foldersCreateRequest, Users user){
         return new Folders(user, foldersCreateRequest.getFolderName(), foldersCreateRequest.getFolderDescription(), foldersCreateRequest.isVisible(), foldersCreateRequest.isDefaultFolder());
+    }
+
+    public boolean isOwnedBy(Long userId) {
+        return this.user != null && this.user.getUserId().equals(userId);
     }
 }

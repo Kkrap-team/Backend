@@ -6,12 +6,15 @@ import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
+import com.Kkrap.RequestDTO.FoldersUpdateRequest;
 import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
 import com.Kkrap.ResponseDto.FoldersResponse;
 import com.Kkrap.Service.Users.UsersService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Duration;
 import java.util.List;
@@ -117,6 +120,11 @@ public class FoldersManagerService {
 
         //응답 데이터를 삭제된 링크들까지 포함 시켜서 해주어야함 - 정환행님한테 물어보기
         return ResponseEntity.ok(FoldersResponse.from(folders, userId));
+    }
+
+    public ResponseEntity<FoldersResponse> updateFolderMetadata(FoldersUpdateRequest request){
+        Users users = usersService.findById(request.getUserId());
+        return foldersService.updateFolderMetadata(request.getFolderId(), users.getUserId(), request.getFolderName(), request.getFolderDescription(), request.isVisible());
     }
 
 
