@@ -21,7 +21,7 @@
 <div align=center><h2> 🚀 멤버 구성 </h2></div>
 
  - PL : 송진우
- - Backend : 정재윤
+ - Backend : 정재윤, 김강민
  - Frontend : 이호진, 김상우, 윤정환
 
 <div align=center><h2> 🚀 개발 환경 </h2></div>

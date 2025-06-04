@@ -6,7 +6,7 @@ import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
 import com.Kkrap.Service.CustomOAuth2UserService;
-import com.Kkrap.Service.UsersService;
+import com.Kkrap.Service.Users.UsersService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -141,7 +141,7 @@ public class SecurityConfig {
                         userId = String.valueOf(newUser.getUserId());
 
                         // 처음 로그인 한 사람은 모든 링크 보기 폴더가 없음 만들어주어야함
-                        Folders folder = new Folders(newUser, "모든 링크", "모든 링크가 저장된 폴더입니다.", false);
+                        Folders folder = new Folders(newUser, "모든 링크", "모든 링크가 저장된 폴더입니다.", false, true);
                         foldersRepository.save(folder);
                     }
                     else

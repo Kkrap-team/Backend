@@ -18,12 +18,14 @@ public class FoldersResponse {
     private String folderDescription;
     private LocalDateTime createTime;
     private boolean visible;
+    private boolean defaultFolder;
+    private Long viewCount;
 
     private FoldersResponse() {}
 
 
     public static FoldersResponse from(Folders folders, Long userId){
-        return new FoldersResponse(folders.getFolderId(), userId, folders.getFolderName(), folders.getFolderDescription(), folders.getCreateTime(), folders.isVisible());
+        return new FoldersResponse(folders.getFolderId(), userId, folders.getFolderName(), folders.getFolderDescription(), folders.getCreateTime(), folders.isVisible(), folders.isDefaultFolder(), folders.getViewCount());
     }
 
 }
