@@ -1,9 +1,8 @@
-package com.Kkrap.Service.Follows;
+package com.Kkrap.Service.FollowsFoldersPermission;
 
 import com.Kkrap.Entity.Follows;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.ResponseDto.FollowsResponse;
-import com.Kkrap.ResponseDto.MessageResponse;
 import com.Kkrap.ResponseDto.UsersProfileResponse;
 import com.Kkrap.Service.Users.UsersService;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +21,16 @@ public class FollowsManagerService {
         this.followsService = followsService;
         this.usersService = usersService;
     }
+
+    public ResponseEntity<List<FollowsResponse>> getFollowingList(Long followerId){
+        Users users = usersService.findById(followerId);
+        List<Follows> response = followsService.findByFollower(users);
+        List<FollowsResponse> responseList = response.stream()
+                .map(FollowsResponse::of)
+                .toList();
+        return ResponseEntity.ok(responseList);
+    }
+
 
     public ResponseEntity<FollowsResponse> followUser(Long followerId, Long followingId){
         Users follower = usersService.findById(followerId);

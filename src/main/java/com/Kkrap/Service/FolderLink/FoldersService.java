@@ -63,6 +63,12 @@ public class FoldersService {
         return ResponseEntity.ok(FoldersResponse.from(folders, userId));
     }
 
+    public void isOwnedByService(Folders folders ,Long userId) {
+        if (!folders.isOwnedBy(userId)) {
+            throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.");
+        }
+    }
+
 
 
 }

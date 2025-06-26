@@ -1,4 +1,4 @@
-package com.Kkrap.Service.Follows;
+package com.Kkrap.Service.FollowsFoldersPermission;
 
 import com.Kkrap.Entity.Follows;
 import com.Kkrap.Entity.Users;
@@ -6,6 +6,8 @@ import com.Kkrap.Exception.AlreadyFollowingException;
 import com.Kkrap.Exception.FollowNotFoundException;
 import com.Kkrap.Repository.FollowsRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FollowsService {
@@ -27,6 +29,10 @@ public class FollowsService {
                 .orElseThrow(() -> new FollowNotFoundException("팔로우 관계가 존재하지 않습니다."));
         followsRepository.delete(follows);
         return follows;
+    }
+
+    public List<Follows> findByFollower(Users follower){
+        return followsRepository.findByFollower(follower);
     }
 
 }

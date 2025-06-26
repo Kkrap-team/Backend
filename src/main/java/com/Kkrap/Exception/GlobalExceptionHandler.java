@@ -68,4 +68,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(FoldersPermissionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleFoldersPermissionNotFoundException(FoldersPermissionNotFoundException ex){
+        log.error("handleFoldersPermissionNotFoundException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }

@@ -3,9 +3,8 @@ package com.Kkrap.Controller;
 
 import com.Kkrap.RequestDTO.FollowsRequest;
 import com.Kkrap.ResponseDto.FollowsResponse;
-import com.Kkrap.ResponseDto.MessageResponse;
 import com.Kkrap.ResponseDto.UsersProfileResponse;
-import com.Kkrap.Service.Follows.FollowsManagerService;
+import com.Kkrap.Service.FollowsFoldersPermission.FollowsManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +19,14 @@ public class FollowsController {
 
     public FollowsController(FollowsManagerService followsManagerService){
         this.followsManagerService = followsManagerService;
+    }
+
+    //현재 팔로우 중인 리스트 조회 -> 권한 부여를 위해 필요함
+    @GetMapping("/{userId}/following")
+    @Operation(summary = "팔로우 조회", description = "팔로우 조회")
+    public ResponseEntity<List<FollowsResponse>> getFollowingList(
+            @PathVariable("userId") Long followerId) {
+        return followsManagerService.getFollowingList(followerId);
     }
 
     //사용자가 팔로우 진행
@@ -47,6 +54,7 @@ public class FollowsController {
             @RequestParam String nickname) {
         return followsManagerService.findUsersByNicknameContains(nickname);
     }
+
 
 
 

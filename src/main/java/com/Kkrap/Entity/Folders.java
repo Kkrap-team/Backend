@@ -44,9 +44,11 @@ public class Folders {
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-
     @OneToMany(mappedBy = "folders", cascade = CascadeType.ALL)
     private List<FoldersLinks> foldersLinks;
+
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    private List<FoldersPermissions> folderPermissions;
 
     public Folders(Users user, String folderName, String folderDescription, boolean visible, boolean defaultFolder) {
         this.user = user;
