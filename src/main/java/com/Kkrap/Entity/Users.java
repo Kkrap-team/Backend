@@ -38,6 +38,10 @@ public class Users {
     private List<Folders> folders;
 
 
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follows> followings;
+
+
     private Users() { } // 외부에서 new 사용 못하게 보호
 
     //정적 팩토리 메서드

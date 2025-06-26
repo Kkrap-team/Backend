@@ -53,4 +53,19 @@ public class GlobalExceptionHandler {
         ErrorResponse response = ErrorResponse.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(FollowNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleFollowNotFoundException(FollowNotFoundException ex){
+        log.error("handleFollowNotFoundException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AlreadyFollowingException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyFollowingException(AlreadyFollowingException ex){
+        log.error("handleAlreadyFollowingException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
 }

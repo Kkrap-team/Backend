@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UsersManagerService {
 
@@ -48,6 +51,8 @@ public class UsersManagerService {
         usersService.findByNickname(nickname);
         return ResponseEntity.ok(MessageResponse.of(200, "사용 가능한 닉네임입니다."));
     }
+
+
 
 
 }

@@ -7,6 +7,7 @@ import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -44,6 +45,10 @@ public class UsersService {
 
     public Optional<Users> findByKakaoId(Long id) {
         return usersRepository.findByKaKaoId(id);
+    }
+
+    public List<Users> findByNicknameContaining(String nickname){
+        return usersRepository.findByNicknameContaining(nickname);
     }
 
 }
