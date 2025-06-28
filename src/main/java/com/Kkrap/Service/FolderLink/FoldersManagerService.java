@@ -4,17 +4,16 @@ import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
+import com.Kkrap.Kafka.FolderCreateProducer;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
-import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
-import com.Kkrap.ResponseDto.FoldersResponse;
+import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
+import com.Kkrap.ResponseDTO.FoldersResponse;
 import com.Kkrap.Service.Users.UsersService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.Duration;
 import java.util.List;
@@ -32,13 +31,17 @@ public class FoldersManagerService {
 
     private final StringRedisTemplate redisTemplate;
 
+    private final FolderCreateProducer folderCreateProducer;
+
     public FoldersManagerService(FoldersService foldersService, UsersService usersService, FoldersLinksService foldersLinksService,
-                                 LinksService linksService, StringRedisTemplate redisTemplate) {
+                                 LinksService linksService, StringRedisTemplate redisTemplate,
+                                 FolderCreateProducer folderCreateProducer) {
         this.foldersService = foldersService;
         this.usersService = usersService;
         this.foldersLinksService = foldersLinksService;
         this.linksService = linksService;
         this.redisTemplate = redisTemplate;
+        this.folderCreateProducer = folderCreateProducer;
     }
 
 
@@ -93,6 +96,14 @@ public class FoldersManagerService {
     {
         Users users = usersService.findById(userId);
         Folders folders = foldersService.save(foldersCreateRequest, users);
+        if (Boolean.TRUE.equals(folders.isVisible())) {
+            String eventPayload = String.format(
+                    "{\"folderId\": %d}",
+                    folders.getFolderId()
+            );
+            folderCreateProducer.sendFolderCreatedEvent(eventPayload);
+        }
+
         return ResponseEntity.ok(FoldersResponse.from(folders, users.getUserId()));
     }
 

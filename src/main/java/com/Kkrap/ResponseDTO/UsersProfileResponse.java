@@ -1,10 +1,9 @@
-package com.Kkrap.ResponseDto;
+package com.Kkrap.ResponseDTO;
 
 import com.Kkrap.Entity.Users;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.catalina.User;
 
 @Getter
 @Setter

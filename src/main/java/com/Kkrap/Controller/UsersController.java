@@ -1,10 +1,8 @@
 package com.Kkrap.Controller;
 
-import com.Kkrap.Entity.Users;
-import com.Kkrap.RequestDTO.FollowsRequest;
 import com.Kkrap.RequestDTO.ProfileUpdateRequest;
-import com.Kkrap.ResponseDto.MessageResponse;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
+import com.Kkrap.ResponseDTO.MessageResponse;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.Users.UsersManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,9 +10,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")

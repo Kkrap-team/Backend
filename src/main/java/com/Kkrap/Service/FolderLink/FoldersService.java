@@ -5,7 +5,7 @@ import com.Kkrap.Entity.Users;
 import com.Kkrap.Exception.FoldersNotFoundException;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
-import com.Kkrap.ResponseDto.FoldersResponse;
+import com.Kkrap.ResponseDTO.FoldersResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -68,6 +68,11 @@ public class FoldersService {
             throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.");
         }
     }
+
+    public List<Folders> findAll(){
+        return foldersRepository.findAll();
+    }
+
 
 
 

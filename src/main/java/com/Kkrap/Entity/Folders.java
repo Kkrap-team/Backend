@@ -40,6 +40,9 @@ public class Folders {
     @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long viewCount = 0L;
 
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long likesCount = 0L;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;

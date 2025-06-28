@@ -1,19 +1,13 @@
 package com.Kkrap.Service;
 
-import com.Kkrap.Entity.Users;
 import com.Kkrap.Exception.NotValidTokenException;
-import com.Kkrap.Repository.UsersRepository;
-import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
-import com.Kkrap.RequestDTO.UsersCreateRequest;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
-import com.Kkrap.Service.FolderLink.FoldersService;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.SocialLogin.RestTemplateKakaoProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class AuthService {

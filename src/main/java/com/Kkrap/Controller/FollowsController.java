@@ -2,8 +2,8 @@ package com.Kkrap.Controller;
 
 
 import com.Kkrap.RequestDTO.FollowsRequest;
-import com.Kkrap.ResponseDto.FollowsResponse;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
+import com.Kkrap.ResponseDTO.FollowsResponse;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;

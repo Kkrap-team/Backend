@@ -4,8 +4,8 @@ import com.Kkrap.RequestDTO.FoldersCreateRequest;
 
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
-import com.Kkrap.ResponseDto.FoldersResponse;
-import com.Kkrap.ResponseDto.FoldersLinksAllResponse;
+import com.Kkrap.ResponseDTO.FoldersResponse;
+import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
 import com.Kkrap.Service.FolderLink.FoldersManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

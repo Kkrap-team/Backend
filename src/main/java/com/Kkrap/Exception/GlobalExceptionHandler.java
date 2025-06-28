@@ -1,6 +1,6 @@
 package com.Kkrap.Exception;
 
-import com.Kkrap.ResponseDto.ErrorResponse;
+import com.Kkrap.ResponseDTO.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

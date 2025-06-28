@@ -5,7 +5,7 @@ import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
-import com.Kkrap.ResponseDto.LinksCreateResponse;
+import com.Kkrap.ResponseDTO.LinksCreateResponse;
 import com.Kkrap.Service.Users.UsersService;
 import com.Kkrap.Util.LinkMetadataExtractor;
 import org.springframework.http.ResponseEntity;

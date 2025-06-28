@@ -1,4 +1,4 @@
-package com.Kkrap.ResponseDto;
+package com.Kkrap.ResponseDTO;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Links;
 import lombok.AllArgsConstructor;

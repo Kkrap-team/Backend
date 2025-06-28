@@ -2,8 +2,8 @@ package com.Kkrap.Service.FollowsFoldersPermission;
 
 import com.Kkrap.Entity.Follows;
 import com.Kkrap.Entity.Users;
-import com.Kkrap.ResponseDto.FollowsResponse;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
+import com.Kkrap.ResponseDTO.FollowsResponse;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.Users.UsersService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

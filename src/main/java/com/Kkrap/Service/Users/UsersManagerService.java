@@ -2,15 +2,12 @@ package com.Kkrap.Service.Users;
 
 
 import com.Kkrap.Entity.Users;
-import com.Kkrap.ResponseDto.MessageResponse;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
+import com.Kkrap.ResponseDTO.MessageResponse;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Util.FileStorageUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UsersManagerService {
