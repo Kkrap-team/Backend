@@ -41,7 +41,7 @@ public class Folders {
     private Long viewCount = 0L;
 
     @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
-    private Long likesCount = 0L;
+    private Long scrapCount = 0L;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

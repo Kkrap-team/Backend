@@ -60,9 +60,9 @@ public class FoldersDocumentManagerService {
 
     public ElasticSearchRankingResponse getWeeklyRankings() {
         List<FoldersDocument> topViewCount = foldersDocumentService.getTop10ViewCountLastWeek();
-        List<FoldersDocument> topLikesCount = foldersDocumentService.getTop10LikesCountLastWeek();
+        List<FoldersDocument> topScrapCount = foldersDocumentService.getTop10ScrapCountLastWeek();
 
-        return new ElasticSearchRankingResponse(topViewCount, topLikesCount);
+        return new ElasticSearchRankingResponse(topViewCount, topScrapCount);
     }
 
 

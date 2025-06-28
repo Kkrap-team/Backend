@@ -41,10 +41,10 @@ public class FoldersDocumentService {
                 .collect(Collectors.toList());
     }
 
-    public List<FoldersDocument> getTop10LikesCountLastWeek() {
-        List<FoldersDocument> docs = foldersDocumentRepository.findTop10ByCreateTimeInLastWeekOrderByLikesCountDesc();
+    public List<FoldersDocument> getTop10ScrapCountLastWeek() {
+        List<FoldersDocument> docs = foldersDocumentRepository.findTop10ByCreateTimeInLastWeekOrderByScrapCountDesc();
         return docs.stream()
-                .sorted(Comparator.comparingLong(FoldersDocument::getLikesCount).reversed())
+                .sorted(Comparator.comparingLong(FoldersDocument::getScrapCount).reversed())
                 .limit(10)
                 .collect(Collectors.toList());
     }

@@ -14,5 +14,5 @@ import java.util.List;
 @AllArgsConstructor
 public class ElasticSearchRankingResponse {
     private List<FoldersDocument> topViewCount;
-    private List<FoldersDocument> topLikesCount;
+    private List<FoldersDocument> topscrapCount;
 }

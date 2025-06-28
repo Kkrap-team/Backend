@@ -27,7 +27,7 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
     """)
     List<FoldersDocument> findTop10ByCreateTimeInLastWeekOrderByViewCountDesc();
 
-    // 지난 7일 이내 + likesCount 내림차순
+    // 지난 7일 이내 + ScrapCount 내림차순
     @Query("""
     {
       "bool": {
@@ -37,6 +37,6 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
       }
     }
     """)
-    List<FoldersDocument> findTop10ByCreateTimeInLastWeekOrderByLikesCountDesc();
+    List<FoldersDocument> findTop10ByCreateTimeInLastWeekOrderByScrapCountDesc();
 
 }

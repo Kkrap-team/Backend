@@ -17,6 +17,9 @@ public class FoldersLinksAllResponse {
     private String folderDescription;
     private boolean visible;
     private boolean defaultFolder;
+    private Long viewCount;
+    private Long scrapCount;
+
     private LocalDateTime createTime;
     private List<LinksResponse> links;
 
@@ -28,10 +31,13 @@ public class FoldersLinksAllResponse {
         String folderDescription = folder.getFolderDescription();
         boolean visible = folder.isVisible();
         boolean defaultFolder = folder.isDefaultFolder();
+        Long viewCount = folder.getViewCount();
+        Long scrapCount = folder.getScrapCount();
+
         LocalDateTime createTime = folder.getCreateTime();
         List<LinksResponse> links = linksList.stream()
                 .map(LinksResponse::new)
                 .collect(Collectors.toList());
-        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, visible, defaultFolder ,createTime, links);
+        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, visible, defaultFolder, viewCount, scrapCount, createTime, links);
     }
 }

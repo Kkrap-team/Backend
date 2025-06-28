@@ -46,7 +46,7 @@ public class FoldersDocumentController {
     }
 
     @GetMapping("/rankings")
-    @Operation(summary = "주간 랭킹 조회", description = "viewCount, likesCount Top10 반환")
+    @Operation(summary = "주간 랭킹 조회", description = "viewCount, scrapCount Top10 반환")
     public ResponseEntity<ElasticSearchRankingResponse> getWeeklyRankings() {
         return ResponseEntity.ok(foldersDocumentManagerService.getWeeklyRankings());
     }

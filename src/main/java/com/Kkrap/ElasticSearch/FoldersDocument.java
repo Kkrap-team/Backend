@@ -22,7 +22,7 @@ public class FoldersDocument {
     private Boolean visible;
 
     private Long viewCount;
-    private Long likesCount;
+    private Long scrapCount;
 
     private Long userId;
     private String nickname;
@@ -39,7 +39,7 @@ public class FoldersDocument {
                 folder.getCreateTime() != null ? folder.getCreateTime().toString() : null,
                 folder.isVisible(),
                 folder.getViewCount(),
-                folder.getLikesCount(),
+                folder.getScrapCount(),
                 folder.getUser().getUserId(),
                 folder.getUser().getNickname(),
                 folder.getUser().getProfile()
