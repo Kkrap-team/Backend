@@ -50,19 +50,6 @@ public class FoldersService {
         foldersRepository.deleteById(folderId);
     }
 
-    //폴더 수정
-    public ResponseEntity<FoldersResponse> updateFolderMetadata(Long folderId, Long userId, String folderName, String folderDescription, boolean visible){
-        Folders folders = findById(folderId);
-        if (!folders.isOwnedBy(userId)) {
-            throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.");
-        }
-        folders.setFolderName(folderName);
-        folders.setFolderDescription(folderDescription);
-        folders.setVisible(visible);
-        save(folders);
-        return ResponseEntity.ok(FoldersResponse.from(folders, userId));
-    }
-
     public void isOwnedByService(Folders folders ,Long userId) {
         if (!folders.isOwnedBy(userId)) {
             throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.");
@@ -72,6 +59,12 @@ public class FoldersService {
     public List<Folders> findAll(){
         return foldersRepository.findAll();
     }
+
+    public List<Folders> findByUserIdAndVisibleTrue(Long userId) {
+        return foldersRepository.findByUserUserIdAndVisibleTrue(userId);
+    }
+
+
 
 
 

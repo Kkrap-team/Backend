@@ -20,4 +20,6 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
     @Query("UPDATE Folders f SET f.viewCount = f.viewCount + 1 WHERE f.folderId = :folderId")
     void incrementViewCountById(@Param("folderId") Long folderId);
 
+    List<Folders> findByUserUserIdAndVisibleTrue(Long userId);
+
 }

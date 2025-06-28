@@ -10,7 +10,9 @@ import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
 import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
 import com.Kkrap.ResponseDTO.FoldersResponse;
+import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.Users.UsersService;
+import jakarta.transaction.Transactional;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,15 +35,20 @@ public class FoldersManagerService {
 
     private final FolderCreateProducer folderCreateProducer;
 
+    private final FoldersDocumentService foldersDocumentService;
+
     public FoldersManagerService(FoldersService foldersService, UsersService usersService, FoldersLinksService foldersLinksService,
                                  LinksService linksService, StringRedisTemplate redisTemplate,
-                                 FolderCreateProducer folderCreateProducer) {
+                                 FolderCreateProducer folderCreateProducer,
+                                 FoldersDocumentService foldersDocumentService
+                                 ) {
         this.foldersService = foldersService;
         this.usersService = usersService;
         this.foldersLinksService = foldersLinksService;
         this.linksService = linksService;
         this.redisTemplate = redisTemplate;
         this.folderCreateProducer = folderCreateProducer;
+        this.foldersDocumentService = foldersDocumentService;
     }
 
 
@@ -108,6 +115,7 @@ public class FoldersManagerService {
     }
 
     //Delete - 폴더 삭제
+    @Transactional
     public ResponseEntity<FoldersResponse> deleteUserFolder(Long userId, FoldersDeleteRequest foldersDeleteRequest)
     {
         //사용자 체크
@@ -129,13 +137,31 @@ public class FoldersManagerService {
         // folders 삭제
         foldersService.deleteById(folderId);
 
+        //색인 업데이트
+        foldersDocumentService.deleteFolderDocument(folders);
+
         //응답 데이터를 삭제된 링크들까지 포함 시켜서 해주어야함 - 정환행님한테 물어보기
         return ResponseEntity.ok(FoldersResponse.from(folders, userId));
     }
 
+    @Transactional
     public ResponseEntity<FoldersResponse> updateFolderMetadata(FoldersUpdateRequest request){
         Users users = usersService.findById(request.getUserId());
-        return foldersService.updateFolderMetadata(request.getFolderId(), users.getUserId(), request.getFolderName(), request.getFolderDescription(), request.isVisible());
+        Folders folders = foldersService.findById(request.getFolderId());
+
+        foldersService.isOwnedByService(folders, users.getUserId());
+        folders.setFolderName(request.getFolderName());
+        folders.setFolderDescription(request.getFolderDescription());
+        folders.setVisible(request.isVisible());
+        foldersService.save(folders);
+
+        if (folders.isVisible()) {
+            foldersDocumentService.indexNewFolder(folders);
+        } else {
+            foldersDocumentService.deleteFolderDocument(folders);
+        }
+
+        return ResponseEntity.ok(FoldersResponse.from(folders, users.getUserId()));
     }
 
 

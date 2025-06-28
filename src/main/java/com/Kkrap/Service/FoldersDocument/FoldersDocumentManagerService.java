@@ -2,10 +2,12 @@ package com.Kkrap.Service.FoldersDocument;
 
 import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.Folders;
+import com.Kkrap.Entity.Users;
 import com.Kkrap.Repository.FoldersDocumentRepository;
 import com.Kkrap.ResponseDTO.ElasticSearchRankingResponse;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,19 +23,6 @@ public class FoldersDocumentManagerService {
     }
 
 
-    //이거는 우리 백엔드에서 사용할 DB 전체를 색인
-    public FoldersDocument indexNewFolder(Folders folder) {
-        FoldersDocument doc = FoldersDocument.from(folder);
-        return foldersDocumentService.save(doc);
-    }
-
-    //폴더 생성 후 -> 카프카에서 이걸 실행
-    public void indexNewFolder(Long folderId) {
-        Folders folders = foldersService.findById(folderId);
-        FoldersDocument doc = FoldersDocument.from(folders);
-        foldersDocumentService.save(doc);
-    }
-
     public List<FoldersDocument> getAllDocuments() {
         return foldersDocumentService.findAll();
     }
@@ -44,7 +33,7 @@ public class FoldersDocumentManagerService {
 
         allFolders.stream()
                 .filter(folder -> folder.isVisible())
-                .forEach(this::indexNewFolder);
+                .forEach(folder -> foldersDocumentService.indexNewFolder(folder));
 
         System.out.println("visible = false 인 모든 폴더가 Elasticsearch에 색인되었습니다!");
     }
@@ -65,6 +54,10 @@ public class FoldersDocumentManagerService {
         return new ElasticSearchRankingResponse(topViewCount, topScrapCount);
     }
 
-
-
+    //조회수 업데이트 후 색인 업데이트
+    @Transactional(readOnly = true)
+    public void updateFolderDocumentById(Long folderId) {
+        Folders folder = foldersService.findById(folderId);
+        foldersDocumentService.indexNewFolder(folder);
+    }
 }
