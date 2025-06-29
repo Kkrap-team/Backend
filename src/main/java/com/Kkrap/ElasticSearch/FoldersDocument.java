@@ -20,6 +20,7 @@ public class FoldersDocument {
     private String folderDescription;
     private String createTime;
     private Boolean visible;
+    private boolean shared;
 
     private Long viewCount;
     private Long scrapCount;
@@ -38,6 +39,7 @@ public class FoldersDocument {
                 folder.getFolderDescription(),
                 folder.getCreateTime() != null ? folder.getCreateTime().toString() : null,
                 folder.isVisible(),
+                folder.isShared(),
                 folder.getViewCount(),
                 folder.getScrapCount(),
                 folder.getUser().getUserId(),

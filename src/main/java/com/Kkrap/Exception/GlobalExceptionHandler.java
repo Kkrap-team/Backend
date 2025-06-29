@@ -74,4 +74,11 @@ public class GlobalExceptionHandler {
         ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(FoldersVisibleException.class)
+    public ResponseEntity<ErrorResponse> handleFoldersVisibleException(FoldersVisibleException ex){
+        log.error("handleFoldersVisibleException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
 }

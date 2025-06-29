@@ -43,6 +43,10 @@ public class Folders {
     @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long scrapCount = 0L;
 
+
+    @Column(nullable = false)
+    private boolean shared;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;

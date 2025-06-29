@@ -26,14 +26,14 @@ public class FoldersDocumentController {
     }
 
     @DeleteMapping("/all")
-    @Operation(summary = "색인 된 거 전부 삭제", description = "색인 된 거 전부 삭제")
+    @Operation(summary = "색인 된 거 전부 삭제 - 프론트엔드 사용금지", description = "색인 된 거 전부 삭제")
     public String deleteAll() {
         foldersDocumentManagerService.deleteAllDocuments();
         return "모든 색인 삭제 완료!";
     }
 
     @PostMapping("/migrate")
-    @Operation(summary = "DB에 저장된 모든 폴더 공개인 것만 넣어주기", description = "DB에 저장된 모든 폴더 공개인 것만 넣어주기")
+    @Operation(summary = "DB에 저장된 모든 폴더 공개인 것만 넣어주기 - 프론트엔드 사용금지", description = "DB에 저장된 모든 폴더 공개인 것만 넣어주기")
     public String migrate() {
         foldersDocumentManagerService.migrateAllFoldersToElasticsearch();
         return "마이그레이션 완료!";

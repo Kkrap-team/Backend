@@ -3,6 +3,7 @@ package com.Kkrap.Service.FolderLink;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Exception.FoldersNotFoundException;
+import com.Kkrap.Exception.FoldersVisibleException;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.ResponseDTO.FoldersResponse;
@@ -63,6 +64,13 @@ public class FoldersService {
     public List<Folders> findByUserIdAndVisibleTrue(Long userId) {
         return foldersRepository.findByUserUserIdAndVisibleTrue(userId);
     }
+
+    public void isVisibleBy(Folders folders){
+        if (!folders.isVisible()){
+            throw FoldersVisibleException.of("공개 권한이 없는 폴더입니다.");
+        }
+    }
+
 
 
 

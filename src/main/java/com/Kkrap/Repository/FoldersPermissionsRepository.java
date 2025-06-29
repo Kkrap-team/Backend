@@ -22,5 +22,4 @@ public interface FoldersPermissionsRepository extends JpaRepository<FoldersPermi
     List<FoldersPermissions> findByFolder(Folders folder);
 
     Optional<FoldersPermissions> findByFolderAndInvitedUserId(Folders folder, Long invitedUserId);
-
 }
