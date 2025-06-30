@@ -49,7 +49,7 @@ public class AuthEndpointTest {
 
     @AutoSource
     @ParameterizedTest
-    @DisplayName("토큰이 빈 문자열일때")
+    @DisplayName("토큰이 빈 문자열일때, 에러를 반환한다.")
     void tokenEmpty(KaKaoTokenRequest request) throws Exception {
         String accessToken = "";
         request.setAccesstoken(accessToken);
