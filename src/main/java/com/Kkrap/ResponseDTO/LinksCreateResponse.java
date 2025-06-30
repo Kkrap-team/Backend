@@ -1,12 +1,8 @@
-package com.Kkrap.ResponseDto;
+package com.Kkrap.ResponseDTO;
 
 import com.Kkrap.Entity.Links;
-import com.Kkrap.RequestDTO.LinksCreateRequest;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;

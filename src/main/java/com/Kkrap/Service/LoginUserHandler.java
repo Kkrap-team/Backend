@@ -3,7 +3,7 @@ package com.Kkrap.Service;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import com.Kkrap.Service.Users.UsersService;
 import org.springframework.stereotype.Component;

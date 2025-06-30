@@ -3,9 +3,10 @@ package com.Kkrap.Service.FolderLink;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Exception.FoldersNotFoundException;
+import com.Kkrap.Exception.FoldersVisibleException;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
-import com.Kkrap.ResponseDto.FoldersResponse;
+import com.Kkrap.ResponseDTO.FoldersResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -50,18 +51,29 @@ public class FoldersService {
         foldersRepository.deleteById(folderId);
     }
 
-    //폴더 수정
-    public ResponseEntity<FoldersResponse> updateFolderMetadata(Long folderId, Long userId, String folderName, String folderDescription, boolean visible){
-        Folders folders = findById(folderId);
+    public void isOwnedByService(Folders folders ,Long userId) {
         if (!folders.isOwnedBy(userId)) {
             throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.");
         }
-        folders.setFolderName(folderName);
-        folders.setFolderDescription(folderDescription);
-        folders.setVisible(visible);
-        save(folders);
-        return ResponseEntity.ok(FoldersResponse.from(folders, userId));
     }
+
+    public List<Folders> findAll(){
+        return foldersRepository.findAll();
+    }
+
+    public List<Folders> findByUserIdAndVisibleTrue(Long userId) {
+        return foldersRepository.findByUserUserIdAndVisibleTrue(userId);
+    }
+
+    public void isVisibleBy(Folders folders){
+        if (!folders.isVisible()){
+            throw FoldersVisibleException.of("공개 권한이 없는 폴더입니다.");
+        }
+    }
+
+
+
+
 
 
 

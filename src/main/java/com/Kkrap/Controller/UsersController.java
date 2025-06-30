@@ -1,8 +1,8 @@
 package com.Kkrap.Controller;
 
 import com.Kkrap.RequestDTO.ProfileUpdateRequest;
-import com.Kkrap.ResponseDto.MessageResponse;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
+import com.Kkrap.ResponseDTO.MessageResponse;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.Users.UsersManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,4 +65,10 @@ public class UsersController {
             @RequestParam String nickname){
         return usersManagerService.checkNicknameAvailable(nickname);
     }
+
+
+
+
+
+
 }

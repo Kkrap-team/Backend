@@ -40,13 +40,22 @@ public class Folders {
     @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
     private Long viewCount = 0L;
 
+    @Column(nullable = false, columnDefinition = "BIGINT DEFAULT 0")
+    private Long scrapCount = 0L;
+
+
+    @Column(nullable = false)
+    private boolean shared;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-
     @OneToMany(mappedBy = "folders", cascade = CascadeType.ALL)
     private List<FoldersLinks> foldersLinks;
+
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    private List<FoldersPermissions> folderPermissions;
 
     public Folders(Users user, String folderName, String folderDescription, boolean visible, boolean defaultFolder) {
         this.user = user;

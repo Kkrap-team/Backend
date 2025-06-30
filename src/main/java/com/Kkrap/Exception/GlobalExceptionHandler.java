@@ -1,6 +1,6 @@
 package com.Kkrap.Exception;
 
-import com.Kkrap.ResponseDto.ErrorResponse;
+import com.Kkrap.ResponseDTO.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +52,33 @@ public class GlobalExceptionHandler {
         log.error("handleSaveFileErrorException", ex);
         ErrorResponse response = ErrorResponse.from(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(FollowNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleFollowNotFoundException(FollowNotFoundException ex){
+        log.error("handleFollowNotFoundException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AlreadyFollowingException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyFollowingException(AlreadyFollowingException ex){
+        log.error("handleAlreadyFollowingException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(FoldersPermissionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleFoldersPermissionNotFoundException(FoldersPermissionNotFoundException ex){
+        log.error("handleFoldersPermissionNotFoundException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FoldersVisibleException.class)
+    public ResponseEntity<ErrorResponse> handleFoldersVisibleException(FoldersVisibleException ex){
+        log.error("handleFoldersVisibleException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 }
