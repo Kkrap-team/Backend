@@ -3,10 +3,12 @@ package com.Kkrap.Service.Users;
 
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
+import com.Kkrap.ResponseDTO.FoldersUserProfileResponse;
 import com.Kkrap.ResponseDTO.MessageResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
+import com.Kkrap.Service.FollowsFoldersPermission.FollowsService;
 import com.Kkrap.Util.FileStorageUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
@@ -24,16 +26,31 @@ public class UsersManagerService {
 
     private final FoldersDocumentService foldersDocumentService;
 
-    public UsersManagerService(UsersService usersService, FoldersService foldersService, FoldersDocumentService foldersDocumentService){
+    private final FollowsService followsService;
+
+    public UsersManagerService(UsersService usersService, FoldersService foldersService, FoldersDocumentService foldersDocumentService,
+                               FollowsService followsService){
         this.usersService = usersService;
         this.foldersService = foldersService;
         this.foldersDocumentService = foldersDocumentService;
+        this.followsService = followsService;
     }
 
     public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId){
         Users users = usersService.findById(userId);
         return ResponseEntity.ok(UsersProfileResponse.of(users.getUserId(),users.getEmail(), users.getNickname(), users.getProfile(), users.getKakaoId(), users.getBio()));
     }
+
+    public ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Long userId){
+        Users user = usersService.findById(userId);
+
+        Long totalViewCount = foldersService.sumViewCountByUser(user);
+        Long followingCount = followsService.countFollower(user.getUserId());
+
+        return ResponseEntity.ok(
+                FoldersUserProfileResponse.of(user, totalViewCount, followingCount)
+        );
+ }
 
     @Transactional
     public ResponseEntity<UsersProfileResponse> updateUserProfile(Long userId, String newNickname, String bio){

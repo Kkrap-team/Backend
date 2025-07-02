@@ -35,4 +35,8 @@ public class FollowsService {
         return followsRepository.findByFollower(follower);
     }
 
+    public Long countFollower(Long userId) {
+        return followsRepository.countByFollowingId(userId);
+    }
+
 }

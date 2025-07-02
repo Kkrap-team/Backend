@@ -71,6 +71,10 @@ public class FoldersService {
         }
     }
 
+    public Long sumViewCountByUser(Users user) {
+        return foldersRepository.sumViewCountByUser(user);
+    }
+
 
 
 
