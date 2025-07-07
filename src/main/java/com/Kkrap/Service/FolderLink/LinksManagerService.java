@@ -42,7 +42,9 @@ public class LinksManagerService {
 
         //모든 링크 폴더에도 추가를 해주어야함
         //만약 foldersId랑 deafultFoldersId랑 같으면 삽입이 필요없고 다르면 넣어야됨
-        if (linksCreateRequest.getFoldersId() != linksCreateRequest.getDefaultFoldersId()){ foldersLinksService.save(FoldersLinks.of(defaultfolders, links, userId)); }
+        if (linksCreateRequest.getFoldersId() != linksCreateRequest.getDefaultFoldersId()){
+            foldersLinksService.save(FoldersLinks.of(defaultfolders, links, userId));
+        }
         return ResponseEntity.ok(LinksCreateResponse.of(links, linksCreateRequest.getDefaultFoldersId(), linksCreateRequest.getFoldersId()));
     }
 

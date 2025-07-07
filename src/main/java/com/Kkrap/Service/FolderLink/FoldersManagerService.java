@@ -255,11 +255,6 @@ public class FoldersManagerService {
         Folders folders = foldersService.findById(folderId);
         List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folders);
 
-        for (FoldersLinks folderLink : folderLinksList) {
-            Links link = folderLink.getLinks();
-            linksService.deleteById(link.getLinkId());
-        }
-
         // FoldersLinks 테이블에서 해당 folderId를 가진 데이터 삭제
         foldersLinksService.deleteAll(folderLinksList);
 

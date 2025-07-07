@@ -1,6 +1,7 @@
 package com.Kkrap.Controller;
 
 import com.Kkrap.RequestDTO.ProfileUpdateRequest;
+import com.Kkrap.ResponseDTO.FoldersUserProfileResponse;
 import com.Kkrap.ResponseDTO.MessageResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.Users.UsersManagerService;
@@ -31,6 +32,18 @@ public class UsersController {
     {
         return usersManagerService.getUserProfile(userId);
     }
+
+    @GetMapping("folders/{userId}")
+    @Operation(summary = "내 폴더 전용 사용자 프로필 조회", description = "내 폴더 전용 사용자의 프로필 조회")
+    @ResponseBody
+    public ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(
+            @Parameter(name = "userId", description = "수정할 사용자 ID", required = true, example = "1")
+            @PathVariable("userId") Long userId)
+    {
+        return usersManagerService.getFoldersUserProfile(userId);
+    }
+
+
 
     //닉네임 변경
     @PatchMapping("/{userId}/profile")
