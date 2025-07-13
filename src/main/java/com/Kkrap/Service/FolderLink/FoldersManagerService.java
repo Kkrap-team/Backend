@@ -4,6 +4,7 @@ import com.Kkrap.Entity.*;
 import com.Kkrap.Kafka.FolderCreateProducer;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
+import com.Kkrap.RequestDTO.FoldersScrapRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
 import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
 import com.Kkrap.ResponseDTO.FoldersResponse;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,10 +68,12 @@ public class FoldersManagerService {
         // shared 컬럼으로 분리
         List<Folders> ownFolders = allMyFolders.stream()
                 .filter(folder -> !folder.isShared())
+                .sorted(Comparator.comparing(Folders::getCreateTime))
                 .collect(Collectors.toList());
 
         List<Folders> mySharedFolders = allMyFolders.stream()
                 .filter(Folders::isShared)
+                .sorted(Comparator.comparing(Folders::getCreateTime))
                 .collect(Collectors.toList());
 
         // 공유받은 폴더 (권한 테이블 기준)
@@ -114,10 +118,12 @@ public class FoldersManagerService {
         // visible = true 필터
         List<Folders> ownFolders = allMyFolders.stream()
                 .filter(folder -> !folder.isShared() && folder.isVisible())
+                .sorted(Comparator.comparing(Folders::getCreateTime))
                 .collect(Collectors.toList());
 
         List<Folders> mySharedFolders = allMyFolders.stream()
                 .filter(folder -> folder.isShared() && folder.isVisible())
+                .sorted(Comparator.comparing(Folders::getCreateTime))
                 .collect(Collectors.toList());
 
         // 초대받은 공유 폴더
@@ -161,10 +167,12 @@ public class FoldersManagerService {
         // shared 컬럼으로 분리
         List<Folders> ownFolders = allMyFolders.stream()
                 .filter(folder -> !folder.isShared())
+                .sorted(Comparator.comparing(Folders::getCreateTime))
                 .collect(Collectors.toList());
 
         List<Folders> mySharedFolders = allMyFolders.stream()
                 .filter(Folders::isShared)
+                .sorted(Comparator.comparing(Folders::getCreateTime))
                 .collect(Collectors.toList());
 
         // 공유받은 폴더 (권한 테이블 기준)
@@ -288,5 +296,41 @@ public class FoldersManagerService {
         return ResponseEntity.ok(FoldersResponse.from(folders, users.getUserId()));
     }
 
+    @Transactional
+    public ResponseEntity<FoldersLinksAllResponse> scrapFolder(Long userId, FoldersScrapRequest foldersScrapRequest) {
+        Users user = usersService.findById(userId);
+        Folders newFolder = foldersService.save(Folders.of(foldersScrapRequest, user));
+
+        Folders sourceFolder = foldersService.findById(foldersScrapRequest.getSourceFolderId());
+
+        //Redis
+        String redisKey = "scrap:" + sourceFolder.getFolderId();
+        redisTemplate.opsForValue().increment(redisKey);
+
+        List<FoldersLinks> sourceFolderLinks = foldersLinksService.findByFolders(sourceFolder);
+
+
+        List<Links> newLinks = sourceFolderLinks.stream()
+                .map(foldersLink -> {
+                    Links originalLink = foldersLink.getLinks();
+                    return linksService.save(
+                            Links.of(
+                                    originalLink.getLinkUrl(),
+                                    originalLink.getLinkName(),
+                                    originalLink.getThumbnailUrl(),
+                                    originalLink.getFaviconUrl()
+                            )
+                    );
+                })
+                .collect(Collectors.toList());
+
+        newLinks.forEach(link ->
+                foldersLinksService.save(FoldersLinks.of(newFolder, link, userId))
+        );
+
+        return ResponseEntity.ok(
+                FoldersLinksAllResponse.of(newFolder, newLinks)
+        );
+    }
 
 }

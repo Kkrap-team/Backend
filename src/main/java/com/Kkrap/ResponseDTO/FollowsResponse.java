@@ -10,16 +10,18 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class FollowsResponse {
-    private Long followsId;
+    //나 자신
+    private Long followerId;
 
     // 팔로우를 거는 사람 (나 자신)
     private Long followingId;
+
     private String nickname;
     private String profile;
 
     private FollowsResponse(){}
 
     public static FollowsResponse of(Follows follows){
-        return new FollowsResponse(follows.getFollowsId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile());
+        return new FollowsResponse(follows.getFollower().getUserId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile());
     }
 }

@@ -3,6 +3,7 @@ package com.Kkrap.Controller;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
+import com.Kkrap.RequestDTO.FoldersScrapRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
 import com.Kkrap.ResponseDTO.FoldersResponse;
 import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
@@ -35,7 +36,6 @@ public class FoldersController {
             @PathVariable("userId") Long userId){
         return foldersManagerService.getUserAllFoldersWithLinks(userId);
     }
-
 
 
     //상대방이 가지고 있는 모든 폴더 안에 있는 링크 4개만 -> 썸네일 전용
@@ -101,4 +101,16 @@ public class FoldersController {
     public ResponseEntity<FoldersResponse> updateFolderMetadata(@RequestBody FoldersUpdateRequest request){
         return foldersManagerService.updateFolderMetadata(request);
     }
+
+    //scrap
+    @PostMapping("/users/{userId}/scrap")
+    @Operation(summary = "상대방 폴더 스크랩", description = "상대방 폴더를 내 폴더로 스크랩")
+    public ResponseEntity<FoldersLinksAllResponse> scrapFolder(
+            @Parameter(name = "userId", description = "내꺼 userId", required = true, example = "5")
+            @PathVariable("userId") Long userId,
+            @RequestBody FoldersScrapRequest request) {
+        return foldersManagerService.scrapFolder(userId, request);
+    }
+
+
 }
