@@ -15,11 +15,13 @@ public class FoldersUserProfileResponse {
     private String bio;
 
     private Long totalViewCount;
+    private Long totalScrapCount;
     private Long followingCount;
 
     public static FoldersUserProfileResponse of(
             Users user,
             Long totalViewCount,
+            Long totalScrapCount,
             Long followingCount
     ) {
         return new FoldersUserProfileResponse(
@@ -28,6 +30,7 @@ public class FoldersUserProfileResponse {
                 user.getProfile(),
                 user.getBio(),
                 totalViewCount,
+                totalScrapCount,
                 followingCount
                 );
     }

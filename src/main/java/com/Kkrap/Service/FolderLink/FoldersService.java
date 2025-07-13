@@ -75,6 +75,10 @@ public class FoldersService {
         return foldersRepository.sumViewCountByUser(user);
     }
 
+    public Long sumScrapCountByUser(Users users){
+        return foldersRepository.sumScrapCountByUser(users);
+    }
+
 
 
 
