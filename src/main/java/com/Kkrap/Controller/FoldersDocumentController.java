@@ -1,9 +1,9 @@
 package com.Kkrap.Controller;
 
+import com.Kkrap.Controller.Spec.FoldersDocumentAPISpec;
 import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.ResponseDTO.ElasticSearchRankingResponse;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentManagerService;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/folders-search")
-public class FoldersDocumentController {
+public class FoldersDocumentController implements FoldersDocumentAPISpec {
 
     private final FoldersDocumentManagerService foldersDocumentManagerService;
 
@@ -19,34 +19,29 @@ public class FoldersDocumentController {
         this.foldersDocumentManagerService = foldersDocumentManagerService;
     }
 
-    @GetMapping("/all")
-    @Operation(summary = "색인 된 거 전부 조회", description = "색인된 거 전부 조회")
+    @Override
     public List<FoldersDocument> getAllDocuments() {
         return foldersDocumentManagerService.getAllDocuments();
     }
 
-    @DeleteMapping("/all")
-    @Operation(summary = "색인 된 거 전부 삭제 - 프론트엔드 사용금지", description = "색인 된 거 전부 삭제")
+    @Override
     public String deleteAll() {
         foldersDocumentManagerService.deleteAllDocuments();
         return "모든 색인 삭제 완료!";
     }
 
-    @PostMapping("/migrate")
-    @Operation(summary = "DB에 저장된 모든 폴더 공개인 것만 넣어주기 - 프론트엔드 사용금지", description = "DB에 저장된 모든 폴더 공개인 것만 넣어주기")
+    @Override
     public String migrate() {
         foldersDocumentManagerService.migrateAllFoldersToElasticsearch();
         return "마이그레이션 완료!";
     }
 
-    @GetMapping("/search")
-    @Operation(summary = "검색바에서 폴더 검색", description = "검색바에서 폴더 검색")
+    @Override
     public ResponseEntity<List<FoldersDocument>> searchFolders(@RequestParam String keyword) {
         return ResponseEntity.ok(foldersDocumentManagerService.searchFolders(keyword));
     }
 
-    @GetMapping("/rankings")
-    @Operation(summary = "주간 랭킹 조회", description = "viewCount, scrapCount Top10 반환")
+    @Override
     public ResponseEntity<ElasticSearchRankingResponse> getWeeklyRankings() {
         return ResponseEntity.ok(foldersDocumentManagerService.getWeeklyRankings());
     }
