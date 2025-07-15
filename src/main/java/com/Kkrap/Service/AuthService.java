@@ -4,6 +4,8 @@ import com.Kkrap.Exception.NotValidTokenException;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
 import com.Kkrap.ResponseDto.UsersProfileResponse;
 import com.Kkrap.Service.SocialLogin.ClientProvider;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
+import com.Kkrap.Service.SocialLogin.RestTemplateKakaoProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
