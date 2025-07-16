@@ -13,6 +13,7 @@ import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
 import com.Kkrap.Service.Users.UsersService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class FoldersManagerService {
     private final FoldersService foldersService;
 
@@ -324,9 +326,13 @@ public class FoldersManagerService {
                 })
                 .collect(Collectors.toList());
 
-        newLinks.forEach(link ->
-                foldersLinksService.save(FoldersLinks.of(newFolder, link, userId))
-        );
+        newLinks.forEach(link -> {
+            try {
+                foldersLinksService.save(FoldersLinks.of(newFolder, link, userId));
+            } catch (Exception e) {
+                log.error("[Scrap] 링크 저장 실패 linkUrl={} reason={}", link.getLinkUrl(), e.getMessage(), e);
+            }
+        });
 
         return ResponseEntity.ok(
                 FoldersLinksAllResponse.of(newFolder, newLinks)

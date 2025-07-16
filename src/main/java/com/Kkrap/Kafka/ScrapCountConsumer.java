@@ -25,6 +25,7 @@ public class ScrapCountConsumer {
             System.out.println("[Kafka] ScrapCount updated - folderId=" + folderId + ", +"+ increment);
         } catch (Exception e) {
             System.err.println("[Kafka] Error processing scrapCount message: " + message);
+            throw new RuntimeException("Kafka ScrapCountConsuemr failed : ", e);
         }
     }
 }

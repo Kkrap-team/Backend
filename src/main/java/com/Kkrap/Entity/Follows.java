@@ -32,6 +32,9 @@ public class Follows {
     private String profile;
 
 
+    public Long getFollwerId(){
+        return this.follower != null ? this.follower.getUserId() : null;
+    }
 
     private  Follows() { }
 

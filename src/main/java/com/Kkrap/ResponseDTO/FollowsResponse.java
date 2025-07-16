@@ -22,6 +22,6 @@ public class FollowsResponse {
     private FollowsResponse(){}
 
     public static FollowsResponse of(Follows follows){
-        return new FollowsResponse(follows.getFollower().getUserId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile());
+        return new FollowsResponse(follows.getFollwerId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile());
     }
 }
