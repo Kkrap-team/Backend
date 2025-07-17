@@ -18,10 +18,11 @@ public class FollowsResponse {
 
     private String nickname;
     private String profile;
+    private String email;
 
     private FollowsResponse(){}
 
     public static FollowsResponse of(Follows follows){
-        return new FollowsResponse(follows.getFollwerId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile());
+        return new FollowsResponse(follows.getFollwerId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile(), follows.getEmail());
     }
 }

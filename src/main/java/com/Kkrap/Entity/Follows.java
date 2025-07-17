@@ -31,6 +31,10 @@ public class Follows {
     @Column(nullable = false, length = 2000)
     private String profile;
 
+    @Column(nullable = false)
+    private String email;
+
+
 
     public Long getFollwerId(){
         return this.follower != null ? this.follower.getUserId() : null;
@@ -38,14 +42,15 @@ public class Follows {
 
     private  Follows() { }
 
-    public Follows(Long userId, String nickname, String profile, Users follower) {
+    public Follows(Long userId, String nickname, String profile, String email, Users follower) {
         this.follower = follower;
         this.followingId = userId;
         this.nickname = nickname;
         this.profile = profile;
+        this.email = email;
     }
 
     public static Follows of(Users follower, Users following){
-        return new Follows(following.getUserId(), following.getNickname(), following.getProfile(), follower);
+        return new Follows(following.getUserId(), following.getNickname(), following.getProfile(), follower.getEmail(), follower);
     }
 }
