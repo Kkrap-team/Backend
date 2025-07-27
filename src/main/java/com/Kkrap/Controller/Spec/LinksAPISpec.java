@@ -2,7 +2,9 @@ package com.Kkrap.Controller.Spec;
 
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
+import com.Kkrap.RequestDTO.LinksTitleUpdateRequest;
 import com.Kkrap.ResponseDTO.LinksCreateResponse;
+import com.Kkrap.ResponseDTO.LinksResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,4 +37,17 @@ public interface LinksAPISpec {
             @Parameter(name = "userId", description = "사용자 ID", required = true, example = "1")
             @PathVariable("userId") Long userId,
             @RequestBody LinksDeleteRequest linksDeleteRequest);
+
+
+    //links 제목 변경
+    @PatchMapping("/users/{userId}/links/title")
+    @Operation(
+            summary = "link 제목 수정",
+            description = "사용자가 link 설정에서 제목 변경하는 api입니다."
+    )
+    ResponseEntity<LinksResponse> updateLinkTitle(
+            @Parameter(name = "userId", description = "사용자 ID", required = true, example = "1")
+            @PathVariable("userId") Long userId,
+            @RequestBody LinksTitleUpdateRequest linksTitleUpdateRequest
+    );
 }

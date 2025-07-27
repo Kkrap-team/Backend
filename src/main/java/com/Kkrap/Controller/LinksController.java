@@ -3,7 +3,9 @@ package com.Kkrap.Controller;
 import com.Kkrap.Controller.Spec.LinksAPISpec;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
+import com.Kkrap.RequestDTO.LinksTitleUpdateRequest;
 import com.Kkrap.ResponseDTO.LinksCreateResponse;
+import com.Kkrap.ResponseDTO.LinksResponse;
 import com.Kkrap.Service.FolderLink.LinksManagerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,5 +28,10 @@ public class LinksController implements LinksAPISpec {
     @Override
     public ResponseEntity<LinksDeleteRequest> deleteLinksWithFolderMapping(Long userId, LinksDeleteRequest linksDeleteRequest) {
         return linksManagerService.deleteLinksWithFolderMapping(userId, linksDeleteRequest);
+    }
+
+    @Override
+    public ResponseEntity<LinksResponse> updateLinkTitle(Long userId, LinksTitleUpdateRequest linksTitleUpdateRequest) {
+        return linksManagerService.updateLinkTitle(userId, linksTitleUpdateRequest);
     }
 }
