@@ -36,7 +36,7 @@ public class Follows {
 
 
 
-    public Long getFollwerId(){
+    public Long getFollowerId(){
         return this.follower.getUserId();
     }
 

@@ -23,6 +23,6 @@ public class FollowsResponse {
     private FollowsResponse(){}
 
     public static FollowsResponse of(Follows follows){
-        return new FollowsResponse(follows.getFollwerId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile(), follows.getEmail());
+        return new FollowsResponse(follows.getFollowerId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile(), follows.getEmail());
     }
 }
