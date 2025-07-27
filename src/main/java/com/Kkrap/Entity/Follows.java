@@ -37,7 +37,7 @@ public class Follows {
 
 
     public Long getFollwerId(){
-        return this.follower != null ? this.follower.getUserId() : null;
+        return this.follower.getUserId();
     }
 
     private  Follows() { }
@@ -51,6 +51,6 @@ public class Follows {
     }
 
     public static Follows of(Users follower, Users following){
-        return new Follows(following.getUserId(), following.getNickname(), following.getProfile(), follower.getEmail(), follower);
+        return new Follows(following.getUserId(), following.getNickname(), following.getProfile(), following.getEmail(), follower);
     }
 }
