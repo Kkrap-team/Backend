@@ -45,9 +45,13 @@ public class FoldersPermissionsManagerService {
             Users invitedUser = usersService.findById(invitedUserId);
 
             boolean exists = foldersPermissionsService.existsByFolderAndInvitedUserId(folder, invitedUserId);
-            if (exists) continue;
+            if (exists) {
+                continue;
+            }
             foldersPermissionsService.save(owner, folder, invitedUser);
         }
+        folder.setShared(true);
+        foldersService.save(folder);
         return ResponseEntity.ok(request);
     }
 

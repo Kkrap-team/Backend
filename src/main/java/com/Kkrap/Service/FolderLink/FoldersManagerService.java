@@ -68,14 +68,24 @@ public class FoldersManagerService {
         List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
 
         // shared 컬럼으로 분리
-        List<Folders> ownFolders = allMyFolders.stream()
-                .filter(folder -> !folder.isShared())
-                .sorted(Comparator.comparing(Folders::getCreateTime))
-                .collect(Collectors.toList());
+        // defaultFolder == true인 폴더 (딱 하나라고 가정)
+        List<Folders> defaultFolderList = allMyFolders.stream()
+                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
+                .toList();
+
+        // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
+        List<Folders> otherOwnFolders = allMyFolders.stream()
+                .filter(folder -> !folder.isShared() && !folder.isDefaultFolder())
+                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
+                .toList();
+
+        // shared 컬럼으로 분리
+        List<Folders> ownFolders = Stream.concat(defaultFolderList.stream(), otherOwnFolders.stream())
+                .toList();
 
         List<Folders> mySharedFolders = allMyFolders.stream()
                 .filter(Folders::isShared)
-                .sorted(Comparator.comparing(Folders::getCreateTime))
+                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
                 .collect(Collectors.toList());
 
         // 공유받은 폴더 (권한 테이블 기준)
@@ -118,14 +128,24 @@ public class FoldersManagerService {
         List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
 
         // visible = true 필터
-        List<Folders> ownFolders = allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && folder.isVisible())
-                .sorted(Comparator.comparing(Folders::getCreateTime))
-                .collect(Collectors.toList());
+        // defaultFolder == true인 폴더 (딱 하나라고 가정)
+        List<Folders> defaultFolderList = allMyFolders.stream()
+                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
+                .toList();
+
+        // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
+        List<Folders> otherOwnFolders = allMyFolders.stream()
+                .filter(folder -> !folder.isShared() && !folder.isDefaultFolder())
+                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
+                .toList();
+
+        // shared 컬럼으로 분리
+        List<Folders> ownFolders = Stream.concat(defaultFolderList.stream(), otherOwnFolders.stream())
+                .toList();
 
         List<Folders> mySharedFolders = allMyFolders.stream()
                 .filter(folder -> folder.isShared() && folder.isVisible())
-                .sorted(Comparator.comparing(Folders::getCreateTime))
+                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
                 .collect(Collectors.toList());
 
         // 초대받은 공유 폴더
@@ -166,15 +186,24 @@ public class FoldersManagerService {
         usersService.findById(userId);
         List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
 
+        // defaultFolder == true인 폴더 (딱 하나라고 가정)
+        List<Folders> defaultFolderList = allMyFolders.stream()
+                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
+                .toList();
+
+        // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
+        List<Folders> otherOwnFolders = allMyFolders.stream()
+                .filter(folder -> !folder.isShared() && !folder.isDefaultFolder())
+                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
+                .toList();
+
         // shared 컬럼으로 분리
-        List<Folders> ownFolders = allMyFolders.stream()
-                .filter(folder -> !folder.isShared())
-                .sorted(Comparator.comparing(Folders::getCreateTime))
-                .collect(Collectors.toList());
+        List<Folders> ownFolders = Stream.concat(defaultFolderList.stream(), otherOwnFolders.stream())
+                .toList();
 
         List<Folders> mySharedFolders = allMyFolders.stream()
                 .filter(Folders::isShared)
-                .sorted(Comparator.comparing(Folders::getCreateTime))
+                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
                 .collect(Collectors.toList());
 
         // 공유받은 폴더 (권한 테이블 기준)
