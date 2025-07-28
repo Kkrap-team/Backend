@@ -9,11 +9,14 @@ import com.Kkrap.RequestDTO.ProfileUpdateRequest;
 import com.Kkrap.ResponseDto.MessageResponse;
 import com.Kkrap.ResponseDto.UsersProfileResponse;
 import com.Kkrap.Service.Users.UsersManagerService;
+import com.Kkrap.Service.Users.UsersService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -30,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 
+@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(controllers = UsersController.class)
 @Import(GlobalExceptionHandler.class)
 public class UserEndpointTest {
