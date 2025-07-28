@@ -1,6 +1,7 @@
 package com.Kkrap.Entity;
 
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
+import com.Kkrap.RequestDTO.FoldersScrapRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -69,6 +70,10 @@ public class Folders {
 
     public static Folders of(FoldersCreateRequest foldersCreateRequest, Users user){
         return new Folders(user, foldersCreateRequest.getFolderName(), foldersCreateRequest.getFolderDescription(), foldersCreateRequest.isVisible(), foldersCreateRequest.isDefaultFolder());
+    }
+
+    public static Folders of(FoldersScrapRequest foldersScrapRequest, Users user){
+        return new Folders(user, foldersScrapRequest.getFolderName(), foldersScrapRequest.getFolderDescription(), foldersScrapRequest.isVisible(), false);
     }
 
     public boolean isOwnedBy(Long userId) {

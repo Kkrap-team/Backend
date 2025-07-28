@@ -5,7 +5,9 @@ import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
+import com.Kkrap.RequestDTO.LinksTitleUpdateRequest;
 import com.Kkrap.ResponseDTO.LinksCreateResponse;
+import com.Kkrap.ResponseDTO.LinksResponse;
 import com.Kkrap.Service.Users.UsersService;
 import com.Kkrap.Util.LinkMetadataExtractor;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +82,14 @@ public class LinksManagerService {
             }
             return ResponseEntity.ok(LinksDeleteRequest.of(defaultFodersId, foldersId, deleteLinkIdList));
         }
+    }
+
+    public ResponseEntity<LinksResponse> updateLinkTitle(Long userId, LinksTitleUpdateRequest linksTitleUpdateRequest) {
+        usersService.findById(userId);
+        Links link = linksService.findById(linksTitleUpdateRequest.getLinkId());
+        link.setLinkName(linksTitleUpdateRequest.getLinkName());
+        linksService.save(link);
+        return ResponseEntity.ok(LinksResponse.of(link));
     }
 
 }

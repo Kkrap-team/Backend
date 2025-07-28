@@ -24,8 +24,14 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
 
     List<Folders> findByUserUserIdAndVisibleTrue(Long userId);
 
-
     @Query("SELECT COALESCE(SUM(f.viewCount), 0) FROM Folders f WHERE f.user = :user")
     Long sumViewCountByUser(@Param("user") Users user);
 
+    @Query("SELECT COALESCE(SUM(f.scrapCount), 0) FROM Folders f WHERE f.user = :user")
+    Long sumScrapCountByUser(@Param("user") Users user);
+
+
+    @Modifying
+    @Query("UPDATE Folders f SET f.scrapCount = f.scrapCount + :increment WHERE f.folderId = :folderId")
+    void incrementScrapCount(@Param("folderId") Long folderId, @Param("increment") Long increment);
 }

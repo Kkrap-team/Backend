@@ -2,12 +2,16 @@ package com.Kkrap.Repository;
 
 
 import com.Kkrap.Entity.Folders;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.Kkrap.Entity.FoldersPermissions;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface FoldersPermissionsRepository extends JpaRepository<FoldersPermissions, Long> {
@@ -22,4 +26,8 @@ public interface FoldersPermissionsRepository extends JpaRepository<FoldersPermi
     List<FoldersPermissions> findByFolder(Folders folder);
 
     Optional<FoldersPermissions> findByFolderAndInvitedUserId(Folders folder, Long invitedUserId);
+
+    @Query("select fp.invitedUserId from FoldersPermissions fp where fp.folder.folderId = :folderId")
+    Set<Long> findInvitedUserIdsByFolderId(@Param("folderId") Long folderId);
+
 }

@@ -29,5 +29,9 @@ public class LinksResponse {
         this.faviconUrl = links.getFaviconUrl();
     }
 
+    public static LinksResponse of(Links links){
+        return new LinksResponse(links.getLinkId(), links.getLinkUrl(), links.getCreateTime(), links.getLinkName(), links.getThumbnailUrl(),links.getFaviconUrl());
+    }
+
 
 }

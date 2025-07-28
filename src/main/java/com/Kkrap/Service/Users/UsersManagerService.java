@@ -45,10 +45,11 @@ public class UsersManagerService {
         Users user = usersService.findById(userId);
 
         Long totalViewCount = foldersService.sumViewCountByUser(user);
+        Long totalScrapCount = foldersService.sumScrapCountByUser(user);
         Long followingCount = followsService.countFollower(user.getUserId());
 
         return ResponseEntity.ok(
-                FoldersUserProfileResponse.of(user, totalViewCount, followingCount)
+                FoldersUserProfileResponse.of(user, totalViewCount, totalScrapCount ,followingCount)
         );
  }
 

@@ -8,6 +8,7 @@ import com.Kkrap.Repository.FoldersPermissionsRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class FoldersPermissionsService {
@@ -39,6 +40,10 @@ public class FoldersPermissionsService {
 
     public List<FoldersPermissions> findByInvitedUserId(Long invitedUserId) {
         return foldersPermissionsRepository.findByInvitedUserId(invitedUserId);
+    }
+
+    public Set<Long> findInvitedUserIdsByFolderId(Long folderId){
+        return foldersPermissionsRepository.findInvitedUserIdsByFolderId(folderId);
     }
 
 }
