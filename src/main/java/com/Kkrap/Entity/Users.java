@@ -34,8 +34,15 @@ public class Users {
     private String bio;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Folders> folders;
+
+
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL)
+    private List<Follows> followings;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<FoldersPermissions> sharedFolders;
 
 
     private Users() { } // 외부에서 new 사용 못하게 보호

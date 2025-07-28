@@ -76,10 +76,37 @@ public class LinkMetadataExtractor {
         Metadata meta = extract(url);
 
         String linkName = (meta.title != null && !meta.title.isBlank()) ? meta.title : null;
-        String thumbnailUrl = (meta.thumbnailUrl != null && !meta.thumbnailUrl.isBlank()) ? meta.thumbnailUrl : null;
+        String thumbnailUrl = (meta.thumbnailUrl != null && !meta.thumbnailUrl.isBlank())
+                ? normalizeUrlSlashes(meta.thumbnailUrl)
+                : null;
         String faviconUrl = (meta.faviconUrl != null && !meta.faviconUrl.isBlank()) ? meta.faviconUrl : null;
 
         return Links.of(url, linkName, thumbnailUrl, faviconUrl);
+    }
+
+    public static String normalizeUrlSlashes(String url) {
+        if (url == null) return null;
+
+        // 프로토콜 구분
+        int protocolIndex = url.indexOf("://");
+        if (protocolIndex == -1) {
+            // 프로토콜 없음 → 전체 처리
+            return url.replaceAll("/{2,}", "/");
+        }
+
+        String protocolPart = url.substring(0, protocolIndex + 3);
+        String rest = url.substring(protocolIndex + 3);
+
+        int firstSlash = rest.indexOf('/');
+        if (firstSlash == -1) {
+            // 슬래시가 없음 → 경로가 없음
+            return protocolPart + rest;
+        }
+        String host = rest.substring(0, firstSlash);        // 호스트 이름
+        String path = rest.substring(firstSlash);           // 경로 전체
+        // 경로에서 슬래시 중복 제거
+        String normalizedPath = path.replaceAll("/{2,}", "/");
+        return protocolPart + host + normalizedPath;
     }
 
 }
