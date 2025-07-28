@@ -2,50 +2,50 @@ package com.Kkrap.Service;
 
 import com.Kkrap.Exception.NotValidTokenException;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
+
+import com.Kkrap.Service.SocialLogin.ClientProvider;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.SocialLogin.RestTemplateKakaoProvider;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 
 @Service
 public class AuthService {
 
-    private final LoginUserHandler loginUserHandler;
+    private final LoginUserPort loginUserHandler;
+    private final ClientProvider clientProvider;
 
-    private final RestTemplateKakaoProvider restTemplateKakaoProvider;
-
-    public AuthService(LoginUserHandler loginUserHandler) {
+    public AuthService(LoginUserHandler loginUserHandler, ClientProvider clientProvider) {
         this.loginUserHandler = loginUserHandler;
-        this.restTemplateKakaoProvider = new RestTemplateKakaoProvider();
+        this.clientProvider = clientProvider;
     }
 
-    public UsersProfileResponse prepare(@RequestBody KaKaoTokenRequest request) {
+    public UsersProfileResponse prepare(KaKaoTokenRequest request) {
         String accessToken = request.getAccesstoken();
 
-        if (accessToken.isEmpty()){
-            isAccessToken(accessToken);
+        if (!isAccessToken(accessToken)) {
+            throw new NotValidTokenException("유효하지 않은 토큰입니다.");
         }
 
-        //1. 카카오 유저 정보 요청
-        Map<String, Object> userInfo = restTemplateKakaoProvider.getClient(accessToken);
-
+        // 1. 카카오 유저 정보 요청
+        Map<String, Object> userInfo = clientProvider.getClient(accessToken);
         UsersProfileResponse response = getUserProfile(userInfo);
-
         return response;
     }
 
     private boolean isAccessToken(String token) {
-        if(token == null){
-            throw new NotValidTokenException("토큰이 없습니다.");
-        }
 
-        if(token.equals("")){
-            throw new NotValidTokenException("토큰이 없습니다.");
+        if (token == null || token.isEmpty() || token.isBlank()) {
+            return false;
         }
-
-        return false;
+        
+        if (token.length() < 10) {
+            return false;
+        }
+        
+        return true;
     }
 
     private UsersProfileResponse getUserProfile(Map<String, Object> user) {

@@ -29,8 +29,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotValidTokenException.class)
     public ResponseEntity<ErrorResponse> notValidTokenException(NotValidTokenException ex) {
         log.error("notValidTokenException", ex);
-        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(LinksNotFoundException.class)
