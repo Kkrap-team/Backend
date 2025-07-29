@@ -34,4 +34,7 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
     @Modifying
     @Query("UPDATE Folders f SET f.scrapCount = f.scrapCount + :increment WHERE f.folderId = :folderId")
     void incrementScrapCount(@Param("folderId") Long folderId, @Param("increment") Long increment);
+
+    List<Folders> findByVisibleTrue();
+
 }

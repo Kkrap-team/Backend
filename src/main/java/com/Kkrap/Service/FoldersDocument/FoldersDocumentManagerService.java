@@ -37,11 +37,9 @@ public class FoldersDocumentManagerService {
 
     public void migrateAllFoldersToElasticsearch() {
 
-        List<Folders> allFolders = foldersService.findAll();
+        List<Folders> allFolders =foldersService.findByVisibleTrue();
 
-        allFolders.stream()
-                .filter(Folders::isVisible)
-                .forEach(folder -> {
+        allFolders.forEach(folder -> {
                     Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
                     foldersDocumentService.indexNewFolder(folder, link);
                 });
