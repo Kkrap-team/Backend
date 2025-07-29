@@ -67,7 +67,7 @@
 
 [//]: # (- 📁 [폴더 기능]&#40;./docs/feature-folder.md&#41;)
 - 🌐 [링크 저장 및 조회 기능](./docs/feature-link.md)
-- 📁 [elasticsearch 조회 기능](./docs/feature-elasticsearch.md)
+- 📁 [elasticsearch 기능](./docs/feature-elasticsearch.md)
 
 [//]: # (- 💬 [채팅 기능]&#40;./docs/feature-chat.md&#41;)
 
