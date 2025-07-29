@@ -9,6 +9,7 @@ import com.Kkrap.RequestDTO.FoldersUpdateRequest;
 import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
 import com.Kkrap.ResponseDTO.FoldersResponse;
 import com.Kkrap.ResponseDTO.UserFoldersWithSharedResponse;
+import com.Kkrap.Service.FeedRedisService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
 import com.Kkrap.Service.Users.UsersService;
@@ -47,11 +48,14 @@ public class FoldersManagerService {
 
     private final FoldersPermissionsService foldersPermissionsService;
 
+    private final FeedRedisService feedRedisService;
+
     public FoldersManagerService(FoldersService foldersService, UsersService usersService, FoldersLinksService foldersLinksService,
                                  LinksService linksService, StringRedisTemplate redisTemplate,
                                  FolderCreateProducer folderCreateProducer,
                                  FoldersDocumentService foldersDocumentService,
-                                 FoldersPermissionsService foldersPermissionsService
+                                 FoldersPermissionsService foldersPermissionsService,
+                                 FeedRedisService feedRedisService
                                  ) {
         this.foldersService = foldersService;
         this.usersService = usersService;
@@ -61,6 +65,7 @@ public class FoldersManagerService {
         this.folderCreateProducer = folderCreateProducer;
         this.foldersDocumentService = foldersDocumentService;
         this.foldersPermissionsService = foldersPermissionsService;
+        this.feedRedisService = feedRedisService;
     }
 
 
@@ -274,6 +279,8 @@ public class FoldersManagerService {
         Users users = usersService.findById(userId);
         Folders folders = foldersService.save(foldersCreateRequest, users);
         if (Boolean.TRUE.equals(folders.isVisible())) {
+            feedRedisService.pushFeedToRedis(users, folders);
+
             String eventPayload = String.format(
                     "{\"folderId\": %d}",
                     folders.getFolderId()

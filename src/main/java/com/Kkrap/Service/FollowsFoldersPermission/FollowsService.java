@@ -39,4 +39,7 @@ public class FollowsService {
         return followsRepository.countByFollowingId(userId);
     }
 
+    public List<Long> findFollowingIdsByFollowerId(Long followerId){
+        return followsRepository.findFollowingIdsByFollowerId(followerId);
+    }
 }

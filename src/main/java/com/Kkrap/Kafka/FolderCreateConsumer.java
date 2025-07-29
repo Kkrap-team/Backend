@@ -42,9 +42,9 @@ public class FolderCreateConsumer {
             Long folderId = jsonNode.get("folderId").asLong();
 
             Folders folders = foldersService.findById(folderId);
-            Optional<Links> link =  foldersLinksService.getFirstLinkByFolder(folders);
+            Links link = foldersLinksService.getFirstLinkByFolder(folders).orElse(null);
             // 서비스 계층에 위임
-            foldersDocumentService.indexNewFolder(folders, link.get());
+            foldersDocumentService.indexNewFolder(folders, link);
 
             System.out.println("[Kafka Consumer] Elasticsearch 색인 추가 완료: " + folderId);
 
