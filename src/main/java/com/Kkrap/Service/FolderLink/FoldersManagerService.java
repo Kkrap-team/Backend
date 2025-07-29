@@ -13,6 +13,7 @@ import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
 import com.Kkrap.Service.Users.UsersService;
 
+import io.swagger.v3.oas.models.links.Link;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -319,7 +321,8 @@ public class FoldersManagerService {
         foldersService.save(folders);
 
         if (folders.isVisible()) {
-            foldersDocumentService.indexNewFolder(folders);
+            Optional<Links> link = foldersLinksService.getFirstLinkByFolder(folders);
+            foldersDocumentService.indexNewFolder(folders, link.get());
         } else {
             foldersDocumentService.deleteFolderDocument(folders);
         }
