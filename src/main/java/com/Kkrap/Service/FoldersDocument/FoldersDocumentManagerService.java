@@ -2,9 +2,12 @@ package com.Kkrap.Service.FoldersDocument;
 
 import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.Folders;
+import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Repository.FoldersDocumentRepository;
 import com.Kkrap.ResponseDTO.ElasticSearchRankingResponse;
+import com.Kkrap.Service.FolderLink.FoldersLinksManagerService;
+import com.Kkrap.Service.FolderLink.FoldersLinksService;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +20,14 @@ public class FoldersDocumentManagerService {
 
     private final FoldersService foldersService;
 
-    public FoldersDocumentManagerService(FoldersDocumentService foldersDocumentService, FoldersService foldersService){
+    private final FoldersLinksService foldersLinksService;
+
+    public FoldersDocumentManagerService(FoldersDocumentService foldersDocumentService,
+                                         FoldersService foldersService,
+                                         FoldersLinksService foldersLinksService){
         this.foldersDocumentService = foldersDocumentService;
         this.foldersService = foldersService;
+        this.foldersLinksService = foldersLinksService;
     }
 
 
@@ -32,10 +40,13 @@ public class FoldersDocumentManagerService {
         List<Folders> allFolders = foldersService.findAll();
 
         allFolders.stream()
-                .filter(folder -> folder.isVisible())
-                .forEach(folder -> foldersDocumentService.indexNewFolder(folder));
+                .filter(Folders::isVisible)
+                .forEach(folder -> {
+                    Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
+                    foldersDocumentService.indexNewFolder(folder, link);
+                });
 
-        System.out.println("visible = false 인 모든 폴더가 Elasticsearch에 색인되었습니다!");
+        System.out.println("모든 visible = true 폴더가 Elasticsearch에 색인되었습니다!");
     }
 
 
@@ -58,6 +69,20 @@ public class FoldersDocumentManagerService {
     @Transactional(readOnly = true)
     public void updateFolderDocumentById(Long folderId) {
         Folders folder = foldersService.findById(folderId);
-        foldersDocumentService.indexNewFolder(folder);
+        Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
+        foldersDocumentService.indexNewFolder(folder, link);
     }
+
+
+    public void updateUserInfoInFolderDocuments(Users users, List<Folders> userFolders) {
+
+        // 색인 업데이트
+        userFolders.forEach(folder -> {
+            Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
+            foldersDocumentService.indexNewFolder(folder, link);
+        });
+    }
+
+
+
 }

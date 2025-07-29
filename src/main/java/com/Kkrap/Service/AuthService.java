@@ -18,7 +18,7 @@ public class AuthService {
     private final ClientProvider clientProvider;
 
     public AuthService(LoginUserHandler loginUserHandler, ClientProvider clientProvider) {
-        this.loginUserHandler = loginUserHandler;
+//        this.loginUserHandler = loginUserHandler;
         this.clientProvider = clientProvider;
     }
 

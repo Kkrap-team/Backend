@@ -2,10 +2,12 @@ package com.Kkrap.Service.Users;
 
 
 import com.Kkrap.Entity.Folders;
+import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.ResponseDTO.FoldersUserProfileResponse;
 import com.Kkrap.ResponseDTO.MessageResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
+import com.Kkrap.Service.FolderLink.FoldersLinksService;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsService;
@@ -28,12 +30,15 @@ public class UsersManagerService {
 
     private final FollowsService followsService;
 
+    private final FoldersLinksService foldersLinksService;
+
     public UsersManagerService(UsersService usersService, FoldersService foldersService, FoldersDocumentService foldersDocumentService,
-                               FollowsService followsService){
+                               FollowsService followsService, FoldersLinksService foldersLinksService){
         this.usersService = usersService;
         this.foldersService = foldersService;
         this.foldersDocumentService = foldersDocumentService;
         this.followsService = followsService;
+        this.foldersLinksService = foldersLinksService;
     }
 
     public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId){
@@ -62,7 +67,12 @@ public class UsersManagerService {
 
         //색인 업데이트
         List<Folders> userFolders = foldersService.findByUserIdAndVisibleTrue(userId);
-        foldersDocumentService.updateUserInfoInFolderDocuments(users, userFolders);
+        userFolders.forEach(folder -> {
+            Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
+            foldersDocumentService.updateUserInfoInFolderDocuments(users, folder, link);
+        });
+        System.out.println("[Elasticsearch] 사용자 정보 변경으로 색인 업데이트 완료: userId=" + users.getUserId());
+
 
         return ResponseEntity.ok(UsersProfileResponse.from(users));
     }
