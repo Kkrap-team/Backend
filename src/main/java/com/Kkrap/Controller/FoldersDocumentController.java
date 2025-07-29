@@ -37,7 +37,7 @@ public class FoldersDocumentController implements FoldersDocumentAPISpec {
     }
 
     @Override
-    public ResponseEntity<List<FoldersDocument>> searchFolders(@RequestParam String keyword) {
+    public ResponseEntity<List<FoldersDocument>> searchFolders(String keyword) {
         return ResponseEntity.ok(foldersDocumentManagerService.searchFolders(keyword));
     }
 

@@ -26,7 +26,7 @@ public interface FoldersDocumentAPISpec {
 
     @GetMapping("/search")
     @Operation(summary = "검색바에서 폴더 검색", description = "검색바에서 폴더 검색")
-    ResponseEntity<List<FoldersDocument>> searchFolders(@RequestParam String keyword);
+    ResponseEntity<List<FoldersDocument>> searchFolders(@RequestParam("keyword") String keyword);
 
     @GetMapping("/rankings")
     @Operation(summary = "주간 랭킹 조회", description = "viewCount, scrapCount Top10 반환")
