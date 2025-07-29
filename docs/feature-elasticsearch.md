@@ -67,7 +67,7 @@ Elasticsearch 활용 내용:
 Elasticsearch 활용 내용:
 - scrapCount, viewCount를 색인에 포함
 - range 필터와 sort 조합으로 구현
-예: 최근 일주일간 스크랩 수가 많은 폴더 상위 20개
+예: 최근 일주일간 스크랩 수가 많은 폴더 상위 10개
 
 장점:
 복잡한 정렬 조건도 빠르게 처리
