@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class LoginUserHandler {
+public class LoginUserHandler implements LoginUserPort {
     private final UsersService usersService;
     private final FoldersService foldersService;
 
@@ -20,6 +20,7 @@ public class LoginUserHandler {
         this.foldersService = foldersService;
     }
 
+    @Override
     public UsersProfileResponse validateUser(String email, String nickname, String profileImage, Long kakaoId) {
         Optional<Users> CheckUser = usersService.findByKakaoId(Long.valueOf(kakaoId));
         if (CheckUser.isEmpty()){
