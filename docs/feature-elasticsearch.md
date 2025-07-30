@@ -49,16 +49,16 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
 
 - 사용자 MainPage 접속 시, 먼저 다음과 같은 api 호출
 ```api
-/acitivtyfeed/{userId}/feed/scroll
+/folders/users/{userId}/scroll
 ```
 - Redis에 키가 존재하면 HTTP 응답 코드 200로 폴더 조회
 - 키가 존재하지 않은다면 HTTP 응답 코드 204으로 밑 api 요청
 ```api
-/acitivtyfeed/{userId}/feed/init
+/folders/users/{userId}/scroll-init
 ```
 - 사용자가 무한 스크롤을 계속하면로 요청
 ```api
-/acitivtyfeed/{userId}/feed/scroll
+/folders/users/{userId}/scroll
 ```
 
 
@@ -67,7 +67,7 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
 2. 최초 진입시 서버 동작
 - 다음과 같은 api의 동작 순서
 ```api
-/acitivtyfeed/{userId}/feed/init
+/folders/users/{userId}/scroll-init
 ```
 - 서버는 Elasticsearch에서 최신 공개 폴더 20개를 조회해서 클라이언트에게 응답
 - 서버는 향후 사용자에게 제공할 폴더 ID 목록 20개를 Redis에 저장 후 cursor는 0으로 저장됨
@@ -81,7 +81,7 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
 
 3. 사용자 무한 스크롤시 서버 동작
 ```api
-/acitivtyfeed/{userId}/feed/scroll
+/folders/users/{userId}/scroll
 ```
 - Redis에서 사용자별 list와 cursor를 조회
 - list에서 읽는 folderId들을 elasticsearch에서 가져와 클라이언트에게 반환
