@@ -10,7 +10,9 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
 
 [블로그 참고: ElasticSearch란?](https://wo-dbs.tistory.com/241)
 
-### 기능 개요 및 목적, 배경
+[블로그 참고: 커서 기반 페이지네이션이란?](https://wo-dbs.tistory.com/243)
+
+### ElasticSearch의 기능 개요 및 목적, 배경
 [블로그 참고: 폴더 검색 기능 설계 문서](https://wo-dbs.tistory.com/242)
 
 
@@ -29,35 +31,67 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
 ---
 
 ### 1. 메인 페이지 무한 스크롤 폴더 조회
+- 기능 개요 및 목적, 배경은 다음 블로그에 작성되어 있다.
+
+[블로그 참고: 메인페이지 무한 스크롤 기능 문서](https://wo-dbs.tistory.com/244)
+
+
 사용 목적: 로그인하지 않은 사용자도 다른 유저들의 폴더를 탐색할 수 있도록, 무한 스크롤 기반의 폴더 리스트 제공
 
-Elasticsearch 활용 내용:
-- visible=true인 폴더 중 최신순으로 정렬 
-- 커서 기반 페이지네이션 (search_after) 사용 
-- 대표 썸네일과 닉네임 포함 색인
+무한 스크롤 방식
+- 색인 데이터는 이미 공개폴더들만 되어있음
+- visible=true(공개 폴더)인 폴더 중 최신순으로 정렬 
+- 커서 기반 페이지네이션 사용 
 
-장점:
-- 성능 부담 없이 대량 데이터 페이징 가능 
-- DB가 아닌 ES만으로 정렬 + 조회 처리
+1. 프론트엔드 요청 순서
+<p align="center">
+  <img src="imgs/elasticsearch/mainpage/무한스크롤_프론트엔드요청순서.png" alt="프론트엔드 요청 순서"/>
+</p>
 
-
-
-```json
-{
-  "query": {
-    "match_all": {}
-  },
-  "sort": [
-    { "createTime": "desc" }
-  ],
-  "size": 20,
-  "search_after": ["2024-07-29T10:00:00.000Z"]
-}
+- 사용자 MainPage 접속 시, 먼저 다음과 같은 api 호출
+```api
+/acitivtyfeed/{userId}/feed/scroll
+```
+- Redis에 키가 존재하면 HTTP 응답 코드 200로 폴더 조회
+- 키가 존재하지 않은다면 HTTP 응답 코드 204으로 밑 api 요청
+```api
+/acitivtyfeed/{userId}/feed/init
+```
+- 사용자가 무한 스크롤을 계속하면로 요청
+```api
+/acitivtyfeed/{userId}/feed/scroll
 ```
 
+
+<br>
+
+2. 최초 진입시 서버 동작
+- 다음과 같은 api의 동작 순서
+```api
+/acitivtyfeed/{userId}/feed/init
+```
+- 서버는 Elasticsearch에서 최신 공개 폴더 20개를 조회해서 클라이언트에게 응답
+- 서버는 향후 사용자에게 제공할 폴더 ID 목록 20개를 Redis에 저장 후 cursor는 0으로 저장됨
+  - 이때 TTL은 24시간으로 지정
+
 <p align="center">
-  <img src="imgs/elasticsearch/무한스크롤.png" alt="전체 아키텍처"/>
+  <img src="imgs/elasticsearch/mainpage/무한스크롤_init.png" alt="프론트엔드 요청 순서"/>
 </p>
+
+
+3. 사용자 무한 스크롤시 서버 동작
+```api
+/acitivtyfeed/{userId}/feed/scroll
+```
+- Redis에서 사용자별 list와 cursor를 조회
+- list에서 읽는 folderId들을 elasticsearch에서 가져와 클라이언트에게 반환
+- cursor는 +20을 해주고 list에는 향후 보내줄 folderId들을 20개 넣어놓음 이때 TTL 24시간 재갱신 
+
+
+<p align="center">
+  <img src="imgs/elasticsearch/mainpage/무한스크롤_scroll.png" alt="프론트엔드 요청 순서"/>
+</p>
+
 
 
 
