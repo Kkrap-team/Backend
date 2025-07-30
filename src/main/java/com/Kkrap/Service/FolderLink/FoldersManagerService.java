@@ -2,15 +2,13 @@ package com.Kkrap.Service.FolderLink;
 
 import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.*;
+import com.Kkrap.Exception.FoldersNotFoundException;
 import com.Kkrap.Kafka.FolderCreateProducer;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.RequestDTO.FoldersScrapRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
-import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
-import com.Kkrap.ResponseDTO.FoldersResponse;
-import com.Kkrap.ResponseDTO.ScrollFolderResponse;
-import com.Kkrap.ResponseDTO.UserFoldersWithSharedResponse;
+import com.Kkrap.ResponseDTO.*;
 import com.Kkrap.Service.FeedRedisService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
@@ -115,11 +113,11 @@ public class FoldersManagerService {
                 })
                 .collect(Collectors.toList());
 
-        List<FoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
+        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
                     List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
+                    return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
 
@@ -175,11 +173,11 @@ public class FoldersManagerService {
                 })
                 .collect(Collectors.toList());
 
-        List<FoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
+        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
+                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
 
@@ -233,11 +231,11 @@ public class FoldersManagerService {
                 })
                 .collect(Collectors.toList());
 
-        List<FoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
+        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
+                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
 
@@ -311,7 +309,6 @@ public class FoldersManagerService {
         //색인 업데이트
         foldersDocumentService.deleteFolderDocument(folders);
 
-        //응답 데이터를 삭제된 링크들까지 포함 시켜서 해주어야함 - 정환행님한테 물어보기
         return ResponseEntity.ok(FoldersResponse.from(folders, userId));
     }
 
@@ -462,6 +459,14 @@ public class FoldersManagerService {
                 .toList();
 
         return ResponseEntity.ok(response);
+    }
+
+    public void checkAccessPermission(Long folderId, Long userId) {
+        Folders folder = foldersService.findById(folderId);
+
+        if (!folder.isOwnedBy(userId)) {
+            foldersPermissionsService.existsByFolderFolderIdAndInvitedUserId(folderId, userId);
+        }
     }
 
 

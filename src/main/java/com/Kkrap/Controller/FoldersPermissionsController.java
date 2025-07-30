@@ -4,6 +4,7 @@ import com.Kkrap.Controller.Spec.FoldersPermissionsAPISpec;
 import com.Kkrap.RequestDTO.FoldersPermissionsCreateRequest;
 import com.Kkrap.RequestDTO.FoldersPermissionsDeleteRequest;
 import com.Kkrap.ResponseDTO.FollowInviteCandidateResponse;
+import com.Kkrap.ResponseDTO.FollowInviteListResponse;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class FoldersPermissionsController implements FoldersPermissionsAPISpec {
     }
 
     @Override
-    public ResponseEntity<List<FollowInviteCandidateResponse>> getFollowingsWithInviteFlag(
+    public ResponseEntity<FollowInviteListResponse> getFollowingsWithInviteFlag(
             Long userId,
             Long folderId
     ) {
