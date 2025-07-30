@@ -78,6 +78,7 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
   <img src="imgs/elasticsearch/mainpage/무한스크롤_init.png" alt="프론트엔드 요청 순서"/>
 </p>
 
+<br>
 
 3. 사용자 무한 스크롤시 서버 동작
 ```api
