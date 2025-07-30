@@ -25,7 +25,7 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
   <img src="imgs/elasticsearch/elasticsearch.png" alt="전체 아키텍처"/>
 </p>
 
-## 🎯 Elasticsearch 사용 기능 요약
+## 🎯 Elasticsearch 사용 기능
 
 
 
@@ -72,6 +72,7 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
 - 서버는 Elasticsearch에서 최신 공개 폴더 20개를 조회해서 클라이언트에게 응답
 - 서버는 향후 사용자에게 제공할 폴더 ID 목록 20개를 Redis에 저장 후 cursor는 0으로 저장됨
   - 이때 TTL은 24시간으로 지정
+  - 색인 되어있는 양에 따라 조절 가능
 
 <p align="center">
   <img src="imgs/elasticsearch/mainpage/무한스크롤_init.png" alt="프론트엔드 요청 순서"/>
@@ -85,7 +86,9 @@ RDB 기반 LIKE 검색의 성능 한계를 극복하고, 실시간으로 최신 
 ```
 - Redis에서 사용자별 list와 cursor를 조회
 - list에서 읽는 folderId들을 elasticsearch에서 가져와 클라이언트에게 반환
-- cursor는 +20을 해주고 list에는 향후 보내줄 folderId들을 20개 넣어놓음 이때 TTL 24시간 재갱신 
+- cursor는 +20을 해주고 list에는 향후 보내줄 folderId들을 20개 넣어놓음 이때 TTL 24시간 재갱신
+  - 색인되어 있는 폴더 개수에 따라 조정 가능
+  - 20개를 보내줄 때는 무조건 랜덤으로 섞어서 보내줌
 
 
 <p align="center">

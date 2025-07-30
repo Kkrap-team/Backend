@@ -4,9 +4,7 @@ import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
-import com.Kkrap.Repository.FoldersDocumentRepository;
 import com.Kkrap.ResponseDTO.ElasticSearchRankingResponse;
-import com.Kkrap.Service.FolderLink.FoldersLinksManagerService;
 import com.Kkrap.Service.FolderLink.FoldersLinksService;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import org.springframework.stereotype.Service;
@@ -80,6 +78,8 @@ public class FoldersDocumentManagerService {
             foldersDocumentService.indexNewFolder(folder, link);
         });
     }
+
+
 
 
 

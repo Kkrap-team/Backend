@@ -39,4 +39,9 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
     """)
     List<FoldersDocument> findTop10ByCreateTimeInLastWeekOrderByScrapCountDesc();
 
+    List<FoldersDocument> findTop40ByOrderByCreateTimeDesc();
+
+    List<FoldersDocument> findByFolderIdIn(List<Long> folderIds);
+
+
 }

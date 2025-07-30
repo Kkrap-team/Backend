@@ -79,4 +79,13 @@ public class FoldersDocumentService {
         indexNewFolder(userFolder, link);
     }
 
+
+    public List<FoldersDocument> findTop40ByOrderByCreateTimeDesc() {
+        return foldersDocumentRepository.findTop40ByOrderByCreateTimeDesc();
+    }
+
+    public List<FoldersDocument> findByFolderIdIn(List<Long> folderIds) {
+        return foldersDocumentRepository.findByFolderIdIn(folderIds);
+    }
+
 }
