@@ -16,8 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class FoldersPermissionsManagerService {
@@ -94,13 +97,30 @@ public class FoldersPermissionsManagerService {
         // 초대된 사람 목록
         Set<Long> invitedIds = foldersPermissionsService.findInvitedUserIdsByFolderId(folderId);
 
-        List<FollowInviteCandidateResponse> candidates = followings.stream()
+//        List<FollowInviteCandidateResponse> candidates = followings.stream()
+//                .map(f -> FollowInviteCandidateResponse.of(f, invitedIds.contains(f.getFollowingId())))
+//                .toList();
+
+        // 내가 팔로우한 사람 중 owner 제외 후 → 초대 여부 포함 응답 생성
+        List<FollowInviteCandidateResponse> candidates = followsService.findByFollower(me).stream()
+                .filter(f -> !f.getFollowingId().equals(owner.getUserId()))
                 .map(f -> FollowInviteCandidateResponse.of(f, invitedIds.contains(f.getFollowingId())))
                 .toList();
 
+        // partitioningBy로 분리
+        Map<Boolean, List<FollowInviteCandidateResponse>> partitioned =
+                candidates.stream().collect(Collectors.partitioningBy(FollowInviteCandidateResponse::isInvited));
+
+        List<FollowInviteCandidateResponse> invited = partitioned.get(true);
+        List<FollowInviteCandidateResponse> notInvited = partitioned.get(false);
+
+
+
         FollowInviteListResponse response = FollowInviteListResponse.of(
                 UsersProfileResponse.from(owner),
-                candidates
+                candidates,
+                invited,
+                notInvited
         );
         return ResponseEntity.ok(response);
     }

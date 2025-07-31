@@ -12,12 +12,15 @@ import java.util.List;
 @Setter
 public class FollowInviteListResponse {
     private UsersProfileResponse owner;
-    private List<FollowInviteCandidateResponse> candidates;
+    private List<FollowInviteCandidateResponse> allCandidates;
+    private List<FollowInviteCandidateResponse> invited;
+    private List<FollowInviteCandidateResponse> notInvited;
 
     private FollowInviteListResponse(){}
 
-    public static FollowInviteListResponse of(UsersProfileResponse usersProfileResponse, List<FollowInviteCandidateResponse> followInviteCandidateResponses){
-        return new FollowInviteListResponse(usersProfileResponse, followInviteCandidateResponses);
+    public static FollowInviteListResponse of(UsersProfileResponse usersProfileResponse, List<FollowInviteCandidateResponse> followInviteCandidateResponses,
+                                              List<FollowInviteCandidateResponse> invited, List<FollowInviteCandidateResponse> notInvited){
+        return new FollowInviteListResponse(usersProfileResponse, followInviteCandidateResponses, invited, notInvited);
     }
 
 }
