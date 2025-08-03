@@ -47,7 +47,12 @@ public class FoldersDocumentService {
         foldersDocumentRepository.deleteAll();
     }
 
-    public List<FoldersDocument> searchByName(String keyword) {
+
+    public List<FoldersDocument> findTop10ByFolderNameContainingIgnoreCase(String keyword) {
+        return foldersDocumentRepository.findTop10ByFolderNameContainingIgnoreCase(keyword);
+    }
+
+    public List<FoldersDocument> findByFolderNameContainingIgnoreCase(String keyword) {
         return foldersDocumentRepository.findByFolderNameContainingIgnoreCase(keyword);
     }
 

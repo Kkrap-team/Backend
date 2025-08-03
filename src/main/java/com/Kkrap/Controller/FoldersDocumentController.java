@@ -37,6 +37,11 @@ public class FoldersDocumentController implements FoldersDocumentAPISpec {
     }
 
     @Override
+    public ResponseEntity<List<FoldersDocument>> searchFoldersTop10(String keyword) {
+        return ResponseEntity.ok(foldersDocumentManagerService.searchFoldersTop10(keyword));
+    }
+
+    @Override
     public ResponseEntity<List<FoldersDocument>> searchFolders(String keyword) {
         return ResponseEntity.ok(foldersDocumentManagerService.searchFolders(keyword));
     }
@@ -47,14 +52,4 @@ public class FoldersDocumentController implements FoldersDocumentAPISpec {
     }
 
 
-
-//    @GetMapping("/search")
-//    public List<FoldersDocument> searchFolders(@RequestParam String keyword) {
-//        return foldersDocumentManagerService.searchFolders(keyword);
-//    }
-
-//    @PostMapping("/index")
-//    public FoldersDocument indexFolder(@RequestBody Folders folder) {
-//        return foldersDocumentManagerService.indexNewFolder(folder);
-//    }
 }

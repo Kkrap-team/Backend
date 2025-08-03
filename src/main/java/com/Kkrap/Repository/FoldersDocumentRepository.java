@@ -15,6 +15,9 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
 
     List<FoldersDocument> findByFolderNameContainingIgnoreCase(String keyword);
 
+    List<FoldersDocument> findTop10ByFolderNameContainingIgnoreCase(String keyword);
+
+
     // 지난 7일 이내 + viewCount 내림차순
     @Query("""
     {

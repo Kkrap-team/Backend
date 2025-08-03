@@ -55,8 +55,12 @@ public class FoldersDocumentManagerService {
         foldersDocumentService.deleteAll();
     }
 
+    public List<FoldersDocument> searchFoldersTop10(String keyword) {
+        return foldersDocumentService.findTop10ByFolderNameContainingIgnoreCase(keyword);
+    }
+
     public List<FoldersDocument> searchFolders(String keyword) {
-        return foldersDocumentService.searchByName(keyword);
+        return foldersDocumentService.findByFolderNameContainingIgnoreCase(keyword);
     }
 
     public ElasticSearchRankingResponse getWeeklyRankings() {
