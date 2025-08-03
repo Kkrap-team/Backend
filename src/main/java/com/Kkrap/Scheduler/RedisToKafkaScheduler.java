@@ -1,6 +1,8 @@
 package com.Kkrap.Scheduler;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,14 +17,15 @@ public class RedisToKafkaScheduler {
     private final StringRedisTemplate redisTemplate;
     private final KafkaTemplate<String, String> kafkaTemplate;
 
+    private static final Logger logger = LoggerFactory.getLogger(RedisToKafkaScheduler.class);
+
     private static final String VIEW_TOPIC = "folder-view-topic";
     private static final String SCRAP_TOPIC = "folder-scrap-topic";
 
-
-    // 5분마다 실행
-//    @Scheduled(fixedRate = 300000)  // 300,000ms = 5분
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 300000) // 300,000ms = 5분
     public void flushViewsToKafka() {
+        logger.info("[FeedFlush] Redis to Kafka view,scrap 스케줄러 시작됨");
+
 
         Set<String> viewKeys = redisTemplate.keys("view:*");
         if (viewKeys != null) {

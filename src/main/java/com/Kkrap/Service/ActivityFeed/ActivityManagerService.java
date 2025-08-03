@@ -41,7 +41,6 @@ public class ActivityManagerService {
         this.linksService = linksService;
         this.followsService = followsService;
     }
-
     public ResponseEntity<List<FeedFolderResponse>> getFeedForUser(Long userId) {
         Users Userme = usersService.findById(userId);
         List<Long> followingIds = followsService.findFollowingIdsByFollowerId(Userme.getUserId());
@@ -66,6 +65,7 @@ public class ActivityManagerService {
 
         return ResponseEntity.ok(result);
     }
+
 
 
 }

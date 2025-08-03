@@ -36,9 +36,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             // 로그 출력
             logger.info("카카오로부터 불러온 사용자 정보: {}", attributes);
-            System.out.println("registrationId :" + registrationId);
-            System.out.println("userNameAttributeName :" + userNameAttributeName);
-            System.out.println("attributes :" + attributes);
+            logger.info("registrationId :" + registrationId);
+            logger.info("userNameAttributeName :" + userNameAttributeName);
+            logger.info("attributes :" + attributes);
 
 
             return new DefaultOAuth2User(

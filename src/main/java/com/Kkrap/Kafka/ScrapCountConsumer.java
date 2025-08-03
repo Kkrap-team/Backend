@@ -1,7 +1,10 @@
 package com.Kkrap.Kafka;
 
 import com.Kkrap.Repository.FoldersRepository;
+import com.Kkrap.Security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScrapCountConsumer {
 
     private final FoldersRepository foldersRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ScrapCountConsumer.class);
 
     @KafkaListener(topics = "folder-scrap-topic", groupId = "folder-consumer")
     @Transactional
@@ -22,9 +26,9 @@ public class ScrapCountConsumer {
 
             foldersRepository.incrementScrapCount(folderId, increment);
 
-            System.out.println("[Kafka] ScrapCount updated - folderId=" + folderId + ", +"+ increment);
+            logger.info("[Kafka] ScrapCount updated - folderId=" + folderId + ", +"+ increment);
         } catch (Exception e) {
-            System.err.println("[Kafka] Error processing scrapCount message: " + message);
+            logger.info("[Kafka] Error processing scrapCount message: " + message);
             throw new RuntimeException("Kafka ScrapCountConsuemr failed : ", e);
         }
     }

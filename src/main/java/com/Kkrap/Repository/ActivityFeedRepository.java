@@ -13,4 +13,5 @@ public interface ActivityFeedRepository extends JpaRepository<ActivityFeed, Long
     // 내가 팔로우한 유저들의 활동 피드 조회
     List<ActivityFeed> findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(List<Long> actorIds, LocalDateTime after);
 
+    void deleteAllByFolderId(Long folderId);
 }

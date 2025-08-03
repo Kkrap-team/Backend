@@ -3,12 +3,14 @@ package com.Kkrap.Service.FolderLink;
 import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.*;
 import com.Kkrap.Exception.FoldersNotFoundException;
+import com.Kkrap.Kafka.FolderCreateConsumer;
 import com.Kkrap.Kafka.FolderCreateProducer;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.RequestDTO.FoldersScrapRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
 import com.Kkrap.ResponseDTO.*;
+import com.Kkrap.Service.ActivityFeed.ActivityFeedService;
 import com.Kkrap.Service.FeedRedisService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
@@ -16,6 +18,8 @@ import com.Kkrap.Service.Users.UsersService;
 
 import io.swagger.v3.oas.models.links.Link;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -47,12 +51,17 @@ public class FoldersManagerService {
 
     private final FeedRedisService feedRedisService;
 
+    private final ActivityFeedService activityFeedService;
+
+    private static final Logger logger = LoggerFactory.getLogger(FoldersManagerService.class);
+
     public FoldersManagerService(FoldersService foldersService, UsersService usersService, FoldersLinksService foldersLinksService,
                                  LinksService linksService, StringRedisTemplate redisTemplate,
                                  FolderCreateProducer folderCreateProducer,
                                  FoldersDocumentService foldersDocumentService,
                                  FoldersPermissionsService foldersPermissionsService,
-                                 FeedRedisService feedRedisService
+                                 FeedRedisService feedRedisService,
+                                 ActivityFeedService activityFeedService
                                  ) {
         this.foldersService = foldersService;
         this.usersService = usersService;
@@ -63,6 +72,7 @@ public class FoldersManagerService {
         this.foldersDocumentService = foldersDocumentService;
         this.foldersPermissionsService = foldersPermissionsService;
         this.feedRedisService = feedRedisService;
+        this.activityFeedService = activityFeedService;
     }
 
 
@@ -309,6 +319,9 @@ public class FoldersManagerService {
         //색인 업데이트
         foldersDocumentService.deleteFolderDocument(folders);
 
+
+        activityFeedService.deleteAllByFolderId(folderId);
+
         return ResponseEntity.ok(FoldersResponse.from(folders, userId));
     }
 
@@ -404,8 +417,8 @@ public class FoldersManagerService {
         // 4. 커서 초기화
         redisTemplate.opsForValue().set(cursorKey, "0", Duration.ofHours(24));
 
-        System.out.println("Redis 저장 시작: listKey=" + listKey + ", cursorKey=" + cursorKey);
-        System.out.println("저장할 folderIds = " + nextFolderIds);
+        logger.info("Redis 저장 시작: listKey=" + listKey + ", cursorKey=" + cursorKey);
+        logger.info("저장할 folderIds = " + nextFolderIds);
 
         // 5. 응답 변환
         List<ScrollFolderResponse> response = responseFolders.stream()

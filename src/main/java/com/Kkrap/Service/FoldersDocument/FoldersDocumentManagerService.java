@@ -6,7 +6,10 @@ import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.ResponseDTO.ElasticSearchRankingResponse;
 import com.Kkrap.Service.FolderLink.FoldersLinksService;
+import com.Kkrap.Service.FolderLink.FoldersManagerService;
 import com.Kkrap.Service.FolderLink.FoldersService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +22,8 @@ public class FoldersDocumentManagerService {
     private final FoldersService foldersService;
 
     private final FoldersLinksService foldersLinksService;
+
+    private static final Logger logger = LoggerFactory.getLogger(FoldersDocumentManagerService.class);
 
     public FoldersDocumentManagerService(FoldersDocumentService foldersDocumentService,
                                          FoldersService foldersService,
@@ -42,7 +47,7 @@ public class FoldersDocumentManagerService {
                     foldersDocumentService.indexNewFolder(folder, link);
                 });
 
-        System.out.println("모든 visible = true 폴더가 Elasticsearch에 색인되었습니다!");
+        logger.info("모든 visible = true 폴더가 Elasticsearch에 색인되었습니다!");
     }
 
 

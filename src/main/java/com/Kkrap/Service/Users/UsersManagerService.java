@@ -13,6 +13,8 @@ import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsService;
 import com.Kkrap.Util.FileStorageUtil;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +33,8 @@ public class UsersManagerService {
     private final FollowsService followsService;
 
     private final FoldersLinksService foldersLinksService;
+
+    private static final Logger logger = LoggerFactory.getLogger(UsersManagerService.class);
 
     public UsersManagerService(UsersService usersService, FoldersService foldersService, FoldersDocumentService foldersDocumentService,
                                FollowsService followsService, FoldersLinksService foldersLinksService){
@@ -71,7 +75,7 @@ public class UsersManagerService {
             Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
             foldersDocumentService.updateUserInfoInFolderDocuments(users, folder, link);
         });
-        System.out.println("[Elasticsearch] 사용자 정보 변경으로 색인 업데이트 완료: userId=" + users.getUserId());
+        logger.info("[Elasticsearch] 사용자 정보 변경으로 색인 업데이트 완료: userId=" + users.getUserId());
 
 
         return ResponseEntity.ok(UsersProfileResponse.from(users));

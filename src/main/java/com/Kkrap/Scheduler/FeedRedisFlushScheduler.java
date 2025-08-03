@@ -5,6 +5,8 @@ import com.Kkrap.Entity.ActivityFeed;
 import com.Kkrap.ResponseDTO.FeedRedisDTO;
 import com.Kkrap.Service.ActivityFeed.ActivityFeedService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ public class FeedRedisFlushScheduler {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private final ActivityFeedService activityFeedService;
+
+    private static final Logger logger = LoggerFactory.getLogger(FeedRedisFlushScheduler.class);
 
     public FeedRedisFlushScheduler(
             RedisTemplate<String, String> redisTemplate,
@@ -34,7 +38,7 @@ public class FeedRedisFlushScheduler {
 
     @Scheduled(fixedRate = 1000 * 60 * 60) // 1시간마다 실행
     public void flushFeedBufferToDB() {
-        System.out.println("[FeedFlush] 스케줄러 시작됨");
+        logger.info("[FeedFlush] 활동 스케줄러 시작됨");
         List<ActivityFeed> feedList = new ArrayList<>();
 
         while (Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_KEY))) {
@@ -51,9 +55,10 @@ public class FeedRedisFlushScheduler {
             }
         }
 
+
         if (!feedList.isEmpty()) {
             activityFeedService.saveAll(feedList);
-            System.out.println("[FeedFlush] 총 " + feedList.size() + "건 저장 완료");
+            logger.info("[FeedFlush] 총 " + feedList.size() + "건 저장 완료");
         }
     }
 
