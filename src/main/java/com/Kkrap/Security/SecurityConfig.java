@@ -2,6 +2,7 @@ package com.Kkrap.Security;
 
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
+import com.Kkrap.Kafka.FolderViewConsumer;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
@@ -11,6 +12,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +50,8 @@ public class SecurityConfig {
     private UsersService usersService;
 
     private final CustomOAuth2UserService oAuth2UserService;
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     public SecurityConfig(CustomOAuth2UserService oAuth2UserService) {
         this.oAuth2UserService = oAuth2UserService;
@@ -117,10 +122,10 @@ public class SecurityConfig {
                     String email = kakaoAccount.get("email").toString(); // 이메일
 
                     // 디버그용 로그 출력
-                    System.out.println("카카오 사용자 ID: " + kakao_id);
-                    System.out.println("카카오 사용자 닉네임: " + nickname);
-                    System.out.println("카카오 사용자 이메일: " + email);
-                    System.out.println("카카오 사용자 프로필 이미지 URL: " + profileImage);
+                    logger.info("카카오 사용자 ID: " + kakao_id);
+                    logger.info("카카오 사용자 닉네임: " + nickname);
+                    logger.info("카카오 사용자 이메일: " + email);
+                    logger.info("카카오 사용자 프로필 이미지 URL: " + profileImage);
 
                     // 사용자 정보를 각각 쿠키에 저장
                     setCookie(response, "kakao_id", kakao_id, 7 * 24 * 60 * 60); // 쿠키 유효기간 7일
@@ -132,7 +137,7 @@ public class SecurityConfig {
                     //DB 로직 추가
                     String userId;
                     Optional<Users> CheckUser = usersRepository.findByKaKaoId(Long.valueOf(kakao_id));
-                    System.out.println("CheckUser : " + CheckUser);
+                    logger.info("CheckUser : " + CheckUser);
                     if (CheckUser.isEmpty()){
                         UsersCreateRequest usersCreateRequest = UsersCreateRequest.of(email, nickname, profileImage, Long.valueOf(kakao_id), null);
                         Users newUser = usersService.save(usersCreateRequest);

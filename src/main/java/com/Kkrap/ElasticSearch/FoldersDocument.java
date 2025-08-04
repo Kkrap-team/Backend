@@ -1,6 +1,7 @@
 package com.Kkrap.ElasticSearch;
 
 import com.Kkrap.Entity.Folders;
+import com.Kkrap.Entity.Links;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -29,10 +30,13 @@ public class FoldersDocument {
     private String nickname;
     private String profileImage;
 
+    private String thumbnailUrl;
+    private String faviconUrl;
+
 
     private FoldersDocument(){}
 
-    public static FoldersDocument from(Folders folder) {
+    public static FoldersDocument from(Folders folder, Links firstLink) {
         return new FoldersDocument(
                 folder.getFolderId(),
                 folder.getFolderName(),
@@ -44,8 +48,9 @@ public class FoldersDocument {
                 folder.getScrapCount(),
                 folder.getUser().getUserId(),
                 folder.getUser().getNickname(),
-                folder.getUser().getProfile()
+                folder.getUser().getProfile(),
+                firstLink != null ? firstLink.getThumbnailUrl() : null,
+                firstLink != null ? firstLink.getFaviconUrl() : null
         );
     }
-
 }

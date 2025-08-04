@@ -3,6 +3,7 @@ package com.Kkrap.Controller.Spec;
 import com.Kkrap.RequestDTO.FoldersPermissionsCreateRequest;
 import com.Kkrap.RequestDTO.FoldersPermissionsDeleteRequest;
 import com.Kkrap.ResponseDTO.FollowInviteCandidateResponse;
+import com.Kkrap.ResponseDTO.FollowInviteListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,7 @@ public interface FoldersPermissionsAPISpec {
 
     @GetMapping("/{userId}/folders/{folderId}/candidates")
     @Operation(summary = "폴더 공유 대상 후보(내 팔로잉) 조회", description = "내가 팔로우 중인 유저 중 이 폴더에 이미 초대된 사람은 invited=true 로 반환")
-    ResponseEntity<List<FollowInviteCandidateResponse>> getFollowingsWithInviteFlag(
+    ResponseEntity<FollowInviteListResponse> getFollowingsWithInviteFlag(
             @Parameter(description = "현재 로그인한 사용자 ID") @PathVariable("userId") Long userId,
             @Parameter(description = "조회할 폴더 ID") @PathVariable("folderId") Long folderId
     );

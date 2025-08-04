@@ -46,4 +46,15 @@ public class FoldersPermissionsService {
         return foldersPermissionsRepository.findInvitedUserIdsByFolderId(folderId);
     }
 
+    public boolean existsByFolderFolderIdAndInvitedUserId(Long folderId, Long userId){
+        boolean exists = foldersPermissionsRepository.existsByFolderFolderIdAndInvitedUserId(folderId, userId);
+        if (!exists) {
+            throw FoldersPermissionNotFoundException.from("공유 권한이 존재하지 않습니다.");
+        }
+        return true;
+    }
+
+    public boolean existsByFolder(Folders folder) {
+        return foldersPermissionsRepository.existsByFolder(folder);
+    }
 }

@@ -30,4 +30,8 @@ public interface FoldersPermissionsRepository extends JpaRepository<FoldersPermi
     @Query("select fp.invitedUserId from FoldersPermissions fp where fp.folder.folderId = :folderId")
     Set<Long> findInvitedUserIdsByFolderId(@Param("folderId") Long folderId);
 
+    boolean existsByFolderFolderIdAndInvitedUserId(Long folderId, Long userId);
+
+    boolean existsByFolder(Folders folder);
+
 }

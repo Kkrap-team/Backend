@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Folders", description = "폴더 관련 API Endpoint")
 public interface FoldersAPISpec {
     //사용자가 가지고 있는 모든 폴더와 내안 있는 링크들 같이 조회
@@ -71,4 +73,18 @@ public interface FoldersAPISpec {
     ResponseEntity<FoldersLinksAllResponse> scrapFolder(
             @PathVariable("userId") Long userId,
             @RequestBody FoldersScrapRequest request);
+
+
+    @GetMapping("/users/{userId}/scroll-init")
+    ResponseEntity<List<ScrollFolderResponse>> initFeed(
+            @Parameter(name = "userId", description = "사용자 ID", required = true, example = "1")
+            @PathVariable("userId") Long userId
+    );
+
+    @GetMapping("/users/{userId}/scroll")
+    ResponseEntity<List<ScrollFolderResponse>> scrollFeed(
+        @Parameter(name = "userId", description = "사용자 ID", required = true, example = "1")
+        @PathVariable("userId") Long userId
+    ) ;
+
 }

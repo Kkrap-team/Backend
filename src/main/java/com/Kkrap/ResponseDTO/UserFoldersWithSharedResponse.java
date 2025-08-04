@@ -12,12 +12,12 @@ import java.util.List;
 @AllArgsConstructor
 public class UserFoldersWithSharedResponse {
     private List<FoldersLinksAllResponse> ownFolders;
-    private List<FoldersLinksAllResponse> sharedFolders;
+    private List<SharedFoldersLinksAllResponse> sharedFolders;
 
 
     private UserFoldersWithSharedResponse() {}
 
-    public static UserFoldersWithSharedResponse of(List<FoldersLinksAllResponse> ownFolders, List<FoldersLinksAllResponse> sharedFolders){
+    public static UserFoldersWithSharedResponse of(List<FoldersLinksAllResponse> ownFolders, List<SharedFoldersLinksAllResponse> sharedFolders){
         return new UserFoldersWithSharedResponse(ownFolders, sharedFolders);
     }
 

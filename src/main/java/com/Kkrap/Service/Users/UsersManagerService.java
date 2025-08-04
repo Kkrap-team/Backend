@@ -2,15 +2,19 @@ package com.Kkrap.Service.Users;
 
 
 import com.Kkrap.Entity.Folders;
+import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.ResponseDTO.FoldersUserProfileResponse;
 import com.Kkrap.ResponseDTO.MessageResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
+import com.Kkrap.Service.FolderLink.FoldersLinksService;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsService;
 import com.Kkrap.Util.FileStorageUtil;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,12 +32,17 @@ public class UsersManagerService {
 
     private final FollowsService followsService;
 
+    private final FoldersLinksService foldersLinksService;
+
+    private static final Logger logger = LoggerFactory.getLogger(UsersManagerService.class);
+
     public UsersManagerService(UsersService usersService, FoldersService foldersService, FoldersDocumentService foldersDocumentService,
-                               FollowsService followsService){
+                               FollowsService followsService, FoldersLinksService foldersLinksService){
         this.usersService = usersService;
         this.foldersService = foldersService;
         this.foldersDocumentService = foldersDocumentService;
         this.followsService = followsService;
+        this.foldersLinksService = foldersLinksService;
     }
 
     public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId){
@@ -62,7 +71,12 @@ public class UsersManagerService {
 
         //색인 업데이트
         List<Folders> userFolders = foldersService.findByUserIdAndVisibleTrue(userId);
-        foldersDocumentService.updateUserInfoInFolderDocuments(users, userFolders);
+        userFolders.forEach(folder -> {
+            Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
+            foldersDocumentService.updateUserInfoInFolderDocuments(users, folder, link);
+        });
+        logger.info("[Elasticsearch] 사용자 정보 변경으로 색인 업데이트 완료: userId=" + users.getUserId());
+
 
         return ResponseEntity.ok(UsersProfileResponse.from(users));
     }

@@ -24,9 +24,13 @@ public interface FoldersDocumentAPISpec {
     @Operation(summary = "DB에 저장된 모든 폴더 공개인 것만 넣어주기 - 프론트엔드 사용금지", description = "DB에 저장된 모든 폴더 공개인 것만 넣어주기")
     String migrate();
 
-    @GetMapping("/search")
+    @GetMapping("/search/text")
     @Operation(summary = "검색바에서 폴더 검색", description = "검색바에서 폴더 검색")
-    ResponseEntity<List<FoldersDocument>> searchFolders(@RequestParam String keyword);
+    ResponseEntity<List<FoldersDocument>> searchFoldersTop10(@RequestParam("keyword") String keyword);
+
+    @GetMapping("/search/enter")
+    @Operation(summary = "검색 초기화 - 새 검색 요청", description = "검색바에서 엔터를 쳐서 처음 검색할 때 실행되는 API")
+    ResponseEntity<List<FoldersDocument>> searchFolders(@RequestParam("keyword") String keyword);
 
     @GetMapping("/rankings")
     @Operation(summary = "주간 랭킹 조회", description = "viewCount, scrapCount Top10 반환")

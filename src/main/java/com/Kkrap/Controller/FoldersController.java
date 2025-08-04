@@ -6,13 +6,13 @@ import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.RequestDTO.FoldersScrapRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
-import com.Kkrap.ResponseDTO.FoldersResponse;
-import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
-import com.Kkrap.ResponseDTO.UserFoldersWithSharedResponse;
+import com.Kkrap.ResponseDTO.*;
 import com.Kkrap.Service.FolderLink.FoldersManagerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RestController
@@ -67,5 +67,15 @@ public class FoldersController implements FoldersAPISpec {
     @Override
     public ResponseEntity<FoldersLinksAllResponse> scrapFolder(Long userId, FoldersScrapRequest request) {
         return foldersManagerService.scrapFolder(userId, request);
+    }
+
+    @Override
+    public ResponseEntity<List<ScrollFolderResponse>> initFeed(Long userId) {
+        return foldersManagerService.initFeed(userId);
+    }
+
+    @Override
+    public ResponseEntity<List<ScrollFolderResponse>> scrollFeed(Long userId) {
+        return foldersManagerService.scrollFeed(userId);
     }
 }

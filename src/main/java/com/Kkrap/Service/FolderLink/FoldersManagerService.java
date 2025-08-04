@@ -1,28 +1,32 @@
 package com.Kkrap.Service.FolderLink;
 
+import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.*;
+import com.Kkrap.Exception.FoldersNotFoundException;
+import com.Kkrap.Kafka.FolderCreateConsumer;
 import com.Kkrap.Kafka.FolderCreateProducer;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.FoldersDeleteRequest;
 import com.Kkrap.RequestDTO.FoldersScrapRequest;
 import com.Kkrap.RequestDTO.FoldersUpdateRequest;
-import com.Kkrap.ResponseDTO.FoldersLinksAllResponse;
-import com.Kkrap.ResponseDTO.FoldersResponse;
-import com.Kkrap.ResponseDTO.UserFoldersWithSharedResponse;
+import com.Kkrap.ResponseDTO.*;
+import com.Kkrap.Service.ActivityFeed.ActivityFeedService;
+import com.Kkrap.Service.FeedRedisService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
 import com.Kkrap.Service.Users.UsersService;
 
+import io.swagger.v3.oas.models.links.Link;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,11 +49,19 @@ public class FoldersManagerService {
 
     private final FoldersPermissionsService foldersPermissionsService;
 
+    private final FeedRedisService feedRedisService;
+
+    private final ActivityFeedService activityFeedService;
+
+    private static final Logger logger = LoggerFactory.getLogger(FoldersManagerService.class);
+
     public FoldersManagerService(FoldersService foldersService, UsersService usersService, FoldersLinksService foldersLinksService,
                                  LinksService linksService, StringRedisTemplate redisTemplate,
                                  FolderCreateProducer folderCreateProducer,
                                  FoldersDocumentService foldersDocumentService,
-                                 FoldersPermissionsService foldersPermissionsService
+                                 FoldersPermissionsService foldersPermissionsService,
+                                 FeedRedisService feedRedisService,
+                                 ActivityFeedService activityFeedService
                                  ) {
         this.foldersService = foldersService;
         this.usersService = usersService;
@@ -59,6 +71,8 @@ public class FoldersManagerService {
         this.folderCreateProducer = folderCreateProducer;
         this.foldersDocumentService = foldersDocumentService;
         this.foldersPermissionsService = foldersPermissionsService;
+        this.feedRedisService = feedRedisService;
+        this.activityFeedService = activityFeedService;
     }
 
 
@@ -109,11 +123,11 @@ public class FoldersManagerService {
                 })
                 .collect(Collectors.toList());
 
-        List<FoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
+        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
                     List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
+                    return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
 
@@ -169,11 +183,11 @@ public class FoldersManagerService {
                 })
                 .collect(Collectors.toList());
 
-        List<FoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
+        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
+                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
 
@@ -227,11 +241,11 @@ public class FoldersManagerService {
                 })
                 .collect(Collectors.toList());
 
-        List<FoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
+        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
+                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
 
@@ -272,6 +286,8 @@ public class FoldersManagerService {
         Users users = usersService.findById(userId);
         Folders folders = foldersService.save(foldersCreateRequest, users);
         if (Boolean.TRUE.equals(folders.isVisible())) {
+            feedRedisService.pushFeedToRedis(users, folders);
+
             String eventPayload = String.format(
                     "{\"folderId\": %d}",
                     folders.getFolderId()
@@ -303,7 +319,9 @@ public class FoldersManagerService {
         //색인 업데이트
         foldersDocumentService.deleteFolderDocument(folders);
 
-        //응답 데이터를 삭제된 링크들까지 포함 시켜서 해주어야함 - 정환행님한테 물어보기
+
+        activityFeedService.deleteAllByFolderId(folderId);
+
         return ResponseEntity.ok(FoldersResponse.from(folders, userId));
     }
 
@@ -319,7 +337,8 @@ public class FoldersManagerService {
         foldersService.save(folders);
 
         if (folders.isVisible()) {
-            foldersDocumentService.indexNewFolder(folders);
+            Optional<Links> link = foldersLinksService.getFirstLinkByFolder(folders);
+            foldersDocumentService.indexNewFolder(folders, link.get());
         } else {
             foldersDocumentService.deleteFolderDocument(folders);
         }
@@ -367,5 +386,103 @@ public class FoldersManagerService {
                 FoldersLinksAllResponse.of(newFolder, newLinks)
         );
     }
+
+    public ResponseEntity<List<ScrollFolderResponse>> initFeed(Long userId) {
+        // 1. Elasticsearch에서 최신 공개 폴더 최대 40개 조회
+        List<FoldersDocument> folders = foldersDocumentService.findTop40ByOrderByCreateTimeDesc();
+
+        int totalCount = folders.size();
+        int responseCount = Math.min(20, totalCount); // 실제 응답할 수 있는 개수
+        int redisStartIndex = responseCount; // Redis에 저장할 시작 index
+
+        // 앞 부분은 클라이언트 응답용
+        List<FoldersDocument> responseFolders = folders.subList(0, responseCount);
+
+        // 나머지 폴더를 Redis에 저장 (있다면)
+        List<Long> nextFolderIds = folders.subList(redisStartIndex, totalCount).stream()
+                .map(FoldersDocument::getFolderId)
+                .toList();
+
+        String listKey = "feed:" + userId + ":list";
+        String cursorKey = "feed:" + userId + ":cursor";
+
+        if (!nextFolderIds.isEmpty()) {
+            redisTemplate.opsForList().rightPushAll(
+                    listKey,
+                    nextFolderIds.stream().map(String::valueOf).toArray(String[]::new)
+            );
+            redisTemplate.expire(listKey, Duration.ofHours(24));
+        }
+
+        // 4. 커서 초기화
+        redisTemplate.opsForValue().set(cursorKey, "0", Duration.ofHours(24));
+
+        logger.info("Redis 저장 시작: listKey=" + listKey + ", cursorKey=" + cursorKey);
+        logger.info("저장할 folderIds = " + nextFolderIds);
+
+        // 5. 응답 변환
+        List<ScrollFolderResponse> response = responseFolders.stream()
+                .map(ScrollFolderResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    public ResponseEntity<List<ScrollFolderResponse>> scrollFeed(Long userId) {
+        String listKey = "feed:" + userId + ":list";
+        String cursorKey = "feed:" + userId + ":cursor";
+
+        // 현재 커서 위치 조회
+        String cursorStr = redisTemplate.opsForValue().get(cursorKey);
+        if (cursorStr == null) {
+            return ResponseEntity.noContent().build();
+        }
+        int cursor = Integer.parseInt(cursorStr);
+
+        // Redis에서 다음 20개 folderId 가져오기
+        List<String> folderIdStrings = redisTemplate.opsForList().range(listKey, cursor, cursor + 19);
+        if (folderIdStrings == null || folderIdStrings.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        int fetchedCount = folderIdStrings.size();
+        List<Long> folderIds = folderIdStrings.stream().map(Long::valueOf).toList();
+
+        // 3. Elasticsearch에서 해당 folderId들 조회
+        List<FoldersDocument> folderDocs = foldersDocumentService.findByFolderIdIn(folderIds);
+
+        // 정렬 보정: Redis의 순서대로 정렬
+        Map<Long, FoldersDocument> docMap = folderDocs.stream()
+                .collect(Collectors.toMap(FoldersDocument::getFolderId, doc -> doc));
+        List<FoldersDocument> orderedDocs = folderIds.stream()
+                .map(docMap::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        Collections.shuffle(orderedDocs);
+
+        // 5. 커서를 실제 fetch한 개수만큼 증가
+        redisTemplate.opsForValue().set(cursorKey, String.valueOf(cursor + fetchedCount), Duration.ofHours(24));
+        redisTemplate.expire(listKey, Duration.ofHours(24));
+
+        // 6. 응답 변환
+        List<ScrollFolderResponse> response = orderedDocs.stream()
+                .map(ScrollFolderResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    public void checkAccessPermission(Long folderId, Long userId) {
+        Folders folder = foldersService.findById(folderId);
+
+        if (!folder.isOwnedBy(userId)) {
+            foldersPermissionsService.existsByFolderFolderIdAndInvitedUserId(folderId, userId);
+        }
+    }
+
+
+
 
 }

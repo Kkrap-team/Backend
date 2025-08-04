@@ -79,10 +79,9 @@ public class FoldersService {
         return foldersRepository.sumScrapCountByUser(users);
     }
 
-
-
-
-
+    public List<Folders> findByVisibleTrue(){
+        return foldersRepository.findByVisibleTrue();
+    }
 
 
 }
