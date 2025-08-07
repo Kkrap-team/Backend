@@ -2,8 +2,13 @@ package com.Kkrap.Controller;
 
 import com.Kkrap.Controller.Spec.AuthAPISpec;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
+import com.Kkrap.RequestDTO.RefreshTokenRequest;
+import com.Kkrap.ResponseDTO.TokenResponse;
+import com.Kkrap.ResponseDTO.TokenUsersProfileResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController implements AuthAPISpec {
 
     private final AuthService authService;
@@ -21,8 +27,14 @@ public class AuthController implements AuthAPISpec {
 
     //토큰 관리 방식
     @Override
-    public ResponseEntity<UsersProfileResponse> kakaoLogin(@RequestBody KaKaoTokenRequest request){
-        var response = authService.prepare(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<TokenUsersProfileResponse> kakaoLogin(@RequestBody KaKaoTokenRequest request,
+                                                                HttpServletResponse cookie){
+        return ResponseEntity.ok(authService.prepare(request, cookie));
+    }
+
+    @Override
+    public ResponseEntity<TokenResponse> refreshAccessToken(String refreshTokenFromCookie, HttpServletResponse response) {
+        log.info("받은 쿠키 refreshToken: {}", refreshTokenFromCookie);
+        return authService.refreshAccessToken(refreshTokenFromCookie, response);
     }
 }

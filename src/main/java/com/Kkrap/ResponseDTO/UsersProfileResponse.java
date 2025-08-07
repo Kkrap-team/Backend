@@ -17,16 +17,15 @@ public class UsersProfileResponse {
 
     private String profile;
 
-    private Long KakaoId;
     private String bio;
 
     private UsersProfileResponse(){ } // 외부에서 생성하지 못하게 함
 
-    public static UsersProfileResponse of(Long userId, String email, String nickname, String profile, Long kakaoId, String bio){
-        return new UsersProfileResponse(userId, email, nickname, profile, kakaoId, bio);
+    public static UsersProfileResponse of(Long userId, String email, String nickname, String profile, String bio){
+        return new UsersProfileResponse(userId, email, nickname, profile, bio);
     }
 
     public static UsersProfileResponse from(Users users){
-        return new UsersProfileResponse(users.getUserId(), users.getEmail(), users.getNickname(), users.getProfile(), users.getKakaoId(), users.getBio());
+        return new UsersProfileResponse(users.getUserId(), users.getEmail(), users.getNickname(), users.getProfile(), users.getBio());
     }
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,10 @@ public interface UsersAPISpec {
     ResponseEntity<UsersProfileResponse> getUserProfile(
             @Parameter(name = "userId", description = "사용자 ID", required = true, example = "1")
             @PathVariable("userId") Long userId);
+
+    @GetMapping("/me")
+    @Operation(summary = "내 프로필 조회", description = "JWT Access Token으로 현재 로그인한 사용자의 프로필을 조회합니다.")
+    ResponseEntity<UsersProfileResponse> getUserProfileToken(Authentication authentication);
 
     @GetMapping("/folders/{userId}")
     @Operation(summary = "내 폴더 전용 사용자 프로필 조회", description = "내 폴더 전용 사용자의 프로필 조회")

@@ -1,4 +1,4 @@
-package com.Kkrap.Service.SocialLogin;
+package com.Kkrap.Service.SocialLoginRefreshToken;
 
 import java.util.Map;
 

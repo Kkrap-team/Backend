@@ -1,4 +1,4 @@
-package com.Kkrap.Service.SocialLogin;
+package com.Kkrap.Service.SocialLoginRefreshToken;
 
 import com.Kkrap.Exception.NotValidTokenException;
 import org.springframework.http.HttpEntity;

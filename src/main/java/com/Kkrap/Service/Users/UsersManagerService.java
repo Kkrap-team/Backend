@@ -47,7 +47,7 @@ public class UsersManagerService {
 
     public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId){
         Users users = usersService.findById(userId);
-        return ResponseEntity.ok(UsersProfileResponse.of(users.getUserId(),users.getEmail(), users.getNickname(), users.getProfile(), users.getKakaoId(), users.getBio()));
+        return ResponseEntity.ok(UsersProfileResponse.of(users.getUserId(),users.getEmail(), users.getNickname(), users.getProfile(), users.getBio()));
     }
 
     public ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Long userId){

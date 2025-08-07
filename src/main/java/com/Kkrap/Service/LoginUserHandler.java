@@ -1,45 +1,85 @@
 package com.Kkrap.Service;
 
+import com.Kkrap.Entity.RefreshToken;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
+import com.Kkrap.ResponseDTO.TokenResponse;
+import com.Kkrap.ResponseDTO.TokenUsersProfileResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.FolderLink.FoldersService;
+import com.Kkrap.Service.SocialLoginRefreshToken.JwtUtil;
+import com.Kkrap.Service.SocialLoginRefreshToken.RefreshTokenService;
 import com.Kkrap.Service.Users.UsersService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class LoginUserHandler implements LoginUserPort {
     private final UsersService usersService;
     private final FoldersService foldersService;
 
-    public LoginUserHandler(UsersService usersService, FoldersService foldersService) {
+    private final JwtUtil jwtUtil;
+
+    private final RefreshTokenService refreshTokenService;
+
+    public LoginUserHandler(UsersService usersService,
+                            FoldersService foldersService,
+                            JwtUtil jwtUtil,
+                            RefreshTokenService refreshTokenService) {
         this.usersService = usersService;
         this.foldersService = foldersService;
+        this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @Override
-    public UsersProfileResponse validateUser(String email, String nickname, String profileImage, Long kakaoId) {
-        Optional<Users> CheckUser = usersService.findByKakaoId(Long.valueOf(kakaoId));
-        if (CheckUser.isEmpty()){
+    public TokenUsersProfileResponse validateUser(String email, String nickname, String profileImage, Long kakaoId, HttpServletResponse response) {
+        Optional<Users> checkUser = usersService.findByKakaoId(Long.valueOf(kakaoId));
+        Users user;
 
-            // 처음 로그인 한 사람 사용자 만들기
+        if (checkUser.isEmpty()) {
+            // 1. 유저 생성
             UsersCreateRequest usersCreateRequest = UsersCreateRequest.of(email, nickname, profileImage, kakaoId, null);
-            Users newUser = usersService.save(usersCreateRequest);
+            user = usersService.save(usersCreateRequest);
 
-            // 처음 로그인 한 사람은 모든 링크 보기 폴더가 없음 만들어주어야함
-            FoldersCreateRequest foldersCreateRequest = FoldersCreateRequest.of("모든 링크", "모든 링크가 저장된 폴더입니다.", false, true);
-            foldersService.save(foldersCreateRequest, newUser);
-            UsersProfileResponse usersProfileResponse = UsersProfileResponse.of(newUser.getUserId(), newUser.getEmail(), newUser.getNickname(), newUser.getProfile(), newUser.getKakaoId(), newUser.getBio());
-            return usersProfileResponse;
+            // 2. 기본 폴더 생성
+            FoldersCreateRequest foldersCreateRequest = FoldersCreateRequest.of(
+                    "모든 링크", "모든 링크가 저장된 폴더입니다.", false, true
+            );
+            foldersService.save(foldersCreateRequest, user);
+        } else {
+            user = checkUser.get();
         }
-        else
-        {
-            Users existingUser = CheckUser.get();
-            UsersProfileResponse usersProfileResponse = UsersProfileResponse.of(existingUser.getUserId(), existingUser.getEmail(), existingUser.getNickname(), existingUser.getProfile(), existingUser.getKakaoId(), existingUser.getBio());
-            return usersProfileResponse;
+
+        UsersProfileResponse profile = UsersProfileResponse.of(
+                user.getUserId(), user.getEmail(), user.getNickname(),
+                user.getProfile(), user.getBio()
+        );
+        String accessToken = jwtUtil.generateAccessToken(user.getUserId());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());
+
+        Optional<RefreshToken> existing = refreshTokenService.findByUserId(user.getUserId());
+        if (existing.isPresent()) {
+            refreshTokenService.updateRefreshToken(user.getUserId(), refreshToken);  // 업데이트만
+        } else {
+            RefreshToken token = RefreshToken.of(refreshToken, user);  // 새로 생성
+            refreshTokenService.save(token);
         }
+
+        log.info("accesstoken : {}", accessToken);
+        log.info("refreshtoken : {}", refreshToken);
+
+        return TokenUsersProfileResponse.of(
+                TokenResponse.of(accessToken, refreshToken),
+                profile
+        );
     }
 }

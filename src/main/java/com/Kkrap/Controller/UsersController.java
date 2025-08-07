@@ -7,6 +7,7 @@ import com.Kkrap.ResponseDTO.MessageResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.Users.UsersManagerService;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,12 @@ public class UsersController implements UsersAPISpec{
 
     @Override
     public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId) {
+        return usersManagerService.getUserProfile(userId);
+    }
+
+    @Override
+    public ResponseEntity<UsersProfileResponse> getUserProfileToken(Authentication authentication) {
+        Long userId = Long.parseLong(authentication.getName());
         return usersManagerService.getUserProfile(userId);
     }
 
