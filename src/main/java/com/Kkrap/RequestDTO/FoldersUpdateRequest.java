@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FoldersUpdateRequest {
     private Long folderId;
-    private Long userId;
     private String folderName;
     private String folderDescription;
     private boolean visible;

@@ -8,6 +8,7 @@ import com.Kkrap.ResponseDTO.FollowInviteListResponse;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,23 +26,26 @@ public class FoldersPermissionsController implements FoldersPermissionsAPISpec {
 
     @Override
     public ResponseEntity<FoldersPermissionsCreateRequest> shareFolderWithUsers(
-            Long userId,
+            Authentication authentication,
             FoldersPermissionsCreateRequest request) {
+        Long userId = Long.parseLong(authentication.getName());
         return foldersPermissionsManagerService.shareFolderWithUsers(userId, request);
     }
 
     @Override
     public ResponseEntity<FoldersPermissionsDeleteRequest> revokeFolderPermission(
-            Long userId,
+            Authentication authentication,
             FoldersPermissionsDeleteRequest request) {
+        Long userId = Long.parseLong(authentication.getName());
         return foldersPermissionsManagerService.revokeFolderPermission(userId, request);
     }
 
     @Override
     public ResponseEntity<FollowInviteListResponse> getFollowingsWithInviteFlag(
-            Long userId,
+            Authentication authentication,
             Long folderId
     ) {
+        Long userId = Long.parseLong(authentication.getName());
         return foldersPermissionsManagerService.getMyFollowingsWithInviteFlag(userId, folderId);
     }
 

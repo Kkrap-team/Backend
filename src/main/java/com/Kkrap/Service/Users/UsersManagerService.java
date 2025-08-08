@@ -11,13 +11,11 @@ import com.Kkrap.Service.FolderLink.FoldersLinksService;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsService;
-import com.Kkrap.Util.FileStorageUtil;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -82,16 +80,35 @@ public class UsersManagerService {
     }
 
     //사진만 업로드
-    public ResponseEntity<UsersProfileResponse> uploadUserProfileImage(Long userId, MultipartFile file){
-        Users user = usersService.findById(userId);
-        // 파일 저장
-        String savedFileName = FileStorageUtil.storeProfileImage(file);
-        // DB에 접근 URL 경로만 저장
-        user.setProfile("/profile/" + savedFileName);
-        Users users = usersService.save(user);
+//    public ResponseEntity<UsersProfileResponse> uploadUserProfileImage(Long userId, MultipartFile file){
+//        Users user = usersService.findById(userId);
+//        // 파일 저장
+//        String savedFileName = FileStorageUtil.storeProfileImage(file);
+//        // DB에 접근 URL 경로만 저장
+//        user.setProfile("/profile/" + savedFileName);
+//        Users users = usersService.save(user);
+//
+//        return ResponseEntity.ok(UsersProfileResponse.from(users));
+//    }
+//    public ResponseEntity<UsersProfileResponse> uploadUserProfileImage(Long userId, MultipartFile file){
+//        Users user = usersService.findById(userId);
+//
+//        // (선택) 기존 이미지 삭제
+//        String oldUrl = user.getProfile();
+//        if (oldUrl != null && oldUrl.contains("amazonaws.com")) {
+//            s3Service.deleteObjectByUrl(oldUrl);
+//        }
+//
+//        // S3 업로드
+//        String imageUrl = s3Service.uploadProfileImage(userId, file);
+//
+//        // DB에는 접근 가능한 절대 URL 저장
+//        user.setProfile(imageUrl);
+//        Users saved = usersService.save(user);
+//
+//        return ResponseEntity.ok(UsersProfileResponse.from(saved));
+//    }
 
-        return ResponseEntity.ok(UsersProfileResponse.from(users));
-    }
 
     //닉네임 중복확인
     public ResponseEntity<MessageResponse> checkNicknameAvailable(String nickname){

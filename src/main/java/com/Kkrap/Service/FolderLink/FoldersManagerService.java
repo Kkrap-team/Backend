@@ -326,8 +326,8 @@ public class FoldersManagerService {
     }
 
     @Transactional
-    public ResponseEntity<FoldersResponse> updateFolderMetadata(FoldersUpdateRequest request){
-        Users users = usersService.findById(request.getUserId());
+    public ResponseEntity<FoldersResponse> updateFolderMetadata(Long userId, FoldersUpdateRequest request){
+        Users users = usersService.findById(userId);
         Folders folders = foldersService.findById(request.getFolderId());
 
         foldersService.isOwnedByService(folders, users.getUserId());

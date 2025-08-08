@@ -22,12 +22,6 @@ public class UsersController implements UsersAPISpec{
     }
 
 
-
-    @Override
-    public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId) {
-        return usersManagerService.getUserProfile(userId);
-    }
-
     @Override
     public ResponseEntity<UsersProfileResponse> getUserProfileToken(Authentication authentication) {
         Long userId = Long.parseLong(authentication.getName());
@@ -35,22 +29,24 @@ public class UsersController implements UsersAPISpec{
     }
 
     @Override
-    public ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Long userId) {
+    public ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Authentication authentication) {
+        Long userId = Long.parseLong(authentication.getName());
         return usersManagerService.getFoldersUserProfile(userId);
     }
 
     @Override
-    public ResponseEntity<UsersProfileResponse> updateUserProfile(Long userId, ProfileUpdateRequest request) {
+    public ResponseEntity<UsersProfileResponse> updateUserProfile(Authentication authentication, ProfileUpdateRequest request) {
+        Long userId = Long.parseLong(authentication.getName());
         return usersManagerService.updateUserProfile(userId, request.getNickname(), request.getBio());
     }
 
-    @Override
-    public ResponseEntity<UsersProfileResponse> uploadUserProfileImage(Long userId, MultipartFile file) {
-        return usersManagerService.uploadUserProfileImage(userId, file);
-    }
+//    @Override
+//    public ResponseEntity<UsersProfileResponse> uploadUserProfileImage(Long userId, MultipartFile file) {
+//        return usersManagerService.uploadUserProfileImage(userId, file);
+//    }
 
     @Override
-    public ResponseEntity<MessageResponse> isNicknameDuplicate(String nickname) {
+    public ResponseEntity<MessageResponse> isNicknameDuplicate(Authentication authentication, String nickname) {
         return usersManagerService.checkNicknameAvailable(nickname);
     }
 }

@@ -8,6 +8,7 @@ import com.Kkrap.ResponseDTO.LinksCreateResponse;
 import com.Kkrap.ResponseDTO.LinksResponse;
 import com.Kkrap.Service.FolderLink.LinksManagerService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,17 +22,20 @@ public class LinksController implements LinksAPISpec {
     }
 
     @Override
-    public ResponseEntity<LinksCreateResponse> createLinkAndAssignToFolders(Long userId, LinksCreateRequest linksCreateRequest) {
+    public ResponseEntity<LinksCreateResponse> createLinkAndAssignToFolders(Authentication authentication, LinksCreateRequest linksCreateRequest) {
+        Long userId = Long.parseLong(authentication.getName());
         return linksManagerService.createLinkAndAssignToFolders(userId, linksCreateRequest);
     }
 
     @Override
-    public ResponseEntity<LinksDeleteRequest> deleteLinksWithFolderMapping(Long userId, LinksDeleteRequest linksDeleteRequest) {
+    public ResponseEntity<LinksDeleteRequest> deleteLinksWithFolderMapping(Authentication authentication, LinksDeleteRequest linksDeleteRequest) {
+        Long userId = Long.parseLong(authentication.getName());
         return linksManagerService.deleteLinksWithFolderMapping(userId, linksDeleteRequest);
     }
 
     @Override
-    public ResponseEntity<LinksResponse> updateLinkTitle(Long userId, LinksTitleUpdateRequest linksTitleUpdateRequest) {
+    public ResponseEntity<LinksResponse> updateLinkTitle(Authentication authentication, LinksTitleUpdateRequest linksTitleUpdateRequest) {
+        Long userId = Long.parseLong(authentication.getName());
         return linksManagerService.updateLinkTitle(userId, linksTitleUpdateRequest);
     }
 }

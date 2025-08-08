@@ -7,6 +7,7 @@ import com.Kkrap.ResponseDTO.FollowsResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsManagerService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,22 +23,25 @@ public class FollowsController implements FollowsAPISpec {
     }
 
     @Override
-    public ResponseEntity<List<FollowsResponse>> getFollowingList(Long followerId) {
+    public ResponseEntity<List<FollowsResponse>> getFollowingList(Authentication authentication) {
+        Long followerId = Long.parseLong(authentication.getName());
         return followsManagerService.getFollowingList(followerId);
     }
 
     @Override
-    public ResponseEntity<FollowsResponse> followUser(Long followerId, FollowsRequest request) {
+    public ResponseEntity<FollowsResponse> followUser(Authentication authentication, FollowsRequest request) {
+        Long followerId = Long.parseLong(authentication.getName());
         return followsManagerService.followUser(followerId, request.getFollowingId());
     }
 
     @Override
-    public ResponseEntity<FollowsResponse> unFollowUser(Long followerId, FollowsRequest request) {
+    public ResponseEntity<FollowsResponse> unFollowUser(Authentication authentication, FollowsRequest request) {
+        Long followerId = Long.parseLong(authentication.getName());
         return followsManagerService.unFollowUser(followerId, request.getFollowingId());
     }
 
     @Override
-    public ResponseEntity<List<UsersProfileResponse>> searchUsersByNicknameContains(String nickname) {
+    public ResponseEntity<List<UsersProfileResponse>> searchUsersByNicknameContains(Authentication authentication, String nickname) {
         return followsManagerService.findUsersByNicknameContains(nickname);
     }
 

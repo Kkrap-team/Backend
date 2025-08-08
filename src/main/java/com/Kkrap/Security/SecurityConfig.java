@@ -73,7 +73,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .csrf(csrf -> csrf.disable()) //
                 .authorizeHttpRequests(authorize -> authorize
-                                .requestMatchers("/auth/**", "/profile/**").permitAll() // 정적 리소스 허용
+                                .requestMatchers("/auth/**", "/profile/**","/api/auth/**", "/folders-search/all", "/folders-search/migrate",
+                                        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/favicon.ico", "/error"
+                                        ).permitAll() // 정적 리소스 허용
                                 .anyRequest().authenticated()
                 )
 //                .oauth2Login(oauth2 -> oauth2
