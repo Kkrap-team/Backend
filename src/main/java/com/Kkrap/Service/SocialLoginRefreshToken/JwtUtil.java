@@ -19,7 +19,8 @@ public class JwtUtil {
     private Key key;
     private final long accessTokenValidity = 1000 * 60 * 1; // 15분
 //    private final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // 7일
-    private final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // 7일
+//    private final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // 7일
+    private final long refreshTokenValidity = 1000L * 60 * 1;
 
     public JwtUtil(@Value("${jwt.secret}") String secretKeyRaw) {
         this.key = Keys.hmacShaKeyFor(secretKeyRaw.getBytes());
@@ -53,7 +54,7 @@ public class JwtUtil {
                     .build()
                     .parseClaimsJws(token);
         } catch (JwtException | IllegalArgumentException e) {
-            throw UnauthorizedException.of("유효하지 않은 refresh token입니다.");
+            throw UnauthorizedException.of("유효하지 않은 refresh token입니다.!");
         }
     }
 

@@ -74,7 +74,7 @@ public class AuthEndpointTest {
 
         String content = new ObjectMapper().writeValueAsString(emptyTokenRequest);
 
-        given(authService.prepare(any(KaKaoTokenRequest.class), any(HttpServletResponse.class)))
+        given(authService.prepare(any(KaKaoTokenRequest.class)))
                 .willThrow(new NotValidTokenException("유효하지 않은 토큰입니다."));
 
         // when & then

@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class LoginUserHandler implements LoginUserPort {
+ public class LoginUserHandler implements LoginUserPort {
     private final UsersService usersService;
     private final FoldersService foldersService;
 
@@ -41,7 +41,7 @@ public class LoginUserHandler implements LoginUserPort {
     }
 
     @Override
-    public TokenUsersProfileResponse validateUser(String email, String nickname, String profileImage, Long kakaoId, HttpServletResponse response) {
+    public TokenUsersProfileResponse validateUser(String email, String nickname, String profileImage, Long kakaoId) {
         Optional<Users> checkUser = usersService.findByKakaoId(Long.valueOf(kakaoId));
         Users user;
 

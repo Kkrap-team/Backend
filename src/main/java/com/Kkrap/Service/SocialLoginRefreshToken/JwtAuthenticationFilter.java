@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -44,19 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(user.getUserId(), null, List.of());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }catch (Exception ex){
-//                throw UnauthorizedException.of("유효하지 않은 refresh token입니다.!");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write("""
-                    {
-                        "code": 401,
-                        "message": "유효하지 않은 token입니다."
-                    }
-                """);
-
-                return; // 필터 체인 더 이상 진행 안 함
+                SecurityContextHolder.clearContext();
+                throw new BadCredentialsException("유효하지 않은 access token입니다.", ex);
             }
 
         }

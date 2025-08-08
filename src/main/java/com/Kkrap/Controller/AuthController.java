@@ -27,14 +27,12 @@ public class AuthController implements AuthAPISpec {
 
     //토큰 관리 방식
     @Override
-    public ResponseEntity<TokenUsersProfileResponse> kakaoLogin(@RequestBody KaKaoTokenRequest request,
-                                                                HttpServletResponse cookie){
-        return ResponseEntity.ok(authService.prepare(request, cookie));
+    public ResponseEntity<TokenUsersProfileResponse> kakaoLogin(@RequestBody KaKaoTokenRequest request){
+        return ResponseEntity.ok(authService.prepare(request));
     }
 
     @Override
-    public ResponseEntity<TokenResponse> refreshAccessToken(String refreshTokenFromCookie, HttpServletResponse response) {
-        log.info("받은 쿠키 refreshToken: {}", refreshTokenFromCookie);
-        return authService.refreshAccessToken(refreshTokenFromCookie, response);
+    public ResponseEntity<TokenResponse> refreshAccessToken(@RequestBody RefreshTokenRequest request) {
+        return authService.refreshAccessToken(request.getRefreshToken());
     }
 }

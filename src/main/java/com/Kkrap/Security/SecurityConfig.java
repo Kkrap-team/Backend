@@ -7,6 +7,7 @@ import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
 import com.Kkrap.Service.CustomOAuth2UserService;
+import com.Kkrap.Service.SocialLoginRefreshToken.CustomAuthenticationEntryPoint;
 import com.Kkrap.Service.SocialLoginRefreshToken.JwtAuthenticationFilter;
 import com.Kkrap.Service.SocialLoginRefreshToken.JwtUtil;
 import com.Kkrap.Service.Users.UsersService;
@@ -50,16 +51,20 @@ public class SecurityConfig {
 
     private final UsersService usersService;
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     public SecurityConfig(CustomOAuth2UserService oAuth2UserService,
                           JwtUtil jwtUtil,
-                          UsersService usersService) {
+                          UsersService usersService,
+                          CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         this.oAuth2UserService = oAuth2UserService;
         this.jwtUtil = jwtUtil;
         this.usersService = usersService;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
@@ -69,7 +74,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) //
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/auth/**", "/profile/**").permitAll() // 정적 리소스 허용
-                                .anyRequest().permitAll()
+                                .anyRequest().authenticated()
                 )
 //                .oauth2Login(oauth2 -> oauth2
 //                        .loginPage("/login")
@@ -78,6 +83,9 @@ public class SecurityConfig {
 //                        )
 //                        .successHandler(authenticationSuccessHandler())  // 로그인 성공 시 핸들러 사용
 //                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 등록
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, usersService),
                         UsernamePasswordAuthenticationFilter.class);
 

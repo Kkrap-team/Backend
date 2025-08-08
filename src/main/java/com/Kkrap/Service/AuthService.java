@@ -42,7 +42,7 @@ public class AuthService {
 
     }
 
-    public TokenUsersProfileResponse prepare(KaKaoTokenRequest request, HttpServletResponse cookie) {
+    public TokenUsersProfileResponse prepare(KaKaoTokenRequest request) {
         String accessToken = request.getAccesstoken();
 
         if (!isAccessToken(accessToken)) {
@@ -51,7 +51,7 @@ public class AuthService {
 
         // 1. 카카오 유저 정보 요청
         Map<String, Object> userInfo = clientProvider.getClient(accessToken);
-        TokenUsersProfileResponse response = getUserProfile(userInfo, cookie);
+        TokenUsersProfileResponse response = getUserProfile(userInfo);
 
         return response;
     }
@@ -69,7 +69,7 @@ public class AuthService {
         return true;
     }
 
-    private TokenUsersProfileResponse getUserProfile(Map<String, Object> user, HttpServletResponse cookie) {
+    private TokenUsersProfileResponse getUserProfile(Map<String, Object> user) {
         Long kakaoId = Long.valueOf(user.get("id").toString());
         Map<String, Object> kakaoAccount = (Map<String, Object>) user.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
@@ -77,11 +77,11 @@ public class AuthService {
         String nickname = profile.get("nickname").toString();
         String profileImage = profile.get("profile_image_url").toString();
 
-        TokenUsersProfileResponse response = loginUserHandler.validateUser(email, nickname, profileImage, kakaoId, cookie);
+        TokenUsersProfileResponse response = loginUserHandler.validateUser(email, nickname, profileImage, kakaoId);
         return response;
     }
 
-    public ResponseEntity<TokenResponse> refreshAccessToken(String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<TokenResponse> refreshAccessToken(String refreshToken) {
         jwtUtil.validateToken(refreshToken);
 
 
@@ -96,7 +96,7 @@ public class AuthService {
 
         refreshTokenService.updateRefreshToken(userId, newRefreshToken);
         // 5. 새로운 accessToken 생성
-        String newAccessToken = jwtUtil.generateAccessToken(userId);
+        String newAccessToken = jwtUtil.generateAccessToken(userId) ;
 
 
         // 6. 응답 DTO로 감싸서 반환
