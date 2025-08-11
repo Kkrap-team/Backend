@@ -3,7 +3,6 @@ package com.Kkrap.Controller.Spec;
 import com.Kkrap.RequestDTO.*;
 import com.Kkrap.ResponseDTO.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,9 +18,9 @@ public interface FoldersAPISpec {
     ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Authentication authentication);
 
     //상대방이 가지고 있는 모든 폴더 안에 있는 링크 4개만 -> 썸네일 전용
-    @GetMapping("/users/folders/thumbnails")
+    @PostMapping("/users/folders/thumbnails")
     @Operation(summary = "상대방의 모든 폴더 및 링크 최신순 4개", description = "상대방 보관함에서 보여줄 썸네일 전용")
-    ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Authentication authentication);
+    ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Authentication authentication, @RequestBody FoldersAllLinksViewRequest request);
 
 
     //내가 가지고 있는 모든 폴더 안에 있는 링크 4개만 -> 썸네일 전용
@@ -30,11 +29,10 @@ public interface FoldersAPISpec {
     ResponseEntity<UserFoldersWithSharedResponse> getMeAllFoldersWithTop4Links(Authentication authentication);
 
 
-    @GetMapping("/users/folders/{folderId}/links")
+    @PostMapping("/users/folders/{folderId}/links")
     @Operation(summary = "상대방 하나의 폴더 링크 전체 조회", description = "상대방 하나의 폴더와 모든 링크 조회")
     ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(
-            Authentication authentication,
-            @PathVariable("folderId") Long folderId);
+            Authentication authentication, @RequestBody OneFoldersLinksDetailViewRequest request);
 
 
     @GetMapping("/me/folders/{folderId}/links")

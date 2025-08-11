@@ -1,11 +1,8 @@
 package com.Kkrap.Controller;
 
 import com.Kkrap.Controller.Spec.FoldersAPISpec;
-import com.Kkrap.RequestDTO.FoldersCreateRequest;
+import com.Kkrap.RequestDTO.*;
 
-import com.Kkrap.RequestDTO.FoldersDeleteRequest;
-import com.Kkrap.RequestDTO.FoldersScrapRequest;
-import com.Kkrap.RequestDTO.FoldersUpdateRequest;
 import com.Kkrap.ResponseDTO.*;
 import com.Kkrap.Service.FolderLink.FoldersManagerService;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +29,10 @@ public class FoldersController implements FoldersAPISpec {
     }
 
     @Override
-    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Authentication authentication) {
+    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Authentication authentication,
+                                                                                          @RequestBody FoldersAllLinksViewRequest request) {
         Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.getAllFoldersWithTop4LinksByUser(userId);
+        return foldersManagerService.getAllFoldersWithTop4LinksByUser(userId, request);
     }
 
     @Override
@@ -44,9 +42,10 @@ public class FoldersController implements FoldersAPISpec {
     }
 
     @Override
-    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Authentication authentication, Long folderId) {
+    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Authentication authentication,
+                                                                               @RequestBody OneFoldersLinksDetailViewRequest request) {
         Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.getOneFolderWithLinksByUser(userId, folderId);
+        return foldersManagerService.getOneFolderWithLinksByUser(userId, request);
     }
 
     @Override

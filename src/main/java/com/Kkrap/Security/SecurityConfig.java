@@ -108,7 +108,9 @@ public class SecurityConfig {
                 "http://192.168.1.27:5174",
                 "http://192.168.1.27:5173",
                 "http://192.168.1.27:5174",
-                "http://localhost:5174"
+                "http://localhost:5174",
+                "https://kkrap.cloud",
+                "https://www.kkrap.cloud"
         ));
 
 

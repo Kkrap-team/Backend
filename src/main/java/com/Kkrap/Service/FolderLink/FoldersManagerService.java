@@ -2,13 +2,8 @@ package com.Kkrap.Service.FolderLink;
 
 import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.*;
-import com.Kkrap.Exception.FoldersNotFoundException;
-import com.Kkrap.Kafka.FolderCreateConsumer;
 import com.Kkrap.Kafka.FolderCreateProducer;
-import com.Kkrap.RequestDTO.FoldersCreateRequest;
-import com.Kkrap.RequestDTO.FoldersDeleteRequest;
-import com.Kkrap.RequestDTO.FoldersScrapRequest;
-import com.Kkrap.RequestDTO.FoldersUpdateRequest;
+import com.Kkrap.RequestDTO.*;
 import com.Kkrap.ResponseDTO.*;
 import com.Kkrap.Service.ActivityFeed.ActivityFeedService;
 import com.Kkrap.Service.FeedRedisService;
@@ -16,7 +11,6 @@ import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
 import com.Kkrap.Service.Users.UsersService;
 
-import io.swagger.v3.oas.models.links.Link;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -137,9 +132,12 @@ public class FoldersManagerService {
 
     //상대방 모든 거 조회할 때
     @Transactional(readOnly = true)
-    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Long userId) {
+    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Long userId, FoldersAllLinksViewRequest request) {
         usersService.findById(userId);
-        List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
+        Long targetUserId = request.getTargetUserId();;
+        usersService.findById(targetUserId);
+
+        List<Folders> allMyFolders = foldersService.findByUserUserId(targetUserId);
 
         // visible = true 필터
         // defaultFolder == true인 폴더 (딱 하나라고 가정)
@@ -163,7 +161,7 @@ public class FoldersManagerService {
                 .collect(Collectors.toList());
 
         // 초대받은 공유 폴더
-        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(userId);
+        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(targetUserId);
         List<Folders> invitedSharedFolders = sharedPermissions.stream()
                 .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
                 .filter(Folders::isVisible)  // 초대받은 것도 visible만
@@ -255,7 +253,10 @@ public class FoldersManagerService {
 
     //조회수 -> Redis -> Kafka
     @Transactional(readOnly = true)
-    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Long userId, Long folderId) {
+    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Long userId, OneFoldersLinksDetailViewRequest request) {
+        usersService.findById(request.getTargetUserId());
+
+        Long folderId = request.getFolderId();
         Folders folder = foldersService.findById(folderId);
         foldersService.isVisibleBy(folder);
 
@@ -286,7 +287,9 @@ public class FoldersManagerService {
         Users users = usersService.findById(userId);
         Folders folders = foldersService.save(foldersCreateRequest, users);
         if (Boolean.TRUE.equals(folders.isVisible())) {
-            feedRedisService.pushFeedToRedis(users, folders);
+//            feedRedisService.pushFeedToRedis(users, folders);
+
+            activityFeedService.save(ActivityFeed.of(users.getUserId(), folders.getFolderId(), LocalDateTime.now()));
 
             String eventPayload = String.format(
                     "{\"folderId\": %d}",

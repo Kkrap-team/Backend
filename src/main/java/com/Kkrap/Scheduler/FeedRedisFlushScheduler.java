@@ -36,7 +36,7 @@ public class FeedRedisFlushScheduler {
 
     private static final String REDIS_KEY = "feed:buffer";
 
-    @Scheduled(fixedRate = 1000 * 60 * 60) // 1시간마다 실행
+//    @Scheduled(fixedRate = 1000 * 60 * 60) // 1시간마다 실행
     public void flushFeedBufferToDB() {
         logger.info("[FeedFlush] 활동 스케줄러 시작됨");
         List<ActivityFeed> feedList = new ArrayList<>();

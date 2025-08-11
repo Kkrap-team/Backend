@@ -22,7 +22,7 @@
 
  - PM : 정재윤
  - Backend : 정재윤, 김강민
- - Frontend : 이호진, 김상우, 김선하
+ - Frontend : 이호진, 김상우
 
 <div><h2> 개발 환경 </h2></div>
 
@@ -53,7 +53,7 @@
 
 <div><h2> 전체 아키텍처 </h2></div>
 <p align="center">
-  <img src="./docs/imgs/전체_아키텍처_1.png" alt="전체 아키텍처" width="700"/>
+  <img src="./docs/imgs/last_architecture.png" alt="전체 아키텍처" width="700"/>
 </p>
 
 <p align="center">
@@ -68,7 +68,7 @@
 [//]: # (- 📁 [폴더 기능]&#40;./docs/feature-folder.md&#41;)
 - 🌐 [링크 저장 및 조회 기능](./docs/feature-link.md)
 - 📁 [elasticsearch 기능](./docs/feature-elasticsearch.md)
-- 🔐 [elasticsearch 기능](./docs/feature-login.md)
+- 🔐 [JWT 로그인 기능](./docs/feature-login.md)
 
 [//]: # (- 💬 [채팅 기능]&#40;./docs/feature-chat.md&#41;)
 

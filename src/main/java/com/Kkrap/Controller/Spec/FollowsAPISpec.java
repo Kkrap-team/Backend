@@ -1,6 +1,8 @@
 package com.Kkrap.Controller.Spec;
 import com.Kkrap.RequestDTO.FollowsRequest;
+import com.Kkrap.ResponseDTO.FollowInviteCandidateResponse;
 import com.Kkrap.ResponseDTO.FollowsResponse;
+import com.Kkrap.ResponseDTO.UserSearchWithFollowResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +39,7 @@ public interface FollowsAPISpec {
     //팔로우 기능을 위한 사용자 조회
     @GetMapping("/search")
     @Operation(summary = "닉네임 포함 사용자 검색", description = "입력한 닉네임 문자열이 포함된 사용자들을 조회합니다.")
-    ResponseEntity<List<UsersProfileResponse>> searchUsersByNicknameContains(
+    ResponseEntity<List<UserSearchWithFollowResponse>> searchUsersByNicknameContains(
             Authentication authentication,
             @RequestParam("nickname") String nickname);
 }

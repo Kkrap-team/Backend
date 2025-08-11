@@ -29,9 +29,8 @@ public class UsersController implements UsersAPISpec{
     }
 
     @Override
-    public ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Authentication authentication) {
-        Long userId = Long.parseLong(authentication.getName());
-        return usersManagerService.getFoldersUserProfile(userId);
+    public ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Authentication authentication,  Long targetUserId) {
+        return usersManagerService.getFoldersUserProfile(targetUserId);
     }
 
     @Override

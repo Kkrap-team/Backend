@@ -25,7 +25,7 @@ public interface UsersAPISpec {
 
     @GetMapping("/folders/{userId}")
     @Operation(summary = "내 폴더 전용 사용자 프로필 조회", description = "내 폴더 전용 사용자의 프로필 조회")
-    ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Authentication authentication);
+    ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Authentication authentication, @PathVariable("userId") Long targetUserId);
 
     //닉네임 변경
     @PatchMapping("/profile")

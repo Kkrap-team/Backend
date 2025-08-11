@@ -2,13 +2,17 @@ package com.Kkrap.Service.FollowsFoldersPermission;
 
 import com.Kkrap.Entity.Follows;
 import com.Kkrap.Entity.Users;
+import com.Kkrap.ResponseDTO.FollowInviteCandidateResponse;
 import com.Kkrap.ResponseDTO.FollowsResponse;
+import com.Kkrap.ResponseDTO.UserSearchWithFollowResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.Users.UsersService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,11 +51,16 @@ public class FollowsManagerService {
     }
 
     //팔로우 기능 닉네임 조회
-    public ResponseEntity<List<UsersProfileResponse>> findUsersByNicknameContains(String nickname) {
+    public ResponseEntity<List<UserSearchWithFollowResponse>> findUsersByNicknameContains(String nickname, Long userId) {
+
+        Set<Long> followingSet = new HashSet<>(followsService.findFollowingIdsByFollowerId(userId));
         List<Users> users = usersService.findByNicknameContaining(nickname);
-        List<UsersProfileResponse> responseList = users.stream()
-                .map(UsersProfileResponse::from)
-                .collect(Collectors.toList());
+
+        List<UserSearchWithFollowResponse> responseList = users.stream()
+                .filter(u -> !u.getUserId().equals(userId))
+                .map(u -> UserSearchWithFollowResponse.of(u, followingSet.contains(u.getUserId())))
+                .toList();
+
         return ResponseEntity.ok(responseList);
     }
 

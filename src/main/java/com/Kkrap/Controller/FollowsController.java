@@ -3,7 +3,9 @@ package com.Kkrap.Controller;
 
 import com.Kkrap.Controller.Spec.FollowsAPISpec;
 import com.Kkrap.RequestDTO.FollowsRequest;
+import com.Kkrap.ResponseDTO.FollowInviteCandidateResponse;
 import com.Kkrap.ResponseDTO.FollowsResponse;
+import com.Kkrap.ResponseDTO.UserSearchWithFollowResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsManagerService;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +43,9 @@ public class FollowsController implements FollowsAPISpec {
     }
 
     @Override
-    public ResponseEntity<List<UsersProfileResponse>> searchUsersByNicknameContains(Authentication authentication, String nickname) {
-        return followsManagerService.findUsersByNicknameContains(nickname);
+    public ResponseEntity<List<UserSearchWithFollowResponse>> searchUsersByNicknameContains(Authentication authentication, String nickname) {
+        Long userId = Long.parseLong(authentication.getName());
+        return followsManagerService.findUsersByNicknameContains(nickname, userId);
     }
 
 
