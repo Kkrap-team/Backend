@@ -7,10 +7,12 @@ import com.Kkrap.RequestDTO.LinksTitleUpdateRequest;
 import com.Kkrap.ResponseDTO.LinksCreateResponse;
 import com.Kkrap.ResponseDTO.LinksResponse;
 import com.Kkrap.Service.FolderLink.LinksManagerService;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Timed(value = "http.controller", extraTags = {"controller","Links"})
 @RequestMapping("/links")
 public class LinksController implements LinksAPISpec {
 
