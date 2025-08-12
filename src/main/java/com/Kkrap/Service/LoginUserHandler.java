@@ -7,6 +7,7 @@ import com.Kkrap.RequestDTO.UsersCreateRequest;
 import com.Kkrap.ResponseDTO.TokenResponse;
 import com.Kkrap.ResponseDTO.TokenUsersProfileResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
+import com.Kkrap.ResponseDTO.UsersProfileUserIdNickName;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import com.Kkrap.Service.SocialLoginRefreshToken.JwtUtil;
 import com.Kkrap.Service.SocialLoginRefreshToken.RefreshTokenService;
@@ -59,9 +60,8 @@ import java.util.Optional;
             user = checkUser.get();
         }
 
-        UsersProfileResponse profile = UsersProfileResponse.of(
-                user.getUserId(), user.getEmail(), user.getNickname(),
-                user.getProfile(), user.getBio()
+        UsersProfileUserIdNickName profile = UsersProfileUserIdNickName.of(
+                user.getUserId(), user.getNickname(), user.getProfile()
         );
         String accessToken = jwtUtil.generateAccessToken(user.getUserId());
         String refreshToken = jwtUtil.generateRefreshToken(user.getUserId());

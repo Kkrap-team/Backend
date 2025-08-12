@@ -9,10 +9,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TokenUsersProfileResponse {
     private TokenResponse token;
-    private UsersProfileResponse profile;
+    private UsersProfileUserIdNickName profile;
 
     private TokenUsersProfileResponse() {}
-    public static TokenUsersProfileResponse of(TokenResponse token, UsersProfileResponse profile){
+    public static TokenUsersProfileResponse of(TokenResponse token, UsersProfileUserIdNickName profile){
         return new TokenUsersProfileResponse(token, profile);
     }
 }

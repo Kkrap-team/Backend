@@ -4,12 +4,17 @@ import com.Kkrap.ElasticSearch.FoldersDocument;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 @Repository
 public interface FoldersDocumentRepository extends ElasticsearchRepository<FoldersDocument, Long> {
     List<FoldersDocument> findAll();
+
+    Page<FoldersDocument> findAll(Pageable pageable);
+
 
     void deleteAll();
 
@@ -45,6 +50,8 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
     List<FoldersDocument> findTop40ByOrderByCreateTimeDesc();
 
     List<FoldersDocument> findByFolderIdIn(List<Long> folderIds);
+
+
 
 
 }
