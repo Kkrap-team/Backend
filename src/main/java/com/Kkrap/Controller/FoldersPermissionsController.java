@@ -6,6 +6,7 @@ import com.Kkrap.RequestDTO.FoldersPermissionsDeleteRequest;
 import com.Kkrap.ResponseDTO.FollowInviteCandidateResponse;
 import com.Kkrap.ResponseDTO.FollowInviteListResponse;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsManagerService;
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 
 
 @RestController
+@Timed(value = "http.controller", extraTags = {"controller","FoldersPermissions"})
 @RequestMapping("/folderspermissions")
 public class FoldersPermissionsController implements FoldersPermissionsAPISpec {
 

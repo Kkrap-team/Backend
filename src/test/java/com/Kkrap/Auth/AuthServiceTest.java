@@ -4,7 +4,7 @@ import autoparams.AutoSource;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
+import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.AuthService;
 import com.Kkrap.Service.LoginUserPort;
 import com.Kkrap.Service.SocialLogin.ClientProvider;

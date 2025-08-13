@@ -7,7 +7,6 @@ import com.Kkrap.Exception.UsersNotFoundException;
 import com.Kkrap.Repository.UsersRepository;
 import com.Kkrap.RequestDTO.UsersCreateRequest;
 import com.Kkrap.Service.Users.UsersService;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,10 +14,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,19 +33,15 @@ public class UserServiceExceptionTest {
         Assertions.assertThrows(UsersNotFoundException.class, () -> usersService.findById(id));
     }
 
+
     @AutoSource
     @ParameterizedTest
-    @Transactional
     @DisplayName("중복되는 닉네임을 부여하면, DuplicateNickNameException이 발생한다.")
     void findByNickname() {
         UsersCreateRequest usersCreateRequest = UsersCreateRequest.of("email", "amazon", "", 1L, "");
-        Users users = Users.from(usersCreateRequest);
+        given(usersRepository.findByNickname(usersCreateRequest.getNickname())).willReturn(Optional.of(Users.from(usersCreateRequest))); // repository 메서드를 Mock
 
-        given(usersRepository.save(any()))
-                .willThrow(new DuplicateNickNameException());
-
-        UsersService usersService1 = new UsersService(usersRepository);
-
+        // when & then
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> usersService.findByNickname(usersCreateRequest.getNickname()))
                 .isInstanceOf(DuplicateNickNameException.class);
     }
