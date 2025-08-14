@@ -5,6 +5,7 @@ import com.Kkrap.RequestDTO.*;
 
 import com.Kkrap.ResponseDTO.*;
 import com.Kkrap.Service.FolderLink.FoldersManagerService;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Controller
 @RestController
+@Timed(value = "http.controller", extraTags = {"controller","Folders"})
 @RequestMapping("/folders")
 public class FoldersController implements FoldersAPISpec {
     private final FoldersManagerService foldersManagerService;

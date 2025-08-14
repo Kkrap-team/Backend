@@ -4,7 +4,6 @@ import com.Kkrap.Controller.AuthController;
 import com.Kkrap.Exception.GlobalExceptionHandler;
 import com.Kkrap.Exception.NotValidTokenException;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
-import com.Kkrap.ResponseDto.UsersProfileResponse;
 import com.Kkrap.Service.AuthService;
 import com.Kkrap.Service.SocialLoginRefreshToken.ClientProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;

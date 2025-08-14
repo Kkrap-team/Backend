@@ -26,9 +26,10 @@ public class UsersService {
     }
 
     public void findByNickname(String nickname){
-        if(usersRepository.findByNickname(nickname).isPresent()){
+        Optional<Users> user = usersRepository.findByNickname(nickname);
+        user.ifPresent(u -> {
             throw DuplicateNickNameException.from("중복되는 닉네임이 있습니다.");
-        }
+        });
     }
 
     //유저 만들기

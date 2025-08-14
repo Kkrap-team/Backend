@@ -9,12 +9,14 @@ import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Timed(value = "http.controller", extraTags = {"controller","Auth"})
 @RequestMapping("/api/auth")
 @Slf4j
 public class AuthController implements AuthAPISpec {

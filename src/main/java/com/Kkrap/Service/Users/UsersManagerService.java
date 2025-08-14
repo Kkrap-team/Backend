@@ -112,7 +112,11 @@ public class UsersManagerService {
 
     //닉네임 중복확인
     public ResponseEntity<MessageResponse> checkNicknameAvailable(String nickname){
-        usersService.findByNickname(nickname);
+        try{
+            usersService.findByNickname(nickname);
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.ok(MessageResponse.of(200, "사용 가능한 닉네임입니다."));
     }
 

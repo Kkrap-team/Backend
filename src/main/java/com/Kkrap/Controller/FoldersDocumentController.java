@@ -4,6 +4,7 @@ import com.Kkrap.Controller.Spec.FoldersDocumentAPISpec;
 import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.ResponseDTO.ElasticSearchRankingResponse;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentManagerService;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Timed(value = "http.controller", extraTags = {"controller","FoldersDocument"})
 @RequestMapping("/folders-search")
 public class FoldersDocumentController implements FoldersDocumentAPISpec {
 

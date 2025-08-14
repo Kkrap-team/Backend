@@ -8,6 +8,7 @@ import com.Kkrap.ResponseDTO.FollowsResponse;
 import com.Kkrap.ResponseDTO.UserSearchWithFollowResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsManagerService;
+import io.micrometer.core.annotation.Timed;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Timed(value = "http.controller", extraTags = {"controller","Follows"})
 @RequestMapping("/follows")
 public class FollowsController implements FollowsAPISpec {
 
