@@ -31,10 +31,10 @@ public class FoldersController implements FoldersAPISpec {
     }
 
     @Override
-    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Authentication authentication,
+    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop1LinksByUser(Authentication authentication,
                                                                                           @RequestBody FoldersAllLinksViewRequest request) {
         Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.getAllFoldersWithTop4LinksByUser(userId, request);
+        return foldersManagerService.getAllFoldersWithTop1LinksByUser(userId, request);
     }
 
     @Override

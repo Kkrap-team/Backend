@@ -24,7 +24,7 @@ public class ScrollFolderResponse {
     private Long viewCount;
     private Long scrapCount;
 
-    private Long userId;
+    private Long owenrId;
     private String nickname;
     private String profileImage;
 

@@ -38,6 +38,15 @@ public class LinksService {
                 .collect(Collectors.toList());
     }
 
+    public List<Links> selectTop1LinksByCreateTime(List<FoldersLinks> folderLinksList){
+        return folderLinksList.stream()
+                .map(folderLink -> linksRepository.findById(folderLink.getLinks().getLinkId()).orElse(null)) // orElse(null) 제거
+                .filter(Objects::nonNull) // 존재하는 Links만 리스트에 추가
+                .sorted(Comparator.comparing(Links::getCreateTime).reversed()) // 최신순 정렬
+                .limit(1) // 상위 1개만 추출
+                .collect(Collectors.toList());
+    }
+
     //links가 있는지 검사
     public void validateAllExistByIds(List<Long> linkIds) {
         for (Long id : linkIds) {

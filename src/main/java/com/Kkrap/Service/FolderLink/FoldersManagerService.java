@@ -123,7 +123,7 @@ public class FoldersManagerService {
         List<FoldersLinksAllResponse> ownFolderResponses = ownFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
                     return FoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
@@ -131,7 +131,7 @@ public class FoldersManagerService {
         List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
                     return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
@@ -142,7 +142,7 @@ public class FoldersManagerService {
 
     //상대방 모든 거 조회할 때
     @Transactional(readOnly = true)
-    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Long userId, FoldersAllLinksViewRequest request) {
+    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop1LinksByUser(Long userId, FoldersAllLinksViewRequest request) {
         usersService.findById(userId);
         Long targetUserId = request.getTargetUserId();;
         usersService.findById(targetUserId);
@@ -152,7 +152,7 @@ public class FoldersManagerService {
         // visible = true 필터
         // defaultFolder == true인 폴더 (딱 하나라고 가정)
         List<Folders> defaultFolderList = allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
+                .filter(folder -> !folder.isShared() && folder.isDefaultFolder() && !folder.isDefaultFolder())
                 .toList();
 
         // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
@@ -186,7 +186,7 @@ public class FoldersManagerService {
         List<FoldersLinksAllResponse> ownFolderResponses = ownFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
+                    List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
                     return FoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
@@ -194,7 +194,7 @@ public class FoldersManagerService {
         List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
                     return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());

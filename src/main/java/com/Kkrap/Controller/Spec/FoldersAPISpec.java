@@ -17,10 +17,10 @@ public interface FoldersAPISpec {
     @Operation(summary = "사용자의 모든 폴더 및 모든 링크", description = "한 명의 사용자가 가진 모든 폴더와 모든 링크 조회")
     ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Authentication authentication);
 
-    //상대방이 가지고 있는 모든 폴더 안에 있는 링크 4개만 -> 썸네일 전용
+    //상대방이 가지고 있는 모든 폴더 안에 있는 링크 1개만 -> 썸네일 전용
     @PostMapping("/users/folders/thumbnails")
-    @Operation(summary = "상대방의 모든 폴더 및 링크 최신순 4개", description = "상대방 보관함에서 보여줄 썸네일 전용")
-    ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Authentication authentication, @RequestBody FoldersAllLinksViewRequest request);
+    @Operation(summary = "상대방의 모든 폴더 및 링크 최신순 1개", description = "상대방 보관함에서 보여줄 썸네일 전용")
+    ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop1LinksByUser(Authentication authentication, @RequestBody FoldersAllLinksViewRequest request);
 
 
     //내가 가지고 있는 모든 폴더 안에 있는 링크 4개만 -> 썸네일 전용
