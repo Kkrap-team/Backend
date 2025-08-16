@@ -81,4 +81,11 @@ public class GlobalExceptionHandler {
         ErrorResponse response = ErrorResponse.from(HttpStatus.FORBIDDEN.value(), ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException ex){
+        log.error("handleUnauthorizedException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
 }

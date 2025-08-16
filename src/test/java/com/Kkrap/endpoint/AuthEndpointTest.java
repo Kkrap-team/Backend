@@ -5,10 +5,10 @@ import com.Kkrap.Exception.GlobalExceptionHandler;
 import com.Kkrap.Exception.NotValidTokenException;
 import com.Kkrap.RequestDTO.KaKaoTokenRequest;
 import com.Kkrap.Service.AuthService;
-import com.Kkrap.Service.LoginUserPort;
-import com.Kkrap.Service.SocialLogin.ClientProvider;
+import com.Kkrap.Service.SocialLoginRefreshToken.ClientProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -71,6 +70,8 @@ public class AuthEndpointTest {
     void tokenEmpty() throws Exception {
         KaKaoTokenRequest emptyTokenRequest = new KaKaoTokenRequest();
         emptyTokenRequest.setAccesstoken("");  // 빈 문자열 설정
+
+        String content = new ObjectMapper().writeValueAsString(emptyTokenRequest);
 
         given(authService.prepare(any(KaKaoTokenRequest.class)))
                 .willThrow(new NotValidTokenException("유효하지 않은 토큰입니다."));

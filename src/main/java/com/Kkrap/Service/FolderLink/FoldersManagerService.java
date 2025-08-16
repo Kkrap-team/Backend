@@ -2,13 +2,8 @@ package com.Kkrap.Service.FolderLink;
 
 import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.*;
-import com.Kkrap.Exception.FoldersNotFoundException;
-import com.Kkrap.Kafka.FolderCreateConsumer;
 import com.Kkrap.Kafka.FolderCreateProducer;
-import com.Kkrap.RequestDTO.FoldersCreateRequest;
-import com.Kkrap.RequestDTO.FoldersDeleteRequest;
-import com.Kkrap.RequestDTO.FoldersScrapRequest;
-import com.Kkrap.RequestDTO.FoldersUpdateRequest;
+import com.Kkrap.RequestDTO.*;
 import com.Kkrap.ResponseDTO.*;
 import com.Kkrap.Service.ActivityFeed.ActivityFeedService;
 import com.Kkrap.Service.FeedRedisService;
@@ -16,7 +11,6 @@ import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
 import com.Kkrap.Service.Users.UsersService;
 
-import io.swagger.v3.oas.models.links.Link;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,6 +47,16 @@ public class FoldersManagerService {
     private final FeedRedisService feedRedisService;
 
     private final ActivityFeedService activityFeedService;
+
+
+    // 상수
+    private static final int PAGE_SIZE = 20;      // 한 번에 내려줄 개수
+    private static final int SNAPSHOT_SIZE = 200; // 새 글 동기화 시 ES에서 비교할 상위 개수
+    private static final Duration TTL = Duration.ofHours(24);
+    private String listKey(Long userId) { return "feed:" + userId + ":list"; }
+    private String cursorKey(Long userId) { return "feed:" + userId + ":cursor"; }
+
+
 
     private static final Logger logger = LoggerFactory.getLogger(FoldersManagerService.class);
 
@@ -137,9 +142,12 @@ public class FoldersManagerService {
 
     //상대방 모든 거 조회할 때
     @Transactional(readOnly = true)
-    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Long userId) {
+    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Long userId, FoldersAllLinksViewRequest request) {
         usersService.findById(userId);
-        List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
+        Long targetUserId = request.getTargetUserId();;
+        usersService.findById(targetUserId);
+
+        List<Folders> allMyFolders = foldersService.findByUserUserId(targetUserId);
 
         // visible = true 필터
         // defaultFolder == true인 폴더 (딱 하나라고 가정)
@@ -163,7 +171,7 @@ public class FoldersManagerService {
                 .collect(Collectors.toList());
 
         // 초대받은 공유 폴더
-        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(userId);
+        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(targetUserId);
         List<Folders> invitedSharedFolders = sharedPermissions.stream()
                 .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
                 .filter(Folders::isVisible)  // 초대받은 것도 visible만
@@ -255,7 +263,10 @@ public class FoldersManagerService {
 
     //조회수 -> Redis -> Kafka
     @Transactional(readOnly = true)
-    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Long userId, Long folderId) {
+    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Long userId, OneFoldersLinksDetailViewRequest request) {
+        usersService.findById(request.getTargetUserId());
+
+        Long folderId = request.getFolderId();
         Folders folder = foldersService.findById(folderId);
         foldersService.isVisibleBy(folder);
 
@@ -286,7 +297,9 @@ public class FoldersManagerService {
         Users users = usersService.findById(userId);
         Folders folders = foldersService.save(foldersCreateRequest, users);
         if (Boolean.TRUE.equals(folders.isVisible())) {
-            feedRedisService.pushFeedToRedis(users, folders);
+//            feedRedisService.pushFeedToRedis(users, folders);
+
+            activityFeedService.save(ActivityFeed.of(users.getUserId(), folders.getFolderId(), LocalDateTime.now()));
 
             String eventPayload = String.format(
                     "{\"folderId\": %d}",
@@ -326,8 +339,8 @@ public class FoldersManagerService {
     }
 
     @Transactional
-    public ResponseEntity<FoldersResponse> updateFolderMetadata(FoldersUpdateRequest request){
-        Users users = usersService.findById(request.getUserId());
+    public ResponseEntity<FoldersResponse> updateFolderMetadata(Long userId, FoldersUpdateRequest request){
+        Users users = usersService.findById(userId);
         Folders folders = foldersService.findById(request.getFolderId());
 
         foldersService.isOwnedByService(folders, users.getUserId());
@@ -338,7 +351,7 @@ public class FoldersManagerService {
 
         if (folders.isVisible()) {
             Optional<Links> link = foldersLinksService.getFirstLinkByFolder(folders);
-            foldersDocumentService.indexNewFolder(folders, link.get());
+            foldersDocumentService.indexNewFolder(folders, link.orElse(null));
         } else {
             foldersDocumentService.deleteFolderDocument(folders);
         }
@@ -387,91 +400,185 @@ public class FoldersManagerService {
         );
     }
 
-    public ResponseEntity<List<ScrollFolderResponse>> initFeed(Long userId) {
-        // 1. Elasticsearch에서 최신 공개 폴더 최대 40개 조회
-        List<FoldersDocument> folders = foldersDocumentService.findTop40ByOrderByCreateTimeDesc();
+    /**
+     * 최신 스냅샷으로 헤드 동기화:
+     * - ES 상위 SNAPSHOT_SIZE를 가져와 Redis 리스트의 앞부분과 비교
+     * - 아직 없는 새 ID만 LPUSH(역순으로 push해서 최종 순서를 ES 순서대로 유지)
+     * - 커서는 새로 끼어든 개수만큼 + (사용자가 보던 지점 유지)
+     * - 너무 길면 LTRIM으로 제한(선택)
+     */
+    private void refreshFeedSnapshot(Long userId) {
+        final String lKey = listKey(userId);
+        final String cKey = cursorKey(userId);
 
-        int totalCount = folders.size();
-        int responseCount = Math.min(20, totalCount); // 실제 응답할 수 있는 개수
-        int redisStartIndex = responseCount; // Redis에 저장할 시작 index
+        // ES 최신 상위 N개 ID 스냅샷
+        List<Long> latestIds = foldersDocumentService
+                .findTopNByOrderByCreateTimeDesc(SNAPSHOT_SIZE)
+                .stream().map(FoldersDocument::getFolderId).toList();
 
-        // 앞 부분은 클라이언트 응답용
-        List<FoldersDocument> responseFolders = folders.subList(0, responseCount);
+        Long lenLong = redisTemplate.opsForList().size(lKey);
+        int listLen = (lenLong == null) ? 0 : lenLong.intValue();
 
-        // 나머지 폴더를 Redis에 저장 (있다면)
-        List<Long> nextFolderIds = folders.subList(redisStartIndex, totalCount).stream()
-                .map(FoldersDocument::getFolderId)
-                .toList();
-
-        String listKey = "feed:" + userId + ":list";
-        String cursorKey = "feed:" + userId + ":cursor";
-
-        if (!nextFolderIds.isEmpty()) {
-            redisTemplate.opsForList().rightPushAll(
-                    listKey,
-                    nextFolderIds.stream().map(String::valueOf).toArray(String[]::new)
-            );
-            redisTemplate.expire(listKey, Duration.ofHours(24));
+        // 리스트 비어있으면 초기화만
+        if (listLen == 0) {
+            if (!latestIds.isEmpty()) {
+                redisTemplate.opsForList().rightPushAll(
+                        lKey, latestIds.stream().map(String::valueOf).toArray(String[]::new)
+                );
+                redisTemplate.expire(lKey, TTL);
+                if (redisTemplate.opsForValue().get(cKey) == null) {
+                    redisTemplate.opsForValue().set(cKey, "0", TTL);
+                }
+            }
+            return;
         }
 
-        // 4. 커서 초기화
-        redisTemplate.opsForValue().set(cursorKey, "0", Duration.ofHours(24));
+        // 현재 헤드(최대 SNAPSHOT_SIZE) 읽기
+        int end = Math.min(SNAPSHOT_SIZE - 1, listLen - 1);
+        List<String> head = redisTemplate.opsForList().range(lKey, 0, end);
+        if (head == null) head = List.of();
+        Set<Long> headSet = head.stream().map(Long::valueOf).collect(Collectors.toSet());
 
-        logger.info("Redis 저장 시작: listKey=" + listKey + ", cursorKey=" + cursorKey);
-        logger.info("저장할 folderIds = " + nextFolderIds);
+        // 최신 목록에서 아직 없는 ID만 추려서 (원래 순서 유지)
+        List<Long> newIds = latestIds.stream().filter(id -> !headSet.contains(id)).toList();
+        if (newIds.isEmpty()) {
+            // TTL만 갱신
+            redisTemplate.expire(lKey, TTL);
+            return;
+        }
 
-        // 5. 응답 변환
-        List<ScrollFolderResponse> response = responseFolders.stream()
-                .map(ScrollFolderResponse::from)
-                .toList();
+        // 새 ID를 헤드에 선삽입(LPUSH) — 역순으로 push해야 최종 순서가 latestIds 순서를 보존
+        List<String> reversed = new ArrayList<>(newIds.stream().map(String::valueOf).toList());
+        Collections.reverse(reversed);
+        for (String idStr : reversed) {
+            redisTemplate.opsForList().leftPush(lKey, idStr);
+        }
 
-        return ResponseEntity.ok(response);
+        // 커서를 새로 끼어든 개수만큼 앞으로 밀기 (사용자 위치 보존)
+        String cursorStr = redisTemplate.opsForValue().get(cKey);
+        int cursor = (cursorStr == null) ? 0 : Integer.parseInt(cursorStr);
+        int nextCursor = cursor + newIds.size();
+        redisTemplate.opsForValue().set(cKey, String.valueOf(nextCursor), TTL);
+
+        // 과도 성장 방지 (선택)
+        int maxKeep = 1000;
+        redisTemplate.opsForList().trim(lKey, 0, maxKeep - 1);
+
+        redisTemplate.expire(lKey, TTL);
     }
 
+    /**
+     * /init-scroll
+     * - ES에서 최신 상위 목록을 통째로 저장
+     * - 커서=0 → 첫 페이지(0..PAGE_SIZE-1) 내려주고, 커서를 pageSize만큼 전진
+     * - 응답 직전에 페이지 내부만 랜덤 섞기
+     * - 매번 멱등(기존 키 삭제 후 재설정)
+     */
+    public ResponseEntity<List<ScrollFolderResponse>> initFeed(Long userId) {
+        final String lKey = listKey(userId);
+        final String cKey = cursorKey(userId);
 
+        List<FoldersDocument> latest = foldersDocumentService.findTopNByOrderByCreateTimeDesc(SNAPSHOT_SIZE);
+        List<Long> allIds = latest.stream().map(FoldersDocument::getFolderId).toList();
+
+        // 멱등화
+        redisTemplate.delete(List.of(lKey, cKey));
+
+        if (!allIds.isEmpty()) {
+            redisTemplate.opsForList().rightPushAll(
+                    lKey, allIds.stream().map(String::valueOf).toArray(String[]::new)
+            );
+            redisTemplate.expire(lKey, TTL);
+        }
+
+        // 첫 페이지 산출
+        int endIdx = Math.min(PAGE_SIZE, allIds.size());
+        List<FoldersDocument> firstPageDocs = latest.subList(0, endIdx);
+
+        // 커서 = 가져간 개수(다음 /scroll은 이어서 시작)
+        redisTemplate.opsForValue().set(cKey, String.valueOf(endIdx), TTL);
+
+        // 응답 내부 랜덤 섞기
+        List<FoldersDocument> shuffled = new ArrayList<>(firstPageDocs);
+        Collections.shuffle(shuffled);
+
+        List<ScrollFolderResponse> body = shuffled.stream()
+                .map(ScrollFolderResponse::from).toList();
+
+        return ResponseEntity.ok(body);
+    }
+
+    /**
+     * /scroll
+     * - 키 없으면 204 → 프론트가 /init-scroll 호출
+     * - 호출마다 refreshFeedSnapshot으로 새 글 헤드 반영 + 커서 이동
+     * - 원형 슬라이스(끝이면 처음으로 래핑), 응답 직전 페이지 내부만 랜덤 섞기
+     */
     public ResponseEntity<List<ScrollFolderResponse>> scrollFeed(Long userId) {
-        String listKey = "feed:" + userId + ":list";
-        String cursorKey = "feed:" + userId + ":cursor";
+        final String lKey = listKey(userId);
+        final String cKey = cursorKey(userId);
 
-        // 현재 커서 위치 조회
-        String cursorStr = redisTemplate.opsForValue().get(cursorKey);
-        if (cursorStr == null) {
-            return ResponseEntity.noContent().build();
+        // 새 글 동기화(헤드 반영 + 커서 이동)
+        refreshFeedSnapshot(userId);
+
+        Long lenLong = redisTemplate.opsForList().size(lKey);
+        String cursorStr = redisTemplate.opsForValue().get(cKey);
+
+        int listLen = (lenLong == null) ? 0 : lenLong.intValue();
+        if (listLen == 0 || cursorStr == null) {
+            return ResponseEntity.noContent().build(); // 프론트가 /init-scroll 하도록
         }
+
         int cursor = Integer.parseInt(cursorStr);
+        if (cursor >= listLen) cursor = cursor % listLen;
 
-        // Redis에서 다음 20개 folderId 가져오기
-        List<String> folderIdStrings = redisTemplate.opsForList().range(listKey, cursor, cursor + 19);
-        if (folderIdStrings == null || folderIdStrings.isEmpty()) {
+        // 현재 cursor부터 끝까지 1차 슬라이스
+        int end1 = Math.min(cursor + PAGE_SIZE - 1, listLen - 1);
+        List<String> slice1 = redisTemplate.opsForList().range(lKey, cursor, end1);
+        int fetched = (slice1 == null) ? 0 : slice1.size();
+
+        // 래핑 필요 시 처음부터 추가
+        List<String> idStrs = new ArrayList<>();
+        if (slice1 != null) idStrs.addAll(slice1);
+
+        if (fetched < PAGE_SIZE && listLen > 0) {
+            int need = PAGE_SIZE - fetched;
+            int end2 = Math.min(need - 1, listLen - 1);
+            List<String> slice2 = redisTemplate.opsForList().range(lKey, 0, end2);
+            if (slice2 != null) {
+                idStrs.addAll(slice2);
+                fetched += slice2.size();
+            }
+        }
+
+        if (idStrs.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        int fetchedCount = folderIdStrings.size();
-        List<Long> folderIds = folderIdStrings.stream().map(Long::valueOf).toList();
+        // ES 조회 + 순서 보존 → 응답 직전 섞기
+        List<Long> ids = idStrs.stream().map(Long::valueOf).toList();
+        List<FoldersDocument> docs = foldersDocumentService.findByFolderIdIn(ids);
 
-        // 3. Elasticsearch에서 해당 folderId들 조회
-        List<FoldersDocument> folderDocs = foldersDocumentService.findByFolderIdIn(folderIds);
+        Map<Long, FoldersDocument> map = docs.stream()
+                .collect(Collectors.toMap(FoldersDocument::getFolderId, d -> d));
 
-        // 정렬 보정: Redis의 순서대로 정렬
-        Map<Long, FoldersDocument> docMap = folderDocs.stream()
-                .collect(Collectors.toMap(FoldersDocument::getFolderId, doc -> doc));
-        List<FoldersDocument> orderedDocs = folderIds.stream()
-                .map(docMap::get)
+        List<FoldersDocument> ordered = ids.stream()
+                .map(map::get)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        Collections.shuffle(orderedDocs);
-
-        // 5. 커서를 실제 fetch한 개수만큼 증가
-        redisTemplate.opsForValue().set(cursorKey, String.valueOf(cursor + fetchedCount), Duration.ofHours(24));
-        redisTemplate.expire(listKey, Duration.ofHours(24));
-
-        // 6. 응답 변환
-        List<ScrollFolderResponse> response = orderedDocs.stream()
-                .map(ScrollFolderResponse::from)
                 .toList();
 
-        return ResponseEntity.ok(response);
+        List<FoldersDocument> shuffled = new ArrayList<>(ordered);
+        Collections.shuffle(shuffled);
+
+        // 커서 전진(원형)
+        int nextCursor = (cursor + fetched) % listLen;
+        redisTemplate.opsForValue().set(cKey, String.valueOf(nextCursor), TTL);
+        redisTemplate.expire(lKey, TTL);
+
+        List<ScrollFolderResponse> res = shuffled.stream()
+                .map(ScrollFolderResponse::from).toList();
+
+        return ResponseEntity.ok(res);
     }
 
     public void checkAccessPermission(Long folderId, Long userId) {

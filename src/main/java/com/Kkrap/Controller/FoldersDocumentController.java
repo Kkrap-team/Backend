@@ -6,6 +6,7 @@ import com.Kkrap.ResponseDTO.ElasticSearchRankingResponse;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentManagerService;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,17 +40,17 @@ public class FoldersDocumentController implements FoldersDocumentAPISpec {
     }
 
     @Override
-    public ResponseEntity<List<FoldersDocument>> searchFoldersTop10(String keyword) {
+    public ResponseEntity<List<FoldersDocument>> searchFoldersTop10(Authentication authentication, String keyword) {
         return ResponseEntity.ok(foldersDocumentManagerService.searchFoldersTop10(keyword));
     }
 
     @Override
-    public ResponseEntity<List<FoldersDocument>> searchFolders(String keyword) {
+    public ResponseEntity<List<FoldersDocument>> searchFolders(Authentication authentication, String keyword) {
         return ResponseEntity.ok(foldersDocumentManagerService.searchFolders(keyword));
     }
 
     @Override
-    public ResponseEntity<ElasticSearchRankingResponse> getWeeklyRankings() {
+    public ResponseEntity<ElasticSearchRankingResponse> getWeeklyRankings(Authentication authentication) {
         return ResponseEntity.ok(foldersDocumentManagerService.getWeeklyRankings());
     }
 

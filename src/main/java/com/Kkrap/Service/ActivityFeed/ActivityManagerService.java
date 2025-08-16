@@ -7,6 +7,7 @@ import com.Kkrap.Service.FolderLink.FoldersService;
 import com.Kkrap.Service.FolderLink.LinksService;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsService;
 import com.Kkrap.Service.Users.UsersService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -46,8 +47,14 @@ public class ActivityManagerService {
         List<Long> followingIds = followsService.findFollowingIdsByFollowerId(Userme.getUserId());
 
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
+//        List<ActivityFeed> feeds = activityFeedService
+//                .findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(followingIds, oneWeekAgo);
         List<ActivityFeed> feeds = activityFeedService
-                .findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(followingIds, oneWeekAgo);
+                .findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(
+                        followingIds,
+                        oneWeekAgo,
+                        PageRequest.of(0, 50)
+                );
 
         List<FeedFolderResponse> result = new ArrayList<>();
 

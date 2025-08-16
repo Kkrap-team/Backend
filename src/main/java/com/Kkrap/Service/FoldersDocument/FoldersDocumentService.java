@@ -5,6 +5,9 @@ import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Repository.FoldersDocumentRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,6 +94,11 @@ public class FoldersDocumentService {
 
     public List<FoldersDocument> findByFolderIdIn(List<Long> folderIds) {
         return foldersDocumentRepository.findByFolderIdIn(folderIds);
+    }
+
+    public List<FoldersDocument> findTopNByOrderByCreateTimeDesc(int n) {
+        Pageable pageable = PageRequest.of(0, n, Sort.by(Sort.Direction.DESC, "createTime"));
+        return foldersDocumentRepository.findAll(pageable).getContent();
     }
 
 }

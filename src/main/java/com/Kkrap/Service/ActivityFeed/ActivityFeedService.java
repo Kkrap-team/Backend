@@ -3,7 +3,7 @@ package com.Kkrap.Service.ActivityFeed;
 import com.Kkrap.Entity.Follows;
 import org.springframework.stereotype.Service;
 
-
+import org.springframework.data.domain.Pageable;
 import com.Kkrap.Entity.ActivityFeed;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
@@ -32,7 +32,12 @@ public class ActivityFeedService {
         activityFeedRepository.saveAll(feedList);
     }
 
-    public List<ActivityFeed> findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(List<Long> followingIds, LocalDateTime oneWeekAgo){
-        return activityFeedRepository.findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(followingIds, oneWeekAgo);
+    public void save(ActivityFeed feed){
+        activityFeedRepository.save(feed);
+    }
+
+
+    public List<ActivityFeed> findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(List<Long> followingIds, LocalDateTime oneWeekAgo, Pageable pageable){
+        return activityFeedRepository.findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(followingIds, oneWeekAgo, pageable);
     }
 }
