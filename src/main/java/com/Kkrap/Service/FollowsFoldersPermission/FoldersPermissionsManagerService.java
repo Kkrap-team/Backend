@@ -80,41 +80,37 @@ public class FoldersPermissionsManagerService {
     // 내가 팔로우 중인 사람들 + 이 폴더에 이미 초대됐는지 여부
     @Transactional(readOnly = true)
     public ResponseEntity<FollowInviteListResponse> getMyFollowingsWithInviteFlag(Long userId, Long folderId) {
-        Users me = usersService.findById(userId);
+        usersService.findById(userId);
         Folders folder = foldersService.findById(folderId);
 
         Users owner = folder.getUser();
+        boolean isOwner = folder.isOwnedBy(userId);
 
-        if (!folder.isOwnedBy(userId)) {
+        // 권한 체크: 소유자가 아니면 초대받은 사용자여야 함 (exists 결과를 반드시 사용!)
+        if (!isOwner) {
             foldersPermissionsService.existsByFolderFolderIdAndInvitedUserId(folderId, userId);
         }
 
-        // 내가 팔로우한 사람 중 owner 제외
-        List<Follows> followings = followsService.findByFollower(me).stream()
-                .filter(f -> !f.getFollowingId().equals(owner.getUserId())) // root 제외
+        // 후보 기준을 'owner가 팔로우한 사람'으로 변경
+        List<Follows> ownerFollowings = followsService.findByFollower(owner).stream()
+                .filter(f -> !f.getFollowingId().equals(owner.getUserId())) // owner 자신 제외 (혹시 몰라서)
                 .toList();
 
-        // 초대된 사람 목록
+        // 이미 초대한 사용자 id 집합
         Set<Long> invitedIds = foldersPermissionsService.findInvitedUserIdsByFolderId(folderId);
 
-//        List<FollowInviteCandidateResponse> candidates = followings.stream()
-//                .map(f -> FollowInviteCandidateResponse.of(f, invitedIds.contains(f.getFollowingId())))
-//                .toList();
-
-        // 내가 팔로우한 사람 중 owner 제외 후 → 초대 여부 포함 응답 생성
-        List<FollowInviteCandidateResponse> candidates = followsService.findByFollower(me).stream()
-                .filter(f -> !f.getFollowingId().equals(owner.getUserId()))
-                .map(f -> FollowInviteCandidateResponse.of(f, invitedIds.contains(f.getFollowingId())))
+        // 후보 리스트 생성 (owner 팔로잉 기준)
+        List<FollowInviteCandidateResponse> candidates = ownerFollowings.stream()
+                .map(f -> FollowInviteCandidateResponse.of(
+                        f, invitedIds.contains(f.getFollowingId())))
                 .toList();
 
-        // partitioningBy로 분리
+        // 초대/미초대 분리
         Map<Boolean, List<FollowInviteCandidateResponse>> partitioned =
                 candidates.stream().collect(Collectors.partitioningBy(FollowInviteCandidateResponse::isInvited));
 
-        List<FollowInviteCandidateResponse> invited = partitioned.get(true);
-        List<FollowInviteCandidateResponse> notInvited = partitioned.get(false);
-
-
+        List<FollowInviteCandidateResponse> invited = partitioned.getOrDefault(true, List.of());
+        List<FollowInviteCandidateResponse> notInvited = partitioned.getOrDefault(false, List.of());
 
         FollowInviteListResponse response = FollowInviteListResponse.of(
                 UsersProfileResponse.from(owner),

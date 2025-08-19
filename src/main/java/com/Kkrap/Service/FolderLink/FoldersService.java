@@ -66,11 +66,9 @@ public class FoldersService {
         return foldersRepository.findByUserUserIdAndVisibleTrue(userId);
     }
 
-    public void isVisibleBy(Folders folders){
-        if (!folders.isVisible()){
-            throw FoldersVisibleException.of("공개 권한이 없는 폴더입니다.");
-        }
-    }
+
+
+
 
     public Long sumViewCountByUser(Users user) {
         return foldersRepository.sumViewCountByUser(user);

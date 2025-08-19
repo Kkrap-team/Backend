@@ -287,7 +287,8 @@ public class FoldersManagerService {
             return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
         }
         else {
-            foldersService.isVisibleBy(folder);
+            foldersPermissionsService.ensureReadable(folder, userId);
+
             String redisKey = "view:" + userId + ":" + folderId;
             redisTemplate.opsForValue().set(redisKey, String.valueOf(folderId), Duration.ofMinutes(5));
 

@@ -4,6 +4,7 @@ import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.FoldersPermissions;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Exception.FoldersPermissionNotFoundException;
+import com.Kkrap.Exception.FoldersVisibleException;
 import com.Kkrap.Repository.FoldersPermissionsRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,17 @@ public class FoldersPermissionsService {
 
     public boolean existsByFolderAndInvitedUserId(Folders folder, Long invitedUserId){
         return foldersPermissionsRepository.existsByFolderAndInvitedUserId(folder, invitedUserId);
+    }
+
+    public void ensureReadable(Folders folder, Long userId) {
+        // 공개 폴더면 OK
+        if (folder.isVisible()) return;
+        // 소유자면 OK
+        if (folder.isOwnedBy(userId)) return;
+        // 초대받은 사용자면 OK
+        boolean invited = foldersPermissionsRepository.existsByFolderAndInvitedUserId(folder, userId);
+        if (invited) return;
+        throw FoldersVisibleException.of("접근 권한이 없습니다.");
     }
 
     public FoldersPermissions save(Users owner, Folders folders, Users invitedUser){
