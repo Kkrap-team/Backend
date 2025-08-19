@@ -81,220 +81,314 @@ public class FoldersManagerService {
     }
 
 
-    @Transactional(readOnly = true)
-    public ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Long userId){
-        usersService.findById(userId);
-        List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
 
-        // shared 컬럼으로 분리
-        // defaultFolder == true인 폴더 (딱 하나라고 가정)
-        List<Folders> defaultFolderList = allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
+    List<Folders> conncatFolders(List<Folders> defaultFolderList, List<Folders> otherOwnFolders){
+        return  Stream.concat(defaultFolderList.stream(), otherOwnFolders.stream())
                 .toList();
+    }
 
-        // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
-        List<Folders> otherOwnFolders = allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && !folder.isDefaultFolder())
-                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
-                .toList();
+//    @Transactional(readOnly = true)
+//    public ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Long userId){
+//        usersService.findById(userId);
+//        List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
+//
+//        // shared 컬럼으로 분리
+//        // defaultFolder == true인 폴더 (딱 하나라고 가정)
+//        List<Folders> defaultFolderList = allMyFolders.stream()
+//                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
+//                .toList();
+//
+//        // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
+//        List<Folders> otherOwnFolders = notSharedFoldersSelect(allMyFolders);
+//
+//        // shared 컬럼으로 분리
+//        List<Folders> ownFolders = conncatFolders(defaultFolderList, otherOwnFolders);
+//
+//        List<Folders> mySharedFolders = allMyFolders.stream()
+//                .filter(Folders::isShared)
+//                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
+//                .collect(Collectors.toList());
+//
+//        // 공유받은 폴더 (권한 테이블 기준)
+//        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(userId);
+//        List<Folders> invitedSharedFolders = sharedPermissions.stream()
+//                .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
+//                .collect(Collectors.toList());
+//
+//        // 공유 폴더 합치기
+//        List<Folders> allSharedFolders = conncatFolders(mySharedFolders, invitedSharedFolders);
+//
+//        //변환
+//        List<FoldersLinksAllResponse> ownFolderResponses = ownFolders.stream()
+//                .map(folder -> {
+//                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+//                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
+//                    return FoldersLinksAllResponse.of(folder, linksList);
+//                })
+//                .collect(Collectors.toList());
+//
+//        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
+//                .map(folder -> {
+//                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+//                    List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
+//                    return SharedFoldersLinksAllResponse.of(folder, linksList);
+//                })
+//                .collect(Collectors.toList());
+//
+//        UserFoldersWithSharedResponse response = UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses);
+//        return ResponseEntity.ok(response);
+//    }
 
-        // shared 컬럼으로 분리
-        List<Folders> ownFolders = Stream.concat(defaultFolderList.stream(), otherOwnFolders.stream())
-                .toList();
-
-        List<Folders> mySharedFolders = allMyFolders.stream()
-                .filter(Folders::isShared)
-                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
-                .collect(Collectors.toList());
-
-        // 공유받은 폴더 (권한 테이블 기준)
-        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(userId);
-        List<Folders> invitedSharedFolders = sharedPermissions.stream()
-                .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
-                .collect(Collectors.toList());
-
-        // 공유 폴더 합치기
-        List<Folders> allSharedFolders = Stream.concat(
-                mySharedFolders.stream(),  // 내가 만든 공유 폴더
-                invitedSharedFolders.stream()  // 내가 초대받은 공유 폴더
-        ).toList();
-
-        //변환
-        List<FoldersLinksAllResponse> ownFolderResponses = ownFolders.stream()
+    List<FoldersLinksAllResponse> AllOwnerFolderslinksSelectTop1linksByCreateTime(List<Folders> folders){
+        return folders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
                     return FoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
+    }
 
-        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
+    List<FoldersLinksAllResponse> AllOwnerFolderslinksSelectTop4linksByCreateTime(List<Folders> folders){
+        return folders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
+                    return FoldersLinksAllResponse.of(folder, linksList);
+                })
+                .collect(Collectors.toList());
+    }
+
+    List<SharedFoldersLinksAllResponse> AllSharedFolderslinksSelectTop1linksByCreateTime(List<Folders> folders){
+        return folders.stream()
+                .map(folder -> {
+                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+                    List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
                     return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
-
-        UserFoldersWithSharedResponse response = UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses);
-        return ResponseEntity.ok(response);
     }
 
-    //상대방 모든 거 조회할 때
-    @Transactional(readOnly = true)
-    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Long userId, FoldersAllLinksViewRequest request) {
-        usersService.findById(userId);
-        Long targetUserId = request.getTargetUserId();;
-        usersService.findById(targetUserId);
+    List<Folders> notSharedFoldersSelect(List<Folders> allMyFolders){
+        return allMyFolders.stream()
+                .filter(folder -> !folder.isShared() && !folder.isDefaultFolder())
+                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
+                .toList();
+    }
 
-        List<Folders> allMyFolders = foldersService.findByUserUserId(targetUserId);
+    @Transactional(readOnly = true)
+    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithLinks(Long userId, Long targetUserId) {
+        usersService.findById(userId);
+        usersService.findById(targetUserId);
+        List<Folders> allMyFolders, defaultFolderList, otherOwnFolders, ownFolders, mySharedFolders, invitedSharedFolders, allSharedFolders;
+        List<FoldersPermissions> sharedPermissions;
+        List<SharedFoldersLinksAllResponse> sharedFolderResponses;
+        List<FoldersLinksAllResponse> ownFolderResponses;
+        if (userId == targetUserId){
+            allMyFolders = foldersService.findByUserUserId(userId);
+            log.info("here1");
+//            defaultFolderList = allMyFolders.stream()
+//                    .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
+//                    .toList();
+//            otherOwnFolders = notSharedFoldersSelect(allMyFolders);
+            ownFolders = allMyFolders.stream()
+                    .filter(folder -> !folder.isShared())
+                    .sorted(Comparator.comparing(Folders::getCreateTime))
+                    .toList();
+
+//            ownFolders = conncatFolders(defaultFolderList, otherOwnFolders);
+            mySharedFolders = allMyFolders.stream()
+                    .filter(Folders::isShared)
+                    .sorted(Comparator.comparing(Folders::getCreateTime))
+                    .collect(Collectors.toList());
+            sharedPermissions = foldersPermissionsService.findByInvitedUserId(userId);
+            invitedSharedFolders = sharedPermissions.stream()
+                    .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
+                    .collect(Collectors.toList());
+            allSharedFolders = conncatFolders(mySharedFolders, invitedSharedFolders);
+            ownFolderResponses = AllOwnerFolderslinksSelectTop4linksByCreateTime(ownFolders);
+            sharedFolderResponses = AllSharedFolderslinksSelectTop1linksByCreateTime(allSharedFolders);
+            return ResponseEntity.ok(UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses));
+
+        }
+        else {
+            allMyFolders = foldersService.findByUserUserId(targetUserId);
+            log.info("here2");
+//            defaultFolderList = allMyFolders.stream()
+//                    .filter(folder -> !folder.isShared() && !folder.isDefaultFolder() && folder.isVisible() )
+//                    .toList();
+            ownFolders = allMyFolders.stream()
+                    .filter(folder -> !folder.isShared() && !folder.isDefaultFolder() && folder.isVisible())
+                    .sorted(Comparator.comparing(Folders::getCreateTime))
+                    .toList();
+
+//            otherOwnFolders = notSharedFoldersSelect(allMyFolders);
+//            ownFolders = conncatFolders(defaultFolderList, otherOwnFolders);
+            mySharedFolders = allMyFolders.stream()
+                    .filter(folder -> folder.isShared() && folder.isVisible())
+                    .sorted(Comparator.comparing(Folders::getCreateTime))
+                    .collect(Collectors.toList());
+            sharedPermissions = foldersPermissionsService.findByInvitedUserId(targetUserId);
+            invitedSharedFolders = sharedPermissions.stream()
+                    .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
+                    .filter(Folders::isVisible)  // 초대받은 것도 visible만
+                    .collect(Collectors.toList());
+            allSharedFolders = conncatFolders(mySharedFolders, invitedSharedFolders);
+
+            ownFolderResponses = AllOwnerFolderslinksSelectTop1linksByCreateTime(ownFolders);
+            sharedFolderResponses = AllSharedFolderslinksSelectTop1linksByCreateTime(allSharedFolders);
+            return ResponseEntity.ok(UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses));
+        }
+
+    }
+
+
+
+
+
+
+
+    //상대방 모든 거 조회할 때
+//    @Transactional(readOnly = true)
+//    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop1LinksByUser(Long userId, FoldersAllLinksViewRequest request) {
+//        usersService.findById(userId);
+//        Long targetUserId = request.getTargetUserId();;
+//        usersService.findById(targetUserId);
+//
+//        List<Folders> allMyFolders = foldersService.findByUserUserId(targetUserId);
 
         // visible = true 필터
         // defaultFolder == true인 폴더 (딱 하나라고 가정)
-        List<Folders> defaultFolderList = allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
-                .toList();
+//        List<Folders> defaultFolderList = allMyFolders.stream()
+//                .filter(folder -> !folder.isShared() && folder.isDefaultFolder() && !folder.isDefaultFolder())
+//                .toList();
 
         // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
-        List<Folders> otherOwnFolders = allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && !folder.isDefaultFolder())
-                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
-                .toList();
+//        List<Folders> otherOwnFolders = notSharedFoldersSelect(allMyFolders);
 
         // shared 컬럼으로 분리
-        List<Folders> ownFolders = Stream.concat(defaultFolderList.stream(), otherOwnFolders.stream())
-                .toList();
+//        List<Folders> ownFolders = conncatFolders(defaultFolderList, otherOwnFolders);
 
-        List<Folders> mySharedFolders = allMyFolders.stream()
-                .filter(folder -> folder.isShared() && folder.isVisible())
-                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
-                .collect(Collectors.toList());
+//        List<Folders> mySharedFolders = allMyFolders.stream()
+//                .filter(folder -> folder.isShared() && folder.isVisible())
+//                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
+//                .collect(Collectors.toList());
 
         // 초대받은 공유 폴더
-        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(targetUserId);
-        List<Folders> invitedSharedFolders = sharedPermissions.stream()
-                .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
-                .filter(Folders::isVisible)  // 초대받은 것도 visible만
-                .collect(Collectors.toList());
+//        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(targetUserId);
+//        List<Folders> invitedSharedFolders = sharedPermissions.stream()
+//                .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
+//                .filter(Folders::isVisible)  // 초대받은 것도 visible만
+//                .collect(Collectors.toList());
 
         // 모든 공유 폴더
-        List<Folders> allSharedFolders = Stream.concat(
-                mySharedFolders.stream(),
-                invitedSharedFolders.stream()
-        ).toList();
+//        List<Folders> allSharedFolders = conncatFolders(mySharedFolders, invitedSharedFolders);
 
-        List<FoldersLinksAllResponse> ownFolderResponses = ownFolders.stream()
-                .map(folder -> {
-                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
-                })
-                .collect(Collectors.toList());
-
-        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
-                .map(folder -> {
-                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
-                    return SharedFoldersLinksAllResponse.of(folder, linksList);
-                })
-                .collect(Collectors.toList());
-
-        UserFoldersWithSharedResponse response = UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses);
-        return ResponseEntity.ok(response);
-    }
-
-
-    public ResponseEntity<UserFoldersWithSharedResponse> getMeAllFoldersWithTop4Links(Long userId){
-        usersService.findById(userId);
-        List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
+//        List<FoldersLinksAllResponse> ownFolderResponses = AllOwnerFolderslinksSelectTop1linksByCreateTime(ownFolders);
+//        List<SharedFoldersLinksAllResponse> sharedFolderResponses = AllSharedFolderslinksSelectTop1linksByCreateTime(allSharedFolders);
+//        UserFoldersWithSharedResponse response = UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//
+//    public ResponseEntity<UserFoldersWithSharedResponse> getMeAllFoldersWithTop4Links(Long userId){
+//        usersService.findById(userId);
+//        List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
 
         // defaultFolder == true인 폴더 (딱 하나라고 가정)
-        List<Folders> defaultFolderList = allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
-                .toList();
+//        List<Folders> defaultFolderList = allMyFolders.stream()
+//                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
+//                .toList();
 
         // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
-        List<Folders> otherOwnFolders = allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && !folder.isDefaultFolder())
-                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
-                .toList();
+//        List<Folders> otherOwnFolders = notSharedFoldersSelect(allMyFolders);
 
         // shared 컬럼으로 분리
-        List<Folders> ownFolders = Stream.concat(defaultFolderList.stream(), otherOwnFolders.stream())
-                .toList();
+//        List<Folders> ownFolders = conncatFolders(defaultFolderList, otherOwnFolders);
 
-        List<Folders> mySharedFolders = allMyFolders.stream()
-                .filter(Folders::isShared)
-                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
-                .collect(Collectors.toList());
+//        List<Folders> mySharedFolders = allMyFolders.stream()
+//                .filter(Folders::isShared)
+//                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
+//                .collect(Collectors.toList());
 
         // 공유받은 폴더 (권한 테이블 기준)
-        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(userId);
-        List<Folders> invitedSharedFolders = sharedPermissions.stream()
-                .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
-                .collect(Collectors.toList());
+//        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(userId);
+//        List<Folders> invitedSharedFolders = sharedPermissions.stream()
+//                .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
+//                .collect(Collectors.toList());
 
         // 공유 폴더 합치기
-        List<Folders> allSharedFolders = Stream.concat(
-                mySharedFolders.stream(),  // 내가 만든 공유 폴더
-                invitedSharedFolders.stream()  // 내가 초대받은 공유 폴더
-        ).toList();
+//        List<Folders> allSharedFolders = conncatFolders(mySharedFolders, invitedSharedFolders);
 
         //변환
-        List<FoldersLinksAllResponse> ownFolderResponses = ownFolders.stream()
-                .map(folder -> {
-                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
-                })
-                .collect(Collectors.toList());
+//        List<FoldersLinksAllResponse> ownFolderResponses = AllOwnerFolderslinksSelectTop4linksByCreateTime(ownFolders);
+//        List<SharedFoldersLinksAllResponse> sharedFolderResponses = AllSharedFolderslinksSelectTop1linksByCreateTime(allSharedFolders);
+//        UserFoldersWithSharedResponse response = UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses);
+//        return ResponseEntity.ok(response);
+//    }
+//
+    @Transactional(readOnly = true)
+    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinks(Long userId, Long folderId, Long targetUserId){
+        usersService.findById(userId);
+        usersService.findById(targetUserId);
+        Folders folder = foldersService.findById(folderId);
+        if (userId == targetUserId){
+            List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+            List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+            return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
+        }
+        else {
+            foldersService.isVisibleBy(folder);
+            String redisKey = "view:" + userId + ":" + folderId;
+            redisTemplate.opsForValue().set(redisKey, String.valueOf(folderId), Duration.ofMinutes(5));
 
-        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
-                .map(folder -> {
-                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-                    List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
-                    return SharedFoldersLinksAllResponse.of(folder, linksList);
-                })
-                .collect(Collectors.toList());
+            List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+            List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
 
-        UserFoldersWithSharedResponse response = UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses);
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
+        }
+
     }
 
     //조회수 -> Redis -> Kafka
-    @Transactional(readOnly = true)
-    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Long userId, OneFoldersLinksDetailViewRequest request) {
-        usersService.findById(request.getTargetUserId());
-
-        Long folderId = request.getFolderId();
-        Folders folder = foldersService.findById(folderId);
-        foldersService.isVisibleBy(folder);
-
-        String redisKey = "view:" + userId + ":" + folderId;
-        redisTemplate.opsForValue().set(redisKey, String.valueOf(folderId), Duration.ofMinutes(5));
-
-        List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-        List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
-
-        return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
-    }
-
-
-    public ResponseEntity<FoldersLinksAllResponse> getMyOneFolderWithLinks(Long folderId){
-        //폴더가 있는지 검사
-        Folders folder = foldersService.findById(folderId);
-        //해당 폴더의 FoldersLinks 조회
-        List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-        List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
-        // Folder + Links 리스트를 Response DTO로 변환
-        return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
-    }
+//    @Transactional(readOnly = true)
+//    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Long userId, OneFoldersLinksDetailViewRequest request) {
+////        usersService.findById(request.getTargetUserId());
+//
+//        Long folderId = request.getFolderId();
+//        Folders folder = foldersService.findById(folderId);
+//        foldersService.isVisibleBy(folder);
+//
+//        String redisKey = "view:" + userId + ":" + folderId;
+//        redisTemplate.opsForValue().set(redisKey, String.valueOf(folderId), Duration.ofMinutes(5));
+//
+//        List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+//        List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+//
+//        return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
+//    }
+//
+//
+//    public ResponseEntity<FoldersLinksAllResponse> getMyOneFolderWithLinks(Long folderId){
+//        //폴더가 있는지 검사
+////        Folders folder = foldersService.findById(folderId);
+//        //해당 폴더의 FoldersLinks 조회
+//        List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+//        List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+//        // Folder + Links 리스트를 Response DTO로 변환
+//        return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
+//    }
 
 
     //Create - 폴더를 만들기
     public ResponseEntity<FoldersResponse> createUserFolder(Long userId, FoldersCreateRequest foldersCreateRequest)
     {
         Users users = usersService.findById(userId);
+        // "", " ", "\t", "\d" , "\n"
+
+
+
+
         Folders folders = foldersService.save(foldersCreateRequest, users);
         if (Boolean.TRUE.equals(folders.isVisible())) {
 //            feedRedisService.pushFeedToRedis(users, folders);

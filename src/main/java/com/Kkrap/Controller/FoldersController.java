@@ -24,35 +24,39 @@ public class FoldersController implements FoldersAPISpec {
         this.foldersManagerService = foldersManagerService;
     }
 
-    @Override
-    public ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Authentication authentication) {
-        Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.getUserAllFoldersWithLinks(userId);
-    }
+//    @Override
+//    public ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Authentication authentication) {
+//        Long userId = Long.parseLong(authentication.getName());
+//        return foldersManagerService.getUserAllFoldersWithLinks(userId);
+//    }
+
+//    @Override
+//    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop1LinksByUser(Authentication authentication,
+//                                                                                          @RequestBody FoldersAllLinksViewRequest request) {
+//        Long userId = Long.parseLong(authentication.getName());
+//        return foldersManagerService.getAllFoldersWithTop1LinksByUser(userId, request);
+//    }
+
+
 
     @Override
-    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop4LinksByUser(Authentication authentication,
-                                                                                          @RequestBody FoldersAllLinksViewRequest request) {
+    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithLinks(Authentication authentication, Long targetUserId) {
         Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.getAllFoldersWithTop4LinksByUser(userId, request);
+        return foldersManagerService.getAllFoldersWithLinks(userId, targetUserId);
     }
 
-    @Override
-    public ResponseEntity<UserFoldersWithSharedResponse> getMeAllFoldersWithTop4Links(Authentication authentication) {
-        Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.getMeAllFoldersWithTop4Links(userId);
-    }
+
+//    @Override
+//    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Authentication authentication,
+//                                                                               @RequestBody OneFoldersLinksDetailViewRequest request) {
+//        Long userId = Long.parseLong(authentication.getName());
+//        return foldersManagerService.getOneFolderWithLinksByUser(userId, request);
+//    }
 
     @Override
-    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Authentication authentication,
-                                                                               @RequestBody OneFoldersLinksDetailViewRequest request) {
+    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinks(Authentication authentication, Long folderId, Long targetUserId) {
         Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.getOneFolderWithLinksByUser(userId, request);
-    }
-
-    @Override
-    public ResponseEntity<FoldersLinksAllResponse> getMyOneFolderWithLinks(Authentication authentication, Long folderId) {
-        return foldersManagerService.getMyOneFolderWithLinks(folderId);
+        return foldersManagerService.getOneFolderWithLinks(userId, folderId, targetUserId);
     }
 
     @Override

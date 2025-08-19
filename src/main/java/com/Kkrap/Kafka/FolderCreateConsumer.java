@@ -43,7 +43,7 @@ public class FolderCreateConsumer {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(message);
 
-            Long folderId = jsonNode.get("folderId").asLong();
+            Long folderId = jsonNode.get("folderId").asLong(); // 이 문자열이 null 일 때 ""
 
             Folders folders = foldersService.findById(folderId);
             Links link = foldersLinksService.getFirstLinkByFolder(folders).orElse(null);

@@ -10,6 +10,8 @@ import com.Kkrap.Service.FolderLink.FoldersManagerService;
 import com.Kkrap.Service.FolderLink.FoldersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,8 +57,24 @@ public class FoldersDocumentManagerService {
         foldersDocumentService.deleteAll();
     }
 
-    public List<FoldersDocument> searchFoldersTop10(String keyword) {
-        return foldersDocumentService.findTop10ByFolderNameContainingIgnoreCase(keyword);
+//    public List<FoldersDocument> searchFoldersTop10(String keyword) {
+//        return foldersDocumentService.findTop10ByFolderNameContainingIgnoreCase(keyword);
+//    }
+
+    public List<FoldersDocument> searchFoldersTop10(String rawKeyword) {
+        String q = normalizeForEsPrefixSearch(rawKeyword);
+        if (q.isBlank()) return List.of();
+        Pageable pageable = PageRequest.of(0, 10); // size 여기서 제어
+        return foldersDocumentService.searchByKeywordSimple(q, pageable);
+    }
+
+    private String normalizeForEsPrefixSearch(String keyword) {
+        if (keyword == null) return "";
+        String trimmed = keyword.trim().replaceAll("\\s+", " ");
+        if (trimmed.isEmpty()) return "";
+        String[] tokens = trimmed.split(" ");
+        tokens[tokens.length - 1] = tokens[tokens.length - 1] + "*"; // 접두 매치
+        return String.join(" ", tokens);
     }
 
     public List<FoldersDocument> searchFolders(String keyword) {

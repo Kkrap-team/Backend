@@ -51,9 +51,15 @@ public class FoldersDocumentService {
     }
 
 
-    public List<FoldersDocument> findTop10ByFolderNameContainingIgnoreCase(String keyword) {
-        return foldersDocumentRepository.findTop10ByFolderNameContainingIgnoreCase(keyword);
+//    public List<FoldersDocument> findTop10ByFolderNameContainingIgnoreCase(String keyword) {
+//        return foldersDocumentRepository.findTop10ByFolderNameContainingIgnoreCase(keyword);
+//    }
+
+    List<FoldersDocument> searchByKeywordSimple(String normalizedQuery, Pageable size){
+        return foldersDocumentRepository.searchByKeywordSimple(normalizedQuery, size).getContent();
     }
+
+
 
     public List<FoldersDocument> findByFolderNameContainingIgnoreCase(String keyword) {
         return foldersDocumentRepository.findByFolderNameContainingIgnoreCase(keyword);
