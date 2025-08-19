@@ -362,8 +362,14 @@ public class FoldersManagerService {
         usersService.findById(userId);
 
         //FolderLinks에 해당 folderId에 속한 FolderLinks 리스트 조회
+
+
         Long folderId = foldersDeleteRequest.getFolderId();
         Folders folders = foldersService.findById(folderId);
+
+        foldersService.isOwnedByService(folders, userId);
+
+
         List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folders);
 
         // FoldersLinks 테이블에서 해당 folderId를 가진 데이터 삭제

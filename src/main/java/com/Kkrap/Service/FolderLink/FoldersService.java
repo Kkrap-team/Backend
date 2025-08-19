@@ -54,7 +54,7 @@ public class FoldersService {
 
     public void isOwnedByService(Folders folders ,Long userId) {
         if (!folders.isOwnedBy(userId)) {
-            throw FoldersNotFoundException.of("폴더가 존재하지 않습니다.");
+            throw FoldersNotFoundException.of("권한이 없는 폴더 입니다.");
         }
     }
 
