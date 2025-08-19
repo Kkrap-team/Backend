@@ -3,6 +3,7 @@ package com.Kkrap.Controller.Spec;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
 import com.Kkrap.RequestDTO.LinksTitleUpdateRequest;
+import com.Kkrap.RequestDTO.MoveLinkToAnotherFolders;
 import com.Kkrap.ResponseDTO.LinksCreateResponse;
 import com.Kkrap.ResponseDTO.LinksResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,4 +49,17 @@ public interface LinksAPISpec {
             Authentication authentication,
             @RequestBody LinksTitleUpdateRequest linksTitleUpdateRequest
     );
+
+    @PatchMapping("/users/links/move")
+    @Operation(
+            summary = "링크 폴더 이동",
+            description = "링크를 현재 폴더에서 다른 폴더로 이동합니다. " +
+                    "이동 시 모든 저장 링크 폴더와의 관계도 함께 반영됩니다."
+    )
+    ResponseEntity<LinksResponse> moveLinkToAnotherFolders(
+            Authentication authentication,
+            @RequestBody MoveLinkToAnotherFolders moveLinkToAnotherFolders
+            );
+
+
 }

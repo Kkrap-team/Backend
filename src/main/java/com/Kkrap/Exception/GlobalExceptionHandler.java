@@ -88,4 +88,19 @@ public class GlobalExceptionHandler {
         ErrorResponse response = ErrorResponse.from(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(FoldersNotFoundLinksException.class)
+    public ResponseEntity<ErrorResponse> handleFoldersNotFoundLinksException(FoldersNotFoundLinksException ex){
+        log.error("handleFoldersNotFoundLinksException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(FoldersSameMoveException.class)
+    public ResponseEntity<ErrorResponse> handleFoldersSameMoveException(FoldersSameMoveException ex){
+        log.error("handleFoldersSameMoveException", ex);
+        ErrorResponse response = ErrorResponse.from(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }

@@ -3,6 +3,7 @@ package com.Kkrap.Service.FolderLink;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Users;
 import com.Kkrap.Exception.FoldersNotFoundException;
+import com.Kkrap.Exception.FoldersSameMoveException;
 import com.Kkrap.Exception.FoldersVisibleException;
 import com.Kkrap.Repository.FoldersRepository;
 import com.Kkrap.RequestDTO.FoldersCreateRequest;
@@ -81,6 +82,11 @@ public class FoldersService {
 
     public List<Folders> findByVisibleTrue(){
         return foldersRepository.findByVisibleTrue();
+    }
+
+
+    void foldersSameMove(){
+        throw FoldersSameMoveException.of("같은 폴더로 이동할 수 없습니다.");
     }
 
 

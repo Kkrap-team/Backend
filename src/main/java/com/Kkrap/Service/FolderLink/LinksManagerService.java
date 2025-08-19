@@ -3,17 +3,21 @@ package com.Kkrap.Service.FolderLink;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.FoldersLinks;
 import com.Kkrap.Entity.Links;
+import com.Kkrap.Entity.Users;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
 import com.Kkrap.RequestDTO.LinksTitleUpdateRequest;
+import com.Kkrap.RequestDTO.MoveLinkToAnotherFolders;
 import com.Kkrap.ResponseDTO.LinksCreateResponse;
 import com.Kkrap.ResponseDTO.LinksResponse;
 import com.Kkrap.Service.Users.UsersService;
 import com.Kkrap.Util.LinkMetadataExtractor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class LinksManagerService {
@@ -31,6 +35,7 @@ public class LinksManagerService {
         this.foldersService = foldersService;
         this.linksService = linksService;
         this.foldersLinksService = foldersLinksService;
+
     }
 
     public ResponseEntity<LinksCreateResponse> createLinkAndAssignToFolders(Long userId, LinksCreateRequest linksCreateRequest){
@@ -72,5 +77,38 @@ public class LinksManagerService {
         linksService.save(link);
         return ResponseEntity.ok(LinksResponse.of(link));
     }
+
+    @Transactional
+    public ResponseEntity<LinksResponse> moveLinkToAnotherFolders(Long userId, MoveLinkToAnotherFolders request) {
+
+        usersService.findById(userId);
+        Links link = linksService.findById(request.getLinkId());
+        Folders source = foldersService.findById(request.getSourceFolderId());
+        Folders target = foldersService.findById(request.getTargetFolderId());
+
+        if (source.getFolderId() == target.getFolderId()) {
+            foldersService.foldersSameMove();
+        }
+
+        foldersService.isOwnedByService(source, userId);
+        foldersService.isOwnedByService(target, userId);
+
+        FoldersLinks sourceRow = foldersLinksService
+                .findByUserIdAndFoldersFolderIdAndLinksLinkId(userId, source.getFolderId(), link.getLinkId());
+
+        boolean targetExists = foldersLinksService
+                .existsByUserIdAndFoldersFolderIdAndLinksLinkId(userId, target.getFolderId(), link.getLinkId());
+
+
+        if (targetExists) {
+            foldersLinksService.deleteByUserIdAndFoldersFolderIdAndLinksLinkId(
+                    userId, source.getFolderId(), link.getLinkId()
+            );
+            return ResponseEntity.ok(LinksResponse.of(link));
+        }
+        sourceRow.setFolders(target);
+        return ResponseEntity.ok(LinksResponse.of(link));
+    }
+
 
 }

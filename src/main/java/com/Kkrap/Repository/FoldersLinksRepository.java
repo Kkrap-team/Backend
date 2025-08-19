@@ -15,4 +15,16 @@ public interface FoldersLinksRepository extends JpaRepository<FoldersLinks, Long
 
     Optional<FoldersLinks> findFirstByFoldersOrderByLinksCreateTimeDesc(Folders folders);
 
+    Optional<FoldersLinks> findByUserIdAndFoldersFolderIdAndLinksLinkId(
+            Long userId, Long folderId, Long linkId
+    );
+
+    boolean existsByUserIdAndFoldersFolderIdAndLinksLinkId(
+            Long userId, Long folderId, Long linkId
+    );
+
+    void deleteByUserIdAndFoldersFolderIdAndLinksLinkId(
+            Long userId, Long folderId, Long linkId
+    );
+
 }

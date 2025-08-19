@@ -4,6 +4,7 @@ import com.Kkrap.Controller.Spec.LinksAPISpec;
 import com.Kkrap.RequestDTO.LinksCreateRequest;
 import com.Kkrap.RequestDTO.LinksDeleteRequest;
 import com.Kkrap.RequestDTO.LinksTitleUpdateRequest;
+import com.Kkrap.RequestDTO.MoveLinkToAnotherFolders;
 import com.Kkrap.ResponseDTO.LinksCreateResponse;
 import com.Kkrap.ResponseDTO.LinksResponse;
 import com.Kkrap.Service.FolderLink.LinksManagerService;
@@ -39,5 +40,11 @@ public class LinksController implements LinksAPISpec {
     public ResponseEntity<LinksResponse> updateLinkTitle(Authentication authentication, LinksTitleUpdateRequest linksTitleUpdateRequest) {
         Long userId = Long.parseLong(authentication.getName());
         return linksManagerService.updateLinkTitle(userId, linksTitleUpdateRequest);
+    }
+
+    @Override
+    public ResponseEntity<LinksResponse> moveLinkToAnotherFolders(Authentication authentication, MoveLinkToAnotherFolders moveLinkToAnotherFolders) {
+        Long userId = Long.parseLong(authentication.getName());
+        return linksManagerService.moveLinkToAnotherFolders(userId, moveLinkToAnotherFolders);
     }
 }
