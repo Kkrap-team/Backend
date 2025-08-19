@@ -411,10 +411,14 @@ public class FoldersManagerService {
     @Transactional
     public ResponseEntity<FoldersLinksAllResponse> scrapFolder(Long userId, FoldersScrapRequest foldersScrapRequest) {
         Users user = usersService.findById(userId);
-        Folders newFolder = foldersService.save(Folders.of(foldersScrapRequest, user));
 
         Folders sourceFolder = foldersService.findById(foldersScrapRequest.getSourceFolderId());
 
+        if (sourceFolder.isOwnedBy(userId)) {
+            foldersService.sameScrapfolders();
+        }
+
+        Folders newFolder = foldersService.save(Folders.of(foldersScrapRequest, user));
         //Redis
         String redisKey = "scrap:" + sourceFolder.getFolderId();
         redisTemplate.opsForValue().increment(redisKey);

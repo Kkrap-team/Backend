@@ -90,4 +90,9 @@ public class FoldersService {
     }
 
 
+    void sameScrapfolders(){
+        throw FoldersSameMoveException.of("내가 가진 폴더는 스크랩할 수 없습니다.");
+    }
+
+
 }
