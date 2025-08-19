@@ -20,7 +20,27 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
 
     List<FoldersDocument> findByFolderNameContainingIgnoreCase(String keyword);
 
-    List<FoldersDocument> findTop10ByFolderNameContainingIgnoreCase(String keyword);
+
+
+
+//    List<FoldersDocument> findTop10ByFolderNameContainingIgnoreCase(String keyword);
+
+    /**
+     * simple_query_string 으로 안전하게 검색.
+     * - default_operator AND: 공백으로 구분된 모든 토큰이 포함되도록
+     * - analyze_wildcard: 우리가 붙인 * 도 분석되게
+     */
+    @Query("""
+    {
+      "simple_query_string": {
+        "query": "?0",
+        "fields": ["folderName^2"],
+        "default_operator": "AND",
+        "analyze_wildcard": true
+      }
+    }
+    """)
+    Page<FoldersDocument> searchByKeywordSimple(String normalizedQuery, Pageable pageable);
 
 
     // 지난 7일 이내 + viewCount 내림차순

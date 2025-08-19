@@ -5,8 +5,10 @@ import com.Kkrap.Entity.Links;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
-
-import java.time.LocalDateTime;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.InnerField;
+import org.springframework.data.elasticsearch.annotations.MultiField;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 @Document(indexName = "folders")
 @Getter
@@ -17,6 +19,12 @@ public class FoldersDocument {
     @Id
     private Long folderId;
 
+    @MultiField(
+            mainField = @Field(type = FieldType.Text, analyzer = "nori", searchAnalyzer = "nori"),
+            otherFields = {
+                    @InnerField(suffix = "ngram", type = FieldType.Text, analyzer = "ngram_analyzer")
+            }
+    )
     private String folderName;
     private String folderDescription;
     private String createTime;
