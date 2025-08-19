@@ -1,5 +1,6 @@
 package com.Kkrap.RequestDTO;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +12,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FoldersCreateRequest {
 
+    @NotNull
     private String folderName;
 
+    @NotNull
     private String folderDescription;
 
     private boolean visible;
