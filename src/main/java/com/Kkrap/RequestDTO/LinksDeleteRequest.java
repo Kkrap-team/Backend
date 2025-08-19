@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class LinksDeleteRequest {
 
-    private Long defaultFoldersId;
 
     private Long foldersId;
 
@@ -19,8 +18,8 @@ public class LinksDeleteRequest {
 
     private LinksDeleteRequest() {}
 
-    public static LinksDeleteRequest of(Long defaultFodersId, Long foldersId, List<Long> deleteLinkIdList ){
-        return new LinksDeleteRequest(defaultFodersId, foldersId, deleteLinkIdList);
+    public static LinksDeleteRequest of(Long foldersId, List<Long> deleteLinkIdList ){
+        return new LinksDeleteRequest(foldersId, deleteLinkIdList);
     }
 
 }

@@ -14,8 +14,6 @@ public class LinksCreateResponse {
 
     private Long foldersId;
 
-    private Long defaultFoldersId;
-
     private String linkUrl;
 
     private LocalDateTime createTime;
@@ -28,8 +26,8 @@ public class LinksCreateResponse {
 
     private LinksCreateResponse() {}
 
-    public static LinksCreateResponse of(Links links, Long defaultFoldersId, Long foldersId){
-        return new LinksCreateResponse(foldersId, defaultFoldersId, links.getLinkUrl(), links.getCreateTime(), links.getLinkName(), links.getThumbnailUrl(), links.getFaviconUrl());
+    public static LinksCreateResponse of(Links links, Long foldersId){
+        return new LinksCreateResponse(foldersId, links.getLinkUrl(), links.getCreateTime(), links.getLinkName(), links.getThumbnailUrl(), links.getFaviconUrl());
     }
 
 }

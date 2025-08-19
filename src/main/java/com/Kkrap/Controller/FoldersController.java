@@ -24,34 +24,12 @@ public class FoldersController implements FoldersAPISpec {
         this.foldersManagerService = foldersManagerService;
     }
 
-//    @Override
-//    public ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Authentication authentication) {
-//        Long userId = Long.parseLong(authentication.getName());
-//        return foldersManagerService.getUserAllFoldersWithLinks(userId);
-//    }
-
-//    @Override
-//    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop1LinksByUser(Authentication authentication,
-//                                                                                          @RequestBody FoldersAllLinksViewRequest request) {
-//        Long userId = Long.parseLong(authentication.getName());
-//        return foldersManagerService.getAllFoldersWithTop1LinksByUser(userId, request);
-//    }
-
-
-
     @Override
     public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithLinks(Authentication authentication, Long targetUserId) {
         Long userId = Long.parseLong(authentication.getName());
         return foldersManagerService.getAllFoldersWithLinks(userId, targetUserId);
     }
 
-
-//    @Override
-//    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(Authentication authentication,
-//                                                                               @RequestBody OneFoldersLinksDetailViewRequest request) {
-//        Long userId = Long.parseLong(authentication.getName());
-//        return foldersManagerService.getOneFolderWithLinksByUser(userId, request);
-//    }
 
     @Override
     public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinks(Authentication authentication, Long folderId, Long targetUserId) {

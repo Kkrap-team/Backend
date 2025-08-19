@@ -20,9 +20,7 @@ public class FoldersCreateRequest {
 
     private boolean visible;
 
-    private boolean defaultFolder;
-
-    public static FoldersCreateRequest of(String folderName, String folderDescription, boolean visible, boolean defaultFolder){
-        return new FoldersCreateRequest(folderName, folderDescription, visible, defaultFolder);
+    public static FoldersCreateRequest of(String folderName, String folderDescription, boolean visible){
+        return new FoldersCreateRequest(folderName, folderDescription, visible);
     }
 }

@@ -14,7 +14,4 @@ public class LinksCreateRequest {
     private String linkUrl;
 
     private Long foldersId;
-
-    private Long defaultFoldersId;
-
 }

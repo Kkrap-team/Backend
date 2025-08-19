@@ -87,57 +87,6 @@ public class FoldersManagerService {
                 .toList();
     }
 
-//    @Transactional(readOnly = true)
-//    public ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Long userId){
-//        usersService.findById(userId);
-//        List<Folders> allMyFolders = foldersService.findByUserUserId(userId);
-//
-//        // shared 컬럼으로 분리
-//        // defaultFolder == true인 폴더 (딱 하나라고 가정)
-//        List<Folders> defaultFolderList = allMyFolders.stream()
-//                .filter(folder -> !folder.isShared() && folder.isDefaultFolder())
-//                .toList();
-//
-//        // 나머지 공유되지 않은 폴더 중 defaultFolder == false 인 것들
-//        List<Folders> otherOwnFolders = notSharedFoldersSelect(allMyFolders);
-//
-//        // shared 컬럼으로 분리
-//        List<Folders> ownFolders = conncatFolders(defaultFolderList, otherOwnFolders);
-//
-//        List<Folders> mySharedFolders = allMyFolders.stream()
-//                .filter(Folders::isShared)
-//                .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
-//                .collect(Collectors.toList());
-//
-//        // 공유받은 폴더 (권한 테이블 기준)
-//        List<FoldersPermissions> sharedPermissions = foldersPermissionsService.findByInvitedUserId(userId);
-//        List<Folders> invitedSharedFolders = sharedPermissions.stream()
-//                .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
-//                .collect(Collectors.toList());
-//
-//        // 공유 폴더 합치기
-//        List<Folders> allSharedFolders = conncatFolders(mySharedFolders, invitedSharedFolders);
-//
-//        //변환
-//        List<FoldersLinksAllResponse> ownFolderResponses = ownFolders.stream()
-//                .map(folder -> {
-//                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-//                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
-//                    return FoldersLinksAllResponse.of(folder, linksList);
-//                })
-//                .collect(Collectors.toList());
-//
-//        List<SharedFoldersLinksAllResponse> sharedFolderResponses = allSharedFolders.stream()
-//                .map(folder -> {
-//                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
-//                    List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
-//                    return SharedFoldersLinksAllResponse.of(folder, linksList);
-//                })
-//                .collect(Collectors.toList());
-//
-//        UserFoldersWithSharedResponse response = UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses);
-//        return ResponseEntity.ok(response);
-//    }
 
     List<FoldersLinksAllResponse> AllOwnerFolderslinksSelectTop1linksByCreateTime(List<Folders> folders){
         return folders.stream()
@@ -171,7 +120,7 @@ public class FoldersManagerService {
 
     List<Folders> notSharedFoldersSelect(List<Folders> allMyFolders){
         return allMyFolders.stream()
-                .filter(folder -> !folder.isShared() && !folder.isDefaultFolder())
+                .filter(folder -> !folder.isShared())
                 .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
                 .toList();
     }
@@ -218,7 +167,7 @@ public class FoldersManagerService {
 //                    .filter(folder -> !folder.isShared() && !folder.isDefaultFolder() && folder.isVisible() )
 //                    .toList();
             ownFolders = allMyFolders.stream()
-                    .filter(folder -> !folder.isShared() && !folder.isDefaultFolder() && folder.isVisible())
+                    .filter(folder -> !folder.isShared() && folder.isVisible())
                     .sorted(Comparator.comparing(Folders::getCreateTime))
                     .toList();
 

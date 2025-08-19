@@ -17,7 +17,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private Key key;
-    private final long accessTokenValidity = 1000 * 60 * 15; // 15분
+    private final long accessTokenValidity = 1000 * 60 * 60; // 1시간
     private final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // 7일
 //    private final long refreshTokenValidity = 1000L * 60 * 1;
 

@@ -19,7 +19,6 @@ public class SharedFoldersLinksAllResponse {
     private String folderName;
     private String folderDescription;
     private boolean visible;
-    private boolean defaultFolder;
     private Long viewCount;
     private Long scrapCount;
     private boolean share;
@@ -38,7 +37,6 @@ public class SharedFoldersLinksAllResponse {
                 folder.getFolderName(),
                 folder.getFolderDescription(),
                 folder.isVisible(),
-                folder.isDefaultFolder(),
                 folder.getViewCount(),
                 folder.getScrapCount(),
                 folder.isShared(),

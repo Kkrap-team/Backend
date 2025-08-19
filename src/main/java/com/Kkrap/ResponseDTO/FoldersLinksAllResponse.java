@@ -17,7 +17,6 @@ public class FoldersLinksAllResponse {
     private String folderName;
     private String folderDescription;
     private boolean visible;
-    private boolean defaultFolder;
     private Long viewCount;
     private Long scrapCount;
     private boolean share;
@@ -36,7 +35,6 @@ public class FoldersLinksAllResponse {
         String folderName = folder.getFolderName();
         String folderDescription = folder.getFolderDescription();
         boolean visible = folder.isVisible();
-        boolean defaultFolder = folder.isDefaultFolder();
         Long viewCount = folder.getViewCount();
         Long scrapCount = folder.getScrapCount();
         boolean share = folder.isShared();
@@ -48,6 +46,6 @@ public class FoldersLinksAllResponse {
         List<LinksResponse> links = linksList.stream()
                 .map(LinksResponse::new)
                 .collect(Collectors.toList());
-        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, visible, defaultFolder, viewCount, scrapCount, share, createTime, ownerUserId, ownerNickname,links);
+        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, visible, viewCount, scrapCount, share, createTime, ownerUserId, ownerNickname,links);
     }
 }

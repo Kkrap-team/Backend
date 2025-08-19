@@ -53,7 +53,7 @@ import java.util.Optional;
 
             // 2. 기본 폴더 생성
             FoldersCreateRequest foldersCreateRequest = FoldersCreateRequest.of(
-                    "모든 링크", "모든 링크가 저장된 폴더입니다.", false, true
+                    "기본 폴더", "기본 폴더입니다.", false
             );
             foldersService.save(foldersCreateRequest, user);
         } else {
