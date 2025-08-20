@@ -4,6 +4,7 @@ import com.Kkrap.ElasticSearch.FoldersDocument;
 import com.Kkrap.Entity.Folders;
 import com.Kkrap.Entity.Links;
 import com.Kkrap.Entity.Users;
+import com.Kkrap.Exception.FoldersNotFoundException;
 import com.Kkrap.ResponseDTO.ElasticSearchRankingResponse;
 import com.Kkrap.Service.FolderLink.FoldersLinksService;
 import com.Kkrap.Service.FolderLink.FoldersManagerService;
@@ -89,12 +90,12 @@ public class FoldersDocumentManagerService {
     }
 
     //조회수 업데이트 후 색인 업데이트
-    @Transactional(readOnly = true)
-    public void updateFolderDocumentById(Long folderId) {
-        Folders folder = foldersService.findById(folderId);
-        Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
-        foldersDocumentService.indexNewFolder(folder, link);
-    }
+//    @Transactional
+//    public void updateFolderDocumentById(Long folderId) {
+//        Folders folder = foldersService.findById(folderId);
+//        Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
+//        foldersDocumentService.indexNewFolder(folder, link);
+//    }
 
 
     public void updateUserInfoInFolderDocuments(Users users, List<Folders> userFolders) {
@@ -107,6 +108,64 @@ public class FoldersDocumentManagerService {
     }
 
 
+
+    /**
+     * 단일 폴더 색인 갱신.
+     * - 폴더가 삭제되었거나 없으면 무시 (로그만 남김)
+     * - 폴더가 비공개(visible=false)이면 ES에서 제거
+     * - 대표 링크(첫 링크) 재계산 후 upsert
+     */
+    @Transactional(readOnly = true)
+    public void updateFolderDocumentById(Long folderId) {
+        try {
+            Folders folder = foldersService.findById(folderId);
+
+            if (!folder.isVisible()) {
+                logger.info("[ES] folderId={} not visible. delete from index.", folderId);
+                safeDeleteFromEs(folderId);
+                return;
+            }
+
+            Links firstLink = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
+            foldersDocumentService.indexNewFolder(folder, firstLink);
+            logger.info("[ES] Reindexed folderId={}", folderId);
+
+        } catch (FoldersNotFoundException e) {
+            logger.warn("[ES] folderId={} not found in DB. delete from index.", folderId);
+            safeDeleteFromEs(folderId);
+        } catch (Exception e) {
+            logger.error("[ES] Failed to reindex folderId={}", folderId, e);
+        }
+    }
+
+    /**
+     * 여러 폴더를 한 번에 갱신(중복 제거).
+     * afterCommit에서 source/target 같이 넘길 때 편의 메서드.
+     */
+//    @Transactional(readOnly = true)
+//    public void updateFolderDocumentsByIds(Collection<Long> folderIds) {
+//        if (folderIds == null || folderIds.isEmpty()) return;
+//        Set<Long> distinct = new HashSet<>(folderIds);
+//        distinct.forEach(this::updateFolderDocumentById);
+//    }
+    @Transactional(readOnly = true)
+    public void reindexUserVisibleFolders(Long userId) {
+        List<Folders> folders = foldersService.findByUserIdAndVisibleTrue(userId);
+        for (Folders folder : folders) {
+            Links firstLink = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
+            foldersDocumentService.indexNewFolder(folder, firstLink); // upsert
+        }
+        logger.info("[ES] reindexed user visible folders. userId={}", userId);
+    }
+
+    public void safeDeleteFromEs(Long folderId) {
+        try {
+            foldersDocumentService.deleteById(folderId);
+        } catch (Exception ex) {
+            // 존재하지 않아도 예외 무시
+            logger.debug("[ES] delete skip or failed for folderId={}: {}", folderId, ex.getMessage());
+        }
+    }
 
 
 

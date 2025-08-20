@@ -87,8 +87,13 @@ public class FoldersPermissionsManagerService {
         boolean isOwner = folder.isOwnedBy(userId);
 
         // 권한 체크: 소유자가 아니면 초대받은 사용자여야 함 (exists 결과를 반드시 사용!)
+//        if (!isOwner) {
+//            foldersPermissionsService.existsByFolderFolderIdAndInvitedUserId(folderId, userId);
+//        }
+        boolean hasPermission = true;
         if (!isOwner) {
-            foldersPermissionsService.existsByFolderFolderIdAndInvitedUserId(folderId, userId);
+            hasPermission = foldersPermissionsService
+                    .existsByFolderFolderIdAndInvitedUserId(folderId, userId);
         }
 
         // 후보 기준을 'owner가 팔로우한 사람'으로 변경
@@ -112,11 +117,18 @@ public class FoldersPermissionsManagerService {
         List<FollowInviteCandidateResponse> invited = partitioned.getOrDefault(true, List.of());
         List<FollowInviteCandidateResponse> notInvited = partitioned.getOrDefault(false, List.of());
 
+//        FollowInviteListResponse response = FollowInviteListResponse.of(
+//                UsersProfileResponse.from(owner),
+//                candidates,
+//                invited,
+//                notInvited
+//        );
         FollowInviteListResponse response = FollowInviteListResponse.of(
                 UsersProfileResponse.from(owner),
                 candidates,
                 invited,
-                notInvited
+                notInvited,
+                hasPermission
         );
         return ResponseEntity.ok(response);
     }

@@ -10,11 +10,15 @@ import com.Kkrap.RequestDTO.LinksTitleUpdateRequest;
 import com.Kkrap.RequestDTO.MoveLinkToAnotherFolders;
 import com.Kkrap.ResponseDTO.LinksCreateResponse;
 import com.Kkrap.ResponseDTO.LinksResponse;
+import com.Kkrap.Service.FoldersDocument.FoldersDocumentManagerService;
+import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.Users.UsersService;
 import com.Kkrap.Util.LinkMetadataExtractor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,16 +32,20 @@ public class LinksManagerService {
 
     private final FoldersLinksService foldersLinksService;
 
+    private final FoldersDocumentManagerService foldersDocumentManagerService;
+
 
     public LinksManagerService(UsersService usersService, FoldersService foldersService,
-                               LinksService linksService, FoldersLinksService foldersLinksService){
+                               LinksService linksService, FoldersLinksService foldersLinksService,
+                               FoldersDocumentManagerService foldersDocumentManagerService){
         this.usersService = usersService;
         this.foldersService = foldersService;
         this.linksService = linksService;
         this.foldersLinksService = foldersLinksService;
+        this.foldersDocumentManagerService = foldersDocumentManagerService;
 
     }
-
+    @Transactional
     public ResponseEntity<LinksCreateResponse> createLinkAndAssignToFolders(Long userId, LinksCreateRequest linksCreateRequest){
         usersService.findById(userId);
         Folders folders = foldersService.findById(linksCreateRequest.getFoldersId());
@@ -46,10 +54,17 @@ public class LinksManagerService {
         links = linksService.save(links); // 3. 링크 저장
         foldersLinksService.save(FoldersLinks.of(folders, links, userId)); //폴더 링크에 삽입 -> folders_links에 넣어야 됨
 
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                foldersDocumentManagerService.updateFolderDocumentById(linksCreateRequest.getFoldersId());
+            }
+        });
+
         return ResponseEntity.ok(LinksCreateResponse.of(links, linksCreateRequest.getFoldersId()));
     }
 
 
+    @Transactional
     public ResponseEntity<LinksDeleteRequest> deleteLinksWithFolderMapping(Long userId, LinksDeleteRequest linksDeleteRequest) {
         usersService.findById(userId);
         List<Long> deleteLinkIdList = linksDeleteRequest.getLinkId();
@@ -66,9 +81,15 @@ public class LinksManagerService {
                 foldersLinksService.delete(fl);// folders_links 삭제
             }
         }
-        return ResponseEntity.ok(LinksDeleteRequest.of(foldersId, deleteLinkIdList));
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                foldersDocumentManagerService.updateFolderDocumentById(foldersId);
+            }
+        });
 
+        return ResponseEntity.ok(LinksDeleteRequest.of(foldersId, deleteLinkIdList));
     }
+
 
     public ResponseEntity<LinksResponse> updateLinkTitle(Long userId, LinksTitleUpdateRequest linksTitleUpdateRequest) {
         usersService.findById(userId);
@@ -101,12 +122,19 @@ public class LinksManagerService {
 
 
         if (targetExists) {
-            foldersLinksService.deleteByUserIdAndFoldersFolderIdAndLinksLinkId(
-                    userId, source.getFolderId(), link.getLinkId()
-            );
-            return ResponseEntity.ok(LinksResponse.of(link));
+            foldersLinksService.deleteByUserIdAndFoldersFolderIdAndLinksLinkId(userId, source.getFolderId(), link.getLinkId());
+        } else {
+            sourceRow.setFolders(target);
         }
-        sourceRow.setFolders(target);
+        Long sourceId = source.getFolderId();
+        Long targetId = target.getFolderId();
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                foldersDocumentManagerService.updateFolderDocumentById(sourceId);
+                foldersDocumentManagerService.updateFolderDocumentById(targetId);
+            }
+        });
+
         return ResponseEntity.ok(LinksResponse.of(link));
     }
 

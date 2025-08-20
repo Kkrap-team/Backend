@@ -7,6 +7,7 @@ import com.Kkrap.RequestDTO.*;
 import com.Kkrap.ResponseDTO.*;
 import com.Kkrap.Service.ActivityFeed.ActivityFeedService;
 import com.Kkrap.Service.FeedRedisService;
+import com.Kkrap.Service.FoldersDocument.FoldersDocumentManagerService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FoldersPermissionsService;
 import com.Kkrap.Service.Users.UsersService;
@@ -18,6 +19,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -41,12 +44,15 @@ public class FoldersManagerService {
     private final FolderCreateProducer folderCreateProducer;
 
     private final FoldersDocumentService foldersDocumentService;
-
     private final FoldersPermissionsService foldersPermissionsService;
 
     private final FeedRedisService feedRedisService;
 
     private final ActivityFeedService activityFeedService;
+
+    private final FoldersDocumentManagerService foldersDocumentManagerService;
+
+
 
 
     // 상수
@@ -66,7 +72,8 @@ public class FoldersManagerService {
                                  FoldersDocumentService foldersDocumentService,
                                  FoldersPermissionsService foldersPermissionsService,
                                  FeedRedisService feedRedisService,
-                                 ActivityFeedService activityFeedService
+                                 ActivityFeedService activityFeedService,
+                                 FoldersDocumentManagerService foldersDocumentManagerService
                                  ) {
         this.foldersService = foldersService;
         this.usersService = usersService;
@@ -78,6 +85,7 @@ public class FoldersManagerService {
         this.foldersPermissionsService = foldersPermissionsService;
         this.feedRedisService = feedRedisService;
         this.activityFeedService = activityFeedService;
+        this.foldersDocumentManagerService = foldersDocumentManagerService;
     }
 
 
@@ -113,6 +121,16 @@ public class FoldersManagerService {
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
                     List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
+                    return SharedFoldersLinksAllResponse.of(folder, linksList);
+                })
+                .collect(Collectors.toList());
+    }
+
+    List<SharedFoldersLinksAllResponse> AllSharedFolderslinksSelectTop4linksByCreateTime(List<Folders> folders){
+        return folders.stream()
+                .map(folder -> {
+                    List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+                    List<Links> linksList = linksService.selectTop4LinksByCreateTime(folderLinksList);
                     return SharedFoldersLinksAllResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
@@ -155,8 +173,8 @@ public class FoldersManagerService {
                     .map(permission -> foldersService.findById(permission.getFolder().getFolderId()))
                     .collect(Collectors.toList());
             allSharedFolders = conncatFolders(mySharedFolders, invitedSharedFolders);
-            ownFolderResponses = AllOwnerFolderslinksSelectTop4linksByCreateTime(ownFolders);
-            sharedFolderResponses = AllSharedFolderslinksSelectTop1linksByCreateTime(allSharedFolders);
+            ownFolderResponses = AllOwnerFolderslinksSelectTop1linksByCreateTime(ownFolders);
+            sharedFolderResponses = AllSharedFolderslinksSelectTop4linksByCreateTime(allSharedFolders);
             return ResponseEntity.ok(UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses));
 
         }
@@ -185,7 +203,7 @@ public class FoldersManagerService {
             allSharedFolders = conncatFolders(mySharedFolders, invitedSharedFolders);
 
             ownFolderResponses = AllOwnerFolderslinksSelectTop1linksByCreateTime(ownFolders);
-            sharedFolderResponses = AllSharedFolderslinksSelectTop1linksByCreateTime(allSharedFolders);
+            sharedFolderResponses = AllSharedFolderslinksSelectTop4linksByCreateTime(allSharedFolders);
             return ResponseEntity.ok(UserFoldersWithSharedResponse.of(ownFolderResponses, sharedFolderResponses));
         }
 
@@ -337,8 +355,6 @@ public class FoldersManagerService {
         // "", " ", "\t", "\d" , "\n"
 
 
-
-
         Folders folders = foldersService.save(foldersCreateRequest, users);
         if (Boolean.TRUE.equals(folders.isVisible())) {
 //            feedRedisService.pushFeedToRedis(users, folders);
@@ -380,7 +396,11 @@ public class FoldersManagerService {
         foldersService.deleteById(folderId);
 
         //색인 업데이트
-        foldersDocumentService.deleteFolderDocument(folders);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                foldersDocumentManagerService.safeDeleteFromEs(folderId);
+            }
+        });
 
 
         activityFeedService.deleteAllByFolderId(folderId);
@@ -399,12 +419,18 @@ public class FoldersManagerService {
         folders.setVisible(request.isVisible());
         foldersService.save(folders);
 
-        if (folders.isVisible()) {
-            Optional<Links> link = foldersLinksService.getFirstLinkByFolder(folders);
-            foldersDocumentService.indexNewFolder(folders, link.orElse(null));
-        } else {
-            foldersDocumentService.deleteFolderDocument(folders);
-        }
+//        if (folders.isVisible()) {
+//            Optional<Links> link = foldersLinksService.getFirstLinkByFolder(folders);
+//            foldersDocumentService.indexNewFolder(folders, link.orElse(null));
+//        } else {
+//            foldersDocumentService.deleteFolderDocument(folders);
+//        }
+        Long folderId = folders.getFolderId();
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                foldersDocumentManagerService.updateFolderDocumentById(folderId);
+            }
+        });
 
         return ResponseEntity.ok(FoldersResponse.from(folders, users.getUserId()));
     }

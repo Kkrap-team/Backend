@@ -29,7 +29,6 @@ public class FoldersDocumentService {
     public void indexNewFolder(Folders folder, Links link) {
         FoldersDocument doc = FoldersDocument.from(folder, link);
         save(doc);
-
     }
 
     //색인 삭제
@@ -106,5 +105,10 @@ public class FoldersDocumentService {
         Pageable pageable = PageRequest.of(0, n, Sort.by(Sort.Direction.DESC, "createTime"));
         return foldersDocumentRepository.findAll(pageable).getContent();
     }
+
+
+
+
+
 
 }

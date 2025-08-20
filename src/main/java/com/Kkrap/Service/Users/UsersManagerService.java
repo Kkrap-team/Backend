@@ -9,6 +9,7 @@ import com.Kkrap.ResponseDTO.MessageResponse;
 import com.Kkrap.ResponseDTO.UsersProfileResponse;
 import com.Kkrap.Service.FolderLink.FoldersLinksService;
 import com.Kkrap.Service.FolderLink.FoldersService;
+import com.Kkrap.Service.FoldersDocument.FoldersDocumentManagerService;
 import com.Kkrap.Service.FoldersDocument.FoldersDocumentService;
 import com.Kkrap.Service.FollowsFoldersPermission.FollowsService;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -32,15 +35,18 @@ public class UsersManagerService {
 
     private final FoldersLinksService foldersLinksService;
 
+    private final FoldersDocumentManagerService foldersDocumentManagerService;
+
     private static final Logger logger = LoggerFactory.getLogger(UsersManagerService.class);
 
     public UsersManagerService(UsersService usersService, FoldersService foldersService, FoldersDocumentService foldersDocumentService,
-                               FollowsService followsService, FoldersLinksService foldersLinksService){
+                               FollowsService followsService, FoldersLinksService foldersLinksService, FoldersDocumentManagerService foldersDocumentManagerService){
         this.usersService = usersService;
         this.foldersService = foldersService;
         this.foldersDocumentService = foldersDocumentService;
         this.followsService = followsService;
         this.foldersLinksService = foldersLinksService;
+        this.foldersDocumentManagerService = foldersDocumentManagerService;
     }
 
     public ResponseEntity<UsersProfileResponse> getUserProfile(Long userId){
@@ -72,6 +78,12 @@ public class UsersManagerService {
         userFolders.forEach(folder -> {
             Links link = foldersLinksService.getFirstLinkByFolder(folder).orElse(null);
             foldersDocumentService.updateUserInfoInFolderDocuments(users, folder, link);
+        });
+        // 커밋 성공 후에만 ES 재색인
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                foldersDocumentManagerService.reindexUserVisibleFolders(userId); // 아래 2) 참고
+            }
         });
         logger.info("[Elasticsearch] 사용자 정보 변경으로 색인 업데이트 완료: userId=" + users.getUserId());
 

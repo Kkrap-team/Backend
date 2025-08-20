@@ -24,14 +24,19 @@ public class FolderCreateConsumer {
 
     private final FoldersLinksService foldersLinksService;
 
+    private final FoldersDocumentManagerService foldersDocumentManagerService;
+
+
     private static final Logger logger = LoggerFactory.getLogger(FolderCreateConsumer.class);
 
     public FolderCreateConsumer(FoldersDocumentService foldersDocumentService,
                                 FoldersService foldersService,
-                                FoldersLinksService foldersLinksService){
+                                FoldersLinksService foldersLinksService,
+                                FoldersDocumentManagerService foldersDocumentManagerService){
         this.foldersDocumentService = foldersDocumentService;
         this.foldersService = foldersService;
         this.foldersLinksService = foldersLinksService;
+        this.foldersDocumentManagerService = foldersDocumentManagerService;
     }
 
 
@@ -44,11 +49,17 @@ public class FolderCreateConsumer {
             JsonNode jsonNode = mapper.readTree(message);
 
             Long folderId = jsonNode.get("folderId").asLong(); // 이 문자열이 null 일 때 ""
+            if (folderId <= 0) {
+                logger.warn("[Kafka Consumer] 잘못된 folderId: {}", jsonNode.path("folderId"));
+                return;
+            }
+            // 공개만 색인 (비공개면 삭제/스킵)
+            foldersDocumentManagerService.updateFolderDocumentById(folderId);
 
-            Folders folders = foldersService.findById(folderId);
-            Links link = foldersLinksService.getFirstLinkByFolder(folders).orElse(null);
-            // 서비스 계층에 위임
-            foldersDocumentService.indexNewFolder(folders, link);
+//            Folders folders = foldersService.findById(folderId);
+//            Links link = foldersLinksService.getFirstLinkByFolder(folders).orElse(null);
+//            // 서비스 계층에 위임
+//            foldersDocumentService.indexNewFolder(folders, link);
 
             logger.info("[Kafka Consumer] Elasticsearch 색인 추가 완료: " + folderId);
 
