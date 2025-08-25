@@ -38,3 +38,8 @@ out/
 
 ### application.properties ##
 /src/main/resources/application.properties
+/src/main/resources/application-local.properties
+/local_volumes
+
+docker-compose.local.yml
+

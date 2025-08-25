@@ -13,6 +13,7 @@ java {
 	}
 }
 
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -24,6 +25,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.security:spring-security-oauth2-client'
@@ -35,14 +38,45 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit 5 포함됨
+	testImplementation 'org.mockito:mockito-core'
+	testImplementation 'org.mockito:mockito-junit-jupiter' // Mockito + JUnit 5 통합
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// AutoParams (JUnit 5 기반 자동 파라미터 생성)
+	implementation("io.github.autoparams:autoparams:11.2.0")
+	// JUnit 플랫폼 런처 (IDE 외부에서 테스트 실행 시 필요할 수 있음)
 
 	//링크 추출
 	implementation 'org.jsoup:jsoup:1.17.2'
 
 	//스웨거
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	//kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+
+	//elasticsearch
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'org.springframework.retry:spring-retry'
+
+	//jwt
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+	//S3
+	implementation "software.amazon.awssdk:s3:2.25.6"
+	implementation "software.amazon.awssdk:auth:2.25.6"
+	implementation "software.amazon.awssdk:core:2.25.6"
+
+	// 모니터링
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
 }
 
 tasks.named('test') {
