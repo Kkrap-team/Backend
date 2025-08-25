@@ -12,10 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FoldersDocumentManagerService {
@@ -165,6 +166,23 @@ public class FoldersDocumentManagerService {
             logger.debug("[ES] delete skip or failed for folderId={}: {}", folderId, ex.getMessage());
         }
     }
+
+    public ResponseEntity<List<FoldersDocument>> getRandomizedTopFolders() {
+        List<FoldersDocument> topView = foldersDocumentService.getTop25ViewCountLastWeek();
+        List<FoldersDocument> topScrap = foldersDocumentService.getTop25ScrapCountLastWeek();
+
+        // 중복 제거 및 합치기
+        Map<Long, FoldersDocument> merged = new LinkedHashMap<>();
+        topView.forEach(doc -> merged.put(doc.getFolderId(), doc));
+        topScrap.forEach(doc -> merged.put(doc.getFolderId(), doc));
+
+        // 셔플
+        List<FoldersDocument> combined = new ArrayList<>(merged.values());
+        Collections.shuffle(combined);
+
+        return ResponseEntity.ok(combined);  // constructor 하나 더 추가 필요할 수 있음
+    }
+
 
 
 
