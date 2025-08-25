@@ -48,15 +48,16 @@ public class LinkMetadataExtractor {
                     thumbnail = preloadImage.attr("href");
                 }
             }
+
             // 파비콘
             String favicon = null;
             Elements appleOrIconElements = doc.select("link[rel~=^(apple-touch-icon|icon)$]");
             if (!appleOrIconElements.isEmpty()) {
-                favicon = appleOrIconElements.first().attr("href");
+                favicon = appleOrIconElements.last().attr("href");
             } else {
-                Element shortcutIcon = doc.selectFirst("link[rel~=(?i)^(shortcut icon)$]");
-                if (shortcutIcon != null) {
-                    favicon = shortcutIcon.attr("href");
+                Elements shortcutIcons = doc.select("link[rel~=(?i)^(shortcut icon)$]");
+                if (!shortcutIcons.isEmpty()) {
+                    favicon = shortcutIcons.last().attr("href"); // 마지막 꺼 선택
                 }
             }
 
