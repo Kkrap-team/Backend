@@ -69,6 +69,7 @@
 - 🌐 [링크 저장 및 조회 기능](./docs/feature-link.md)
 - 📁 [elasticsearch 기능](./docs/feature-elasticsearch.md)
 - 🔐 [JWT 로그인 기능](./docs/feature-login.md)
+- 📖 [CI/CD](./docs/feature-login.md)
 
 [//]: # (- 💬 [채팅 기능]&#40;./docs/feature-chat.md&#41;)
 

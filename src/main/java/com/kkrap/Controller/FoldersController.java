@@ -39,6 +39,11 @@ public class FoldersController implements FoldersAPISpec {
     }
 
     @Override
+    public ResponseEntity<FoldersLinksAllResponse> getNoAuthOneFolderWithLinks(Long folderId, Long targetUserId) {
+        return foldersManagerService.getNoAuthOneFolderWithLinks(folderId, targetUserId);
+    }
+
+    @Override
     public ResponseEntity<FoldersResponse> createUserFolder(Authentication authentication, FoldersCreateRequest foldersCreateRequest) {
         Long userId = Long.parseLong(authentication.getName());
         return foldersManagerService.createUserFolder(userId, foldersCreateRequest);
@@ -72,10 +77,5 @@ public class FoldersController implements FoldersAPISpec {
     public ResponseEntity<List<ScrollFolderResponse>> scrollFeed(Authentication authentication) {
         Long userId = Long.parseLong(authentication.getName());
         return foldersManagerService.scrollFeed(userId);
-    }
-
-    @Override
-    public ResponseEntity<List<FoldersDocument>> noAuthscrollFeed() {
-        return foldersManagerService.noAuthscrollFeed();
     }
 }
