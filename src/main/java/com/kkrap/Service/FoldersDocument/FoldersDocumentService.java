@@ -92,10 +92,6 @@ public class FoldersDocumentService {
     }
 
 
-    public List<FoldersDocument> findTop40ByOrderByCreateTimeDesc() {
-        return foldersDocumentRepository.findTop40ByOrderByCreateTimeDesc();
-    }
-
     public List<FoldersDocument> findByFolderIdIn(List<Long> folderIds) {
         return foldersDocumentRepository.findByFolderIdIn(folderIds);
     }
@@ -103,6 +99,23 @@ public class FoldersDocumentService {
     public List<FoldersDocument> findTopNByOrderByCreateTimeDesc(int n) {
         Pageable pageable = PageRequest.of(0, n, Sort.by(Sort.Direction.DESC, "createTime"));
         return foldersDocumentRepository.findAll(pageable).getContent();
+    }
+
+
+    public List<FoldersDocument> getTop25ViewCountLastWeek() {
+        List<FoldersDocument> docs = foldersDocumentRepository.findTop25ByCreateTimeInLastWeekOrderByViewCountDesc();
+        return docs.stream()
+                .sorted(Comparator.comparingLong(FoldersDocument::getViewCount).reversed())
+                .limit(25)
+                .toList();
+    }
+
+    public List<FoldersDocument> getTop25ScrapCountLastWeek() {
+        List<FoldersDocument> docs = foldersDocumentRepository.findTop25ByCreateTimeInLastWeekOrderByScrapCountDesc();
+        return docs.stream()
+                .sorted(Comparator.comparingLong(FoldersDocument::getScrapCount).reversed())
+                .limit(25)
+                .toList();
     }
 
 

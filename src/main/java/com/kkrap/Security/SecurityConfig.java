@@ -57,7 +57,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) //
                 .authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/auth/**", "/profile/**","/api/auth/**", "/folders-search/all", "/folders-search/migrate",
-                                        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/favicon.ico", "/error", "/folders/users/noauth/scroll"
+                                        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/favicon.ico", "/error", "/folders/users/noauth/scroll", "/folders/users/noauth/**",
+                                        "/folders-search/noauth/**"
                                         ).permitAll() // 정적 리소스 허용
                                 .anyRequest().authenticated()
                 )

@@ -13,41 +13,23 @@ import java.util.List;
 
 @Tag(name = "Folders", description = "폴더 관련 API Endpoint")
 public interface FoldersAPISpec {
-    //사용자가 가지고 있는 모든 폴더와 내안 있는 링크들 같이 조회
-//    @GetMapping("/users/folders")
-//    @Operation(summary = "사용자의 모든 폴더 및 모든 링크", description = "한 명의 사용자가 가진 모든 폴더와 모든 링크 조회")
-//    ResponseEntity<UserFoldersWithSharedResponse> getUserAllFoldersWithLinks(Authentication authentication);
-
-    //상대방이 가지고 있는 모든 폴더 안에 있는 링크 1개만 -> 썸네일 전용
-//    @PostMapping("/users/folders/thumbnails")
-//    @Operation(summary = "상대방의 모든 폴더 및 링크 최신순 1개", description = "상대방 보관함에서 보여줄 썸네일 전용")
-//    ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop1LinksByUser(Authentication authentication, @RequestBody FoldersAllLinksViewRequest request);
-
 
     //내가 가지고 있는 모든 폴더 안에 있는 링크 4개만 -> 썸네일 전용
-    @GetMapping("/users/folders/thumbnails/{targetUserId}")
+    @GetMapping("/users/thumbnails/{targetUserId}")
     @Operation(summary = "모든 폴더 및 링크 최신순 조회", description = "내꺼 상대방꺼 전부 됨")
     ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithLinks(Authentication authentication, @PathVariable("targetUserId") Long targetUserId);
 
 
-//    @PostMapping("/users/folders/{folderId}/links")
-//    @Operation(summary = "상대방 하나의 폴더 링크 전체 조회", description = "상대방 하나의 폴더와 모든 링크 조회")
-//    ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinksByUser(
-//            Authentication authentication, @RequestBody OneFoldersLinksDetailViewRequest request);
-
-    @GetMapping("/users/folders/{folderId}/links/{targetUserId}")
+    @GetMapping("/users/{folderId}/links/{targetUserId}")
     @Operation(summary = "하나 폴더 링크 전체 조회", description = "내꺼 상대방꺼 전부 됨")
     ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinks(
             Authentication authentication,
             @PathVariable("folderId") Long folderId, @PathVariable("targetUserId") Long targetUserId);
 
-
-
-
-
-
-
-
+    @GetMapping("/users/noauth/{folderId}/links/{targetUserId}")
+    @Operation(summary = "비회원 user 하나 폴더 링크 전체 조회", description = "")
+    ResponseEntity<FoldersLinksAllResponse> getNoAuthOneFolderWithLinks(
+            @PathVariable("folderId") Long folderId, @PathVariable("targetUserId") Long targetUserId);
 
 
     //Create - 폴더를 만드는 api
@@ -56,7 +38,6 @@ public interface FoldersAPISpec {
     ResponseEntity<FoldersResponse> createUserFolder(
             Authentication authentication,
             @RequestBody FoldersCreateRequest foldersCreateRequest);
-
 
     //Delete
     @DeleteMapping("/users/folders")
@@ -90,8 +71,5 @@ public interface FoldersAPISpec {
     ResponseEntity<List<ScrollFolderResponse>> scrollFeed(
         Authentication authentication
     ) ;
-
-    @GetMapping("/users/noauth/scroll")
-    ResponseEntity<List<FoldersDocument>> noAuthscrollFeed();
 
 }

@@ -213,8 +213,6 @@ public class FoldersManagerService {
 
 
 
-
-
     //상대방 모든 거 조회할 때
 //    @Transactional(readOnly = true)
 //    public ResponseEntity<UserFoldersWithSharedResponse> getAllFoldersWithTop1LinksByUser(Long userId, FoldersAllLinksViewRequest request) {
@@ -307,7 +305,7 @@ public class FoldersManagerService {
         else {
             foldersPermissionsService.ensureReadable(folder, userId);
 
-            String redisKey = "view:" + userId + ":" + folderId;
+            String redisKey = "view:" + targetUserId + ":" + folderId;
             redisTemplate.opsForValue().set(redisKey, String.valueOf(folderId), Duration.ofMinutes(5));
 
             List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
@@ -317,6 +315,23 @@ public class FoldersManagerService {
         }
 
     }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<FoldersLinksAllResponse> getNoAuthOneFolderWithLinks(Long folderId, Long targetUserId){
+        usersService.findById(targetUserId);
+        Folders folder = foldersService.findById(folderId);
+        foldersPermissionsService.ensureReadable(folder, 0L);
+
+        String redisKey = "view:" + targetUserId + ":" + folderId;
+        redisTemplate.opsForValue().set(redisKey, String.valueOf(folderId), Duration.ofMinutes(5));
+
+        List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
+        List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
+
+        return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
+
+    }
+
 
     //조회수 -> Redis -> Kafka
 //    @Transactional(readOnly = true)
@@ -669,12 +684,6 @@ public class FoldersManagerService {
         }
     }
 
-
-    public ResponseEntity<List<FoldersDocument>> noAuthscrollFeed() {
-
-        List<FoldersDocument> request = foldersDocumentService.findTop40ByOrderByCreateTimeDesc();
-        return ResponseEntity.ok(request);
-    }
 
 
 }
