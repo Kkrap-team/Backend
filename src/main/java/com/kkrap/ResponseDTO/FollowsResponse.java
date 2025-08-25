@@ -1,0 +1,28 @@
+package com.kkrap.ResponseDTO;
+
+
+import com.kkrap.Entity.Follows;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+public class FollowsResponse {
+    //나 자신
+    private Long followerId;
+
+    // 팔로우를 거는 사람 (나 자신)
+    private Long followingId;
+
+    private String nickname;
+    private String profile;
+    private String email;
+
+    private FollowsResponse(){}
+
+    public static FollowsResponse of(Follows follows){
+        return new FollowsResponse(follows.getFollowerId(), follows.getFollowingId(), follows.getNickname(), follows.getProfile(), follows.getEmail());
+    }
+}
