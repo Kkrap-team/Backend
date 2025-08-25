@@ -18,7 +18,17 @@ pipeline {
 
     stage('Build (Gradle)') {
       steps { sh "./gradlew clean build -x test" }
-      post { always { junit 'build/test-results/test/*.xml' } }
+      post { always {
+               junit testResults: '**/build/test-results/test/*.xml', allowEmptyResults: true
+               // or 파일 존재 체크
+               // script {
+               //   if (fileExists('build/test-results/test')) {
+               //     junit testResults: 'build/test-results/test/*.xml'
+               //   } else {
+               //     echo 'No test reports found (tests skipped).'
+               //   }
+               // }
+       } }
     }
 
     stage('Build & Push Image') {
