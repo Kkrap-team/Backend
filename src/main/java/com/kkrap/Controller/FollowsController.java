@@ -4,6 +4,7 @@ package com.kkrap.Controller;
 import com.kkrap.Controller.Spec.FollowsAPISpec;
 import com.kkrap.RequestDTO.FollowsRequest;
 import com.kkrap.ResponseDTO.FollowsResponse;
+import com.kkrap.ResponseDTO.MutualFollowResponse;
 import com.kkrap.ResponseDTO.UserSearchWithFollowResponse;
 import com.kkrap.Service.FollowsFoldersPermission.FollowsManagerService;
 import io.micrometer.core.annotation.Timed;
@@ -48,6 +49,9 @@ public class FollowsController implements FollowsAPISpec {
         return followsManagerService.findUsersByNicknameContains(nickname, userId);
     }
 
-
-
+    @Override
+    public ResponseEntity<MutualFollowResponse> checkMutualFollow(Authentication authentication, Long targetUserId) {
+        Long userId = Long.parseLong(authentication.getName());
+        return followsManagerService.checkFollow(userId, targetUserId);
+    }
 }
