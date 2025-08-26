@@ -1,6 +1,7 @@
 package com.kkrap.Controller.Spec;
 import com.kkrap.RequestDTO.FollowsRequest;
 import com.kkrap.ResponseDTO.FollowsResponse;
+import com.kkrap.ResponseDTO.MutualFollowResponse;
 import com.kkrap.ResponseDTO.UserSearchWithFollowResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,4 +41,17 @@ public interface FollowsAPISpec {
     ResponseEntity<List<UserSearchWithFollowResponse>> searchUsersByNicknameContains(
             Authentication authentication,
             @RequestParam("nickname") String nickname);
+
+
+    @GetMapping("/mutual")
+    @Operation(
+            summary = "서로 팔로우 여부 확인",
+            description = "내(토큰 기준)와 targetUserId가 서로 팔로우 중인지 확인합니다."
+    )
+    ResponseEntity<MutualFollowResponse> checkMutualFollow(
+            Authentication authentication,
+            @RequestParam("targetUserId") Long targetUserId
+    );
+
+
 }

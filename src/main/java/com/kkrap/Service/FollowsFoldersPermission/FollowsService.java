@@ -6,6 +6,7 @@ import com.kkrap.Exception.AlreadyFollowingException;
 import com.kkrap.Exception.FollowNotFoundException;
 import com.kkrap.Repository.FollowsRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,5 +42,10 @@ public class FollowsService {
 
     public List<Long> findFollowingIdsByFollowerId(Long followerId){
         return followsRepository.findFollowingIdsByFollowerId(followerId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean checkFollow(Long me, Long targetUserId) {
+        return followsRepository.existsByFollower_UserIdAndFollowingId(me, targetUserId);
     }
 }
