@@ -3,10 +3,12 @@ package com.kkrap.Service.FollowsFoldersPermission;
 import com.kkrap.Entity.Follows;
 import com.kkrap.Entity.Users;
 import com.kkrap.ResponseDTO.FollowsResponse;
+import com.kkrap.ResponseDTO.MutualFollowResponse;
 import com.kkrap.ResponseDTO.UserSearchWithFollowResponse;
 import com.kkrap.Service.Users.UsersService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +63,10 @@ public class FollowsManagerService {
         return ResponseEntity.ok(responseList);
     }
 
-
+    @Transactional(readOnly = true)
+    public ResponseEntity<MutualFollowResponse> checkFollow(Long me, Long targetUserId) {
+        boolean exists = followsService.checkFollow(me, targetUserId);
+        return ResponseEntity.ok(MutualFollowResponse.from(exists));
+    }
 
 }
