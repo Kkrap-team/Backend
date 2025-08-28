@@ -52,7 +52,7 @@ public class ActivityManagerService {
                 .findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(
                         followingIds,
                         oneWeekAgo,
-                        PageRequest.of(0, 50)
+                        PageRequest.of(0, 200)
                 );
 
         List<FeedFolderResponse> result = new ArrayList<>();
