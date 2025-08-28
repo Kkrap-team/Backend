@@ -160,7 +160,7 @@ public class FoldersManagerService {
 //            otherOwnFolders = notSharedFoldersSelect(allMyFolders);
             ownFolders = allMyFolders.stream()
                     .filter(folder -> !folder.isShared())
-                    .sorted(Comparator.comparing(Folders::getCreateTime))
+                    .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
                     .toList();
 
 //            ownFolders = conncatFolders(defaultFolderList, otherOwnFolders);
@@ -186,7 +186,7 @@ public class FoldersManagerService {
 //                    .toList();
             ownFolders = allMyFolders.stream()
                     .filter(folder -> !folder.isShared() && folder.isVisible())
-                    .sorted(Comparator.comparing(Folders::getCreateTime))
+                    .sorted(Comparator.comparing(Folders::getCreateTime).reversed())
                     .toList();
 
 //            otherOwnFolders = notSharedFoldersSelect(allMyFolders);
