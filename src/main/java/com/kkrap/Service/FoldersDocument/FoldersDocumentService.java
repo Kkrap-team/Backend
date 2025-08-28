@@ -103,7 +103,7 @@ public class FoldersDocumentService {
 
 
     public List<FoldersDocument> getTop25ViewCountLastWeek() {
-        List<FoldersDocument> docs = foldersDocumentRepository.findTop25ByCreateTimeInLastWeekOrderByViewCountDesc();
+        List<FoldersDocument> docs = foldersDocumentRepository.findTop25ByOrderByViewCountDesc();
         return docs.stream()
                 .sorted(Comparator.comparingLong(FoldersDocument::getViewCount).reversed())
                 .limit(25)
@@ -111,7 +111,7 @@ public class FoldersDocumentService {
     }
 
     public List<FoldersDocument> getTop25ScrapCountLastWeek() {
-        List<FoldersDocument> docs = foldersDocumentRepository.findTop25ByCreateTimeInLastWeekOrderByScrapCountDesc();
+        List<FoldersDocument> docs = foldersDocumentRepository.findTop25ByOrderByScrapCountDesc();
         return docs.stream()
                 .sorted(Comparator.comparingLong(FoldersDocument::getScrapCount).reversed())
                 .limit(25)
