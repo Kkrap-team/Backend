@@ -69,27 +69,11 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
 
     List<FoldersDocument> findByFolderIdIn(List<Long> folderIds);
 
-    @Query("""
-    {
-      "bool": {
-        "filter": [
-          { "range": { "createTime": { "gte": "now-14d/d" } } }
-        ]
-      }
-    }
-    """)
-        List<FoldersDocument> findTop25ByCreateTimeInLastWeekOrderByViewCountDesc();
 
-    @Query("""
-    {
-      "bool": {
-        "filter": [
-          { "range": { "createTime": { "gte": "now-14d/d" } } }
-        ]
-      }
-    }
-    """)
-        List<FoldersDocument> findTop25ByCreateTimeInLastWeekOrderByScrapCountDesc();
+    List<FoldersDocument> findTop25ByOrderByViewCountDesc();
+
+
+    List<FoldersDocument> findTop25ByOrderByScrapCountDesc();
 
 
 
