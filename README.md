@@ -26,16 +26,25 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
     - 팔로우 관계를 통해 지인 간의 정보 소통을 강화
     - 결과적으로 정보 관리의 번거로움을 줄이고 효율적인 지식 네트워크를 형성
 
-> ![데이터 및 사용자 조사 결과](docs/imgs/그림1.png)
+> 
+> <p align="center">
+>  <img src="docs/imgs/그림1.png" alt="mypage" width="600"/>
+> </p>
 > 그림 1. 비정형 데이터 추세  
 
-> ![데이터 및 사용자 조사 결과](docs/imgs/그림2.png)
+> <p align="center">
+>  <img src="docs/imgs/그림2.png" alt="mypage" width="600"/>
+> </p>
 > 그림 2. SNS 활동 이유
 
-> ![데이터 및 사용자 조사 결과](docs/imgs/그림3.png)
+> <p align="center">
+>  <img src="docs/imgs/그림3.png" alt="mypage" width="600"/>
+> </p>
 > 그림 3. 나와의 채팅 기능 사용 유무  
 
-> ![데이터 및 사용자 조사 결과](docs/imgs/그림4.png)
+> <p align="center">
+>  <img src="docs/imgs/그림4.png" alt="mypage" width="600"/>
+> </p>
 > 그림 4. 수집한 정보 공유 유무
 
 
