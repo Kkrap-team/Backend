@@ -30,22 +30,24 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
 > <p align="center">
 >  <img src="docs/imgs/그림1.png" alt="mypage" width="600"/>
 > </p>
-> 그림 1. 비정형 데이터 추세  
-
+> <p align="center">그림 1. 비정형 데이터 추세 </p>
 > <p align="center">
 >  <img src="docs/imgs/그림2.png" alt="mypage" width="600"/>
 > </p>
-> 그림 2. SNS 활동 이유
+> 
+> <p align="center">그림 2. SNS 활동 이유 </p>
+
 
 > <p align="center">
 >  <img src="docs/imgs/그림3.png" alt="mypage" width="600"/>
 > </p>
-> 그림 3. 나와의 채팅 기능 사용 유무  
+> <p align="center">그림 3. 나와의 채팅 기능 사용 유무 </p>
 
 > <p align="center">
 >  <img src="docs/imgs/그림4.png" alt="mypage" width="600"/>
 > </p>
-> 그림 4. 수집한 정보 공유 유무
+> <p align="center">그림 4. 수집한 정보 공유 유무</p>
+
 
 
 
@@ -222,6 +224,7 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
 > 이를 통해 배포 오류를 줄이고 코드 변경 시 신속하게 배포가 가능한 환경을 마련했습니다.
 
 > JWT 기반 로그인 인증 구조 개선
+> 
 > 🔐 [JWT 로그인 기능](./docs/feature-login.md)
 >
 > Spring Security의 필터 체인을 이해하고, JWT 토큰 기반 인증 및 인가 로직을 직접 설계했습니다. 
