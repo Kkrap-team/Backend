@@ -121,7 +121,6 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
   <img src="https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white">
 </div>
 
----
 
 ### 📖 Frontend
 <div>
