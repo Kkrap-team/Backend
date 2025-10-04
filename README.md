@@ -6,10 +6,15 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
 (”나만의 링크 정리함, 함께 공유하는 네트워크”)
 - 이 레포지토리는 Kkrap의 BackEnd입니다.
 
+<br>
+
 ## 프로젝트 간단 설명
 
 
 소셜 미디어의 비정형 데이터가 폭발적으로 증가함에 따라 사용자는 다양한 플랫폼에서 수집한 정보를 효율적으로 보관하고 공유하는 데 어려움을 겪고 있다. kkrap은 여러 SNS와 웹에서 스크랩한 링크를 한 곳에 모아 정리하고 팔로우 기반 관계를 통해 지인들과 간편하게 공유할 수 있는 링크 큐레이션 플랫폼이다.
+
+
+<br>
 
 ## 프로젝트 개요 (Overview)
 
@@ -49,6 +54,7 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
 > <p align="center">그림 4. 수집한 정보 공유 유무</p>
 
 
+<br>
 
 
 ## 팀/역할
@@ -74,6 +80,7 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
 | 1.1.0 | 2025.08.28 | 베타 테스트 릴리즈        | 완료 |
 
 
+<br>
 
 ## 개발 환경
 
@@ -129,8 +136,9 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
   <img src="https://img.shields.io/badge/6.2.6-515151?style=for-the-badge">
 </div>
 
-## 코딩 컨벤션 
+<br>
 
+## 코딩 컨벤션 
 
 - feat 새로운 기능 추가
 - fix 버그 수정
@@ -146,6 +154,8 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
 - temp	임시 변경 사항 (이후 삭제될 가능성 있음)
 
 </div>
+
+<br>
 
 ## 시스템 아키텍처 / 구조도
 
@@ -167,6 +177,7 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
   <img src="docs/gif/search_optimized.gif" alt="search" width="600"/>
 </p>
 
+<br>
 
 - 메인 페이지
 - 나의 폴더 및 공유된 폴더 조회
@@ -175,11 +186,15 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
   <img src="docs/gif/main_optimized.gif" alt="main" width="600"/>
 </p>
 
+<br>
+
 - 팔로우
 1. 친구 활동기록 보기, 팔로잉 추가 및 삭제
 <p align="center">
   <img src="docs/gif/activityfeed_optimized.gif" alt="activityfeed" width="600"/>
 </p>
+
+<br>
 
 - 내 페이지
 1. 나의 폴더 및 공유된 폴더 조회
@@ -187,10 +202,14 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
   <img src="docs/gif/mypage_optimized.gif" alt="mypage" width="600"/>
 </p>
 
+<br>
+
 2. 폴더 생성 및 링크 추가
 <p align="center">
   <img src="docs/gif/makefoldermakelink_optimized.gif" alt="makefoldermakelink" width="600"/>
 </p>
+
+<br>
 
 3. 폴더 공유하기(권한 추가 및 삭제)
 <p align="center">
@@ -198,6 +217,7 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
 </p>
 
 
+<br>
 
 
 
@@ -230,12 +250,15 @@ kkrap - 링큐 큐레이션 & 공유 플랫폼
 > Spring Security의 필터 체인을 이해하고, JWT 토큰 기반 인증 및 인가 로직을 직접 설계했습니다. 
 > 세션리스 인증 구조를 통해 서버 부하를 줄이고 유지보수가 용이한 구조를 확보했습니다.
 
+
+
 외부 성과 및 지원 이력
 1. 부산 IT 모각코 사이드 프로젝트 지원 사업 선정
 - 기간 : 2025년 9월 ~ 2025년 11월 (3개월)
 - 주관/기관 : 부산정보산업진흥원, 부산IT모각코
 - 설명 : 부산정보산업진흥원 주관 ‘부산 개발자 사이드 프로젝트 지원사업’에 선정되어 40만원 바우처와 멘토링 지원을 받아 프로젝트를 고도화했습니다.
 
+<br>
 
 
 ### 기술적 개선(문제점 해결 및 실패한 점)
