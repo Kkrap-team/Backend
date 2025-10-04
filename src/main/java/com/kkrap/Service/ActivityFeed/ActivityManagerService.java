@@ -45,7 +45,7 @@ public class ActivityManagerService {
         Users Userme = usersService.findById(userId);
         List<Long> followingIds = followsService.findFollowingIdsByFollowerId(Userme.getUserId());
 
-        LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(90);
 //        List<ActivityFeed> feeds = activityFeedService
 //                .findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(followingIds, oneWeekAgo);
         List<ActivityFeed> feeds = activityFeedService
