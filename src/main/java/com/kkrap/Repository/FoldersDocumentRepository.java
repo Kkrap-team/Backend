@@ -48,7 +48,7 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
     {
       "bool": {
         "filter": [
-          { "range": { "createTime": { "gte": "now-7d/d" } } }
+          { "range": { "createTime": { "gte": "now-90d/d" } } }
         ]
       }
     }
@@ -60,7 +60,7 @@ public interface FoldersDocumentRepository extends ElasticsearchRepository<Folde
     {
       "bool": {
         "filter": [
-          { "range": { "createTime": { "gte": "now-7d/d" } } }
+          { "range": { "createTime": { "gte": "now-90d/d" } } }
         ]
       }
     }
