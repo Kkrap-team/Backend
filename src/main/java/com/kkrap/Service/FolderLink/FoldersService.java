@@ -8,6 +8,7 @@ import com.kkrap.Repository.FoldersRepository;
 import com.kkrap.RequestDTO.FoldersCreateRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -89,5 +90,8 @@ public class FoldersService {
         throw FoldersSameMoveException.of("내가 가진 폴더는 스크랩할 수 없습니다.");
     }
 
+    public List<Folders> fetchVisibleFoldersPageGlobal(LocalDateTime cursorTime, Long cursorId, int limitPlusOne) {
+        return foldersRepository.fetchVisibleFoldersPageGlobal(cursorTime, cursorId, limitPlusOne);
+    }
 
 }

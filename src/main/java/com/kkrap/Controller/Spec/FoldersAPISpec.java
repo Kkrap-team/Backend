@@ -21,13 +21,13 @@ public interface FoldersAPISpec {
 
     @GetMapping("/users/{folderId}/links/{targetUserId}")
     @Operation(summary = "하나 폴더 링크 전체 조회", description = "내꺼 상대방꺼 전부 됨")
-    ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinks(
+    ResponseEntity<OneFoldersAllLinksResponse> getOneFolderWithLinks(
             Authentication authentication,
             @PathVariable("folderId") Long folderId, @PathVariable("targetUserId") Long targetUserId);
 
     @GetMapping("/users/noauth/{folderId}/links/{targetUserId}")
     @Operation(summary = "비회원 user 하나 폴더 링크 전체 조회", description = "")
-    ResponseEntity<FoldersLinksAllResponse> getNoAuthOneFolderWithLinks(
+    ResponseEntity<OneFoldersAllLinksResponse> getNoAuthOneFolderWithLinks(
             @PathVariable("folderId") Long folderId, @PathVariable("targetUserId") Long targetUserId);
 
 
@@ -56,19 +56,20 @@ public interface FoldersAPISpec {
     //scrap
     @PostMapping("/users/scrap")
     @Operation(summary = "상대방 폴더 스크랩", description = "상대방 폴더를 내 폴더로 스크랩")
-    ResponseEntity<FoldersLinksAllResponse> scrapFolder(
+    ResponseEntity<OneFoldersAllLinksResponse> scrapFolder(
             Authentication authentication,
             @RequestBody FoldersScrapRequest request);
 
 
-    @GetMapping("/users/scroll-init")
-    ResponseEntity<List<ScrollFolderResponse>> initFeed(
-            Authentication authentication
-    );
-
     @GetMapping("/users/scroll")
-    ResponseEntity<List<ScrollFolderResponse>> scrollFeed(
-        Authentication authentication
-    ) ;
+    @Operation(
+            summary = "내 공개 폴더 무한 스크롤",
+            description = "내가 만든 폴더 중 visible=true인 것만 최신순으로 키셋 페이지네이션"
+    )
+    ResponseEntity<List<OneFoldersAllLinksResponse>> scrollVisibleFolders(
+            Authentication authentication,
+            @RequestParam(defaultValue = "20") Long size,
+            @RequestParam(required = false) String cursor
+    );
 
 }

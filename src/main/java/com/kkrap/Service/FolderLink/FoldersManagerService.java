@@ -1,5 +1,6 @@
 package com.kkrap.Service.FolderLink;
 
+import com.kkrap.Data.KeysetCursor;
 import com.kkrap.Entity.*;
 import com.kkrap.RequestDTO.*;
 import com.kkrap.ResponseDTO.*;
@@ -55,12 +56,12 @@ public class FoldersManagerService {
     }
 
 
-    List<FoldersLinksAllResponse> AllOwnerFolderslinksSelectTop1linksByCreateTime(List<Folders> folders){
+    List<OneFoldersAllLinksResponse> AllOwnerFolderslinksSelectTop1linksByCreateTime(List<Folders> folders){
         return folders.stream()
                 .map(folder -> {
                     List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
                     List<Links> linksList = linksService.selectTop1LinksByCreateTime(folderLinksList);
-                    return FoldersLinksAllResponse.of(folder, linksList);
+                    return OneFoldersAllLinksResponse.of(folder, linksList);
                 })
                 .collect(Collectors.toList());
     }
@@ -84,7 +85,7 @@ public class FoldersManagerService {
         List<Folders> allMyFolders, ownFolders, mySharedFolders, invitedSharedFolders, allSharedFolders;
         List<FoldersPermissions> sharedPermissions;
         List<SharedFoldersLinksAllResponse> sharedFolderResponses;
-        List<FoldersLinksAllResponse> ownFolderResponses;
+        List<OneFoldersAllLinksResponse> ownFolderResponses;
         if (userId == targetUserId){
             allMyFolders = foldersService.findByUserUserId(userId);
             ownFolders = allMyFolders.stream()
@@ -132,14 +133,14 @@ public class FoldersManagerService {
 
 
     @Transactional(readOnly = true)
-    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinks(Long userId, Long folderId, Long targetUserId){
+    public ResponseEntity<OneFoldersAllLinksResponse> getOneFolderWithLinks(Long userId, Long folderId, Long targetUserId){
         usersService.findById(userId);
         usersService.findById(targetUserId);
         Folders folder = foldersService.findById(folderId);
         if (userId == targetUserId){
             List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
             List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
-            return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
+            return ResponseEntity.ok(OneFoldersAllLinksResponse.of(folder, linksList));
         }
         else {
             foldersPermissionsService.ensureReadable(folder, userId);
@@ -147,13 +148,13 @@ public class FoldersManagerService {
             List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
             List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
 
-            return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
+            return ResponseEntity.ok(OneFoldersAllLinksResponse.of(folder, linksList));
         }
 
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<FoldersLinksAllResponse> getNoAuthOneFolderWithLinks(Long folderId, Long targetUserId){
+    public ResponseEntity<OneFoldersAllLinksResponse> getNoAuthOneFolderWithLinks(Long folderId, Long targetUserId){
         usersService.findById(targetUserId);
         Folders folder = foldersService.findById(folderId);
         foldersPermissionsService.ensureReadable(folder, 0L);
@@ -161,7 +162,7 @@ public class FoldersManagerService {
         List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
         List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
 
-        return ResponseEntity.ok(FoldersLinksAllResponse.of(folder, linksList));
+        return ResponseEntity.ok(OneFoldersAllLinksResponse.of(folder, linksList));
 
     }
 
@@ -221,7 +222,7 @@ public class FoldersManagerService {
     }
 
     @Transactional
-    public ResponseEntity<FoldersLinksAllResponse> scrapFolder(Long userId, FoldersScrapRequest foldersScrapRequest) {
+    public ResponseEntity<OneFoldersAllLinksResponse> scrapFolder(Long userId, FoldersScrapRequest foldersScrapRequest) {
         Users user = usersService.findById(userId);
 
         Folders sourceFolder = foldersService.findById(foldersScrapRequest.getSourceFolderId());
@@ -258,17 +259,32 @@ public class FoldersManagerService {
         });
 
         return ResponseEntity.ok(
-                FoldersLinksAllResponse.of(newFolder, newLinks)
+                OneFoldersAllLinksResponse.of(newFolder, newLinks)
         );
     }
 
+    public ResponseEntity<List<OneFoldersAllLinksResponse>> scrollVisibleFolders(Long userId, Long size, String cursorStr) {
+        usersService.findById(userId);
 
-    public ResponseEntity<List<ScrollFolderResponse>> initFeed(Long userId) {
+        Long limit = Math.max(1, Math.min(size, 50));
+        KeysetCursor c = KeysetCursor.parse(cursorStr);
+        LocalDateTime cursorTime = (c == null) ? null : c.getTime();
+        Long cursorId = (c == null) ? null : c.getId();
 
-        return ResponseEntity.ok(body);
-    }
+        // 키셋으로 visible=true 내 폴더만
+        List<Folders> folders = foldersService.fetchVisibleFoldersPageGlobal(cursorTime, cursorId, (int) (limit + 1));
 
-    public ResponseEntity<List<ScrollFolderResponse>> scrollFeed(Long userId) {
+        boolean hasNext = folders.size() > limit;
+        if (hasNext) folders = folders.subList(0, Math.toIntExact(limit));
+
+        // 폴더별 링크 조회
+        List<OneFoldersAllLinksResponse> res = folders.stream()
+                .map(folder -> {
+                    List<FoldersLinks> flist = foldersLinksService.findByFolders(folder);
+                    List<Links> links = linksService.selectTop1LinksByCreateTime(flist);
+                    return OneFoldersAllLinksResponse.of(folder, links);
+                })
+                .toList();
 
         return ResponseEntity.ok(res);
     }

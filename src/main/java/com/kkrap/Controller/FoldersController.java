@@ -32,13 +32,13 @@ public class FoldersController implements FoldersAPISpec {
 
 
     @Override
-    public ResponseEntity<FoldersLinksAllResponse> getOneFolderWithLinks(Authentication authentication, Long folderId, Long targetUserId) {
+    public ResponseEntity<OneFoldersAllLinksResponse> getOneFolderWithLinks(Authentication authentication, Long folderId, Long targetUserId) {
         Long userId = Long.parseLong(authentication.getName());
         return foldersManagerService.getOneFolderWithLinks(userId, folderId, targetUserId);
     }
 
     @Override
-    public ResponseEntity<FoldersLinksAllResponse> getNoAuthOneFolderWithLinks(Long folderId, Long targetUserId) {
+    public ResponseEntity<OneFoldersAllLinksResponse> getNoAuthOneFolderWithLinks(Long folderId, Long targetUserId) {
         return foldersManagerService.getNoAuthOneFolderWithLinks(folderId, targetUserId);
     }
 
@@ -61,20 +61,18 @@ public class FoldersController implements FoldersAPISpec {
     }
 
     @Override
-    public ResponseEntity<FoldersLinksAllResponse> scrapFolder(Authentication authentication, FoldersScrapRequest request) {
+    public ResponseEntity<OneFoldersAllLinksResponse> scrapFolder(Authentication authentication, FoldersScrapRequest request) {
         Long userId = Long.parseLong(authentication.getName());
         return foldersManagerService.scrapFolder(userId, request);
     }
 
     @Override
-    public ResponseEntity<List<ScrollFolderResponse>> initFeed(Authentication authentication) {
+    public ResponseEntity<List<OneFoldersAllLinksResponse>> scrollVisibleFolders(
+            Authentication authentication,
+            Long size,
+            String cursor
+    ) {
         Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.initFeed(userId);
-    }
-
-    @Override
-    public ResponseEntity<List<ScrollFolderResponse>> scrollFeed(Authentication authentication) {
-        Long userId = Long.parseLong(authentication.getName());
-        return foldersManagerService.scrollFeed(userId);
+        return foldersManagerService.scrollVisibleFolders(userId, size, cursor);
     }
 }

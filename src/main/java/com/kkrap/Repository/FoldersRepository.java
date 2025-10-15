@@ -36,4 +36,24 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
 
     List<Folders> findByVisibleTrue();
 
+    // com.kkrap.Repository.FoldersRepository
+    @Query(value = """
+    SELECT f.*
+    FROM folders f
+    WHERE f.visible = true
+      AND (
+            :cursorTime IS NULL
+            OR f.create_time < :cursorTime
+            OR (f.create_time = :cursorTime AND f.folder_id < :cursorId)
+          )
+    ORDER BY f.create_time DESC, f.folder_id DESC
+    LIMIT :limitPlusOne
+    """, nativeQuery = true)
+    List<Folders> fetchVisibleFoldersPageGlobal(
+            @Param("cursorTime") java.time.LocalDateTime cursorTime,
+            @Param("cursorId") Long cursorId,
+            @Param("limitPlusOne") int limitPlusOne
+    );
+
+
 }

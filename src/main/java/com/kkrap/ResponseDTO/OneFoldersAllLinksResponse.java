@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @AllArgsConstructor
-public class FoldersLinksAllResponse {
+public class OneFoldersAllLinksResponse {
     private Long folderId;
     private String folderName;
     private String folderDescription;
@@ -26,9 +26,9 @@ public class FoldersLinksAllResponse {
     private String ownerNickname;
     private List<LinksResponse> links;
 
-    private FoldersLinksAllResponse(){}
+    private OneFoldersAllLinksResponse(){}
 
-    public static  FoldersLinksAllResponse of(Folders folder, List<Links> linksList) {
+    public static OneFoldersAllLinksResponse of(Folders folder, List<Links> linksList) {
         Users users = folder.getUser();
 
         Long folderId = folder.getFolderId();
@@ -46,6 +46,6 @@ public class FoldersLinksAllResponse {
         List<LinksResponse> links = linksList.stream()
                 .map(LinksResponse::new)
                 .collect(Collectors.toList());
-        return new FoldersLinksAllResponse(folderId, folderName, folderDescription, visible, viewCount, scrapCount, share, createTime, ownerUserId, ownerNickname,links);
+        return new OneFoldersAllLinksResponse(folderId, folderName, folderDescription, visible, viewCount, scrapCount, share, createTime, ownerUserId, ownerNickname,links);
     }
 }
