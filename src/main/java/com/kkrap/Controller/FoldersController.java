@@ -80,4 +80,16 @@ public class FoldersController implements FoldersAPISpec {
     public ResponseEntity<FoldersRankingResponse> get90dFoldersRankings() {
         return foldersManagerService.get90dFoldersRankings();
     }
+
+    @Override
+    public ResponseEntity<List<OneFoldersAllLinksResponse>> searchTop10VisibleByFolderName(
+            @RequestParam("keyword") String keyword) {
+        return foldersManagerService.searchTop10VisibleByFolderName(keyword);
+    }
+
+    @Override
+    public ResponseEntity<List<OneFoldersAllLinksResponse>> searchAllVisibleByFolderNameLike(
+            @RequestParam("keyword") String keyword) {
+        return foldersManagerService.searchAllVisibleByFolderNameLike(keyword);
+    }
 }

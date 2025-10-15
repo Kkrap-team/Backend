@@ -82,6 +82,25 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
             @Param("limit") int limit
     );
 
+    @Query(value = """
+    SELECT *
+    FROM folders
+    WHERE visible = true
+      AND LOWER(folder_name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+    ORDER BY create_time DESC, folder_id DESC
+    LIMIT 10
+    """, nativeQuery = true)
+    List<Folders> searchTop10VisibleByFolderName(@Param("keyword") String keyword);
+
+    @Query(value = """
+    SELECT *
+    FROM folders
+    WHERE visible = true
+      AND LOWER(folder_name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+    ORDER BY create_time DESC, folder_id DESC
+    """, nativeQuery = true)
+    List<Folders> searchAllVisibleByFolderNameLike(@Param("keyword") String keyword);
+
 
 
 

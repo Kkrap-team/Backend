@@ -80,7 +80,15 @@ public interface FoldersAPISpec {
     ResponseEntity<FoldersRankingResponse> get90dFoldersRankings();
 
 
+    @GetMapping("/noauth/text")
+    @Operation(summary = "검색바에서 텍스트로 폴더 검색(Top10)", description = "visible=true 대상")
+    ResponseEntity<List<OneFoldersAllLinksResponse>> searchTop10VisibleByFolderName(
+            @RequestParam("keyword") String keyword);
 
+    @GetMapping("/noauth/enter")
+    @Operation(summary = "검색 초기화 - 엔터 후 폴더 검색", description = "visible=true 대상")
+    ResponseEntity<List<OneFoldersAllLinksResponse>> searchAllVisibleByFolderNameLike(
+            @RequestParam("keyword") String keyword);
 
 
 }

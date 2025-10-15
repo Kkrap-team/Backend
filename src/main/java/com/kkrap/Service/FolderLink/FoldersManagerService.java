@@ -321,6 +321,51 @@ public class FoldersManagerService {
     }
 
 
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<OneFoldersAllLinksResponse>> searchTop10VisibleByFolderName(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+
+        // 검색 Top10 폴더 바로 가져오기
+        List<Folders> folders = foldersService.searchTop10VisibleByFolderName(keyword.trim());
+
+        // 2) 각 폴더에 top4 링크 붙이기
+        List<OneFoldersAllLinksResponse> result = folders.stream()
+                .map(folder -> {
+                    List<FoldersLinks> flist = foldersLinksService.findByFolders(folder);
+                    List<Links> links = linksService.selectTop1LinksByCreateTime(flist);
+                    return OneFoldersAllLinksResponse.of(folder, links);
+                })
+                .toList();
+
+        return ResponseEntity.ok(result);
+    }
+
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<List<OneFoldersAllLinksResponse>> searchAllVisibleByFolderNameLike(String keyword) {
+        String q = (keyword == null) ? "" : keyword.trim();
+        if (q.isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+
+        // 1) LIKE로 전체 검색
+        List<Folders> folders = foldersService.searchAllVisibleByFolderNameLike(q);
+
+        // 2) 각 폴더에 링크 top4 붙여서 DTO 조립 (N+1 일단 무시)
+        List<OneFoldersAllLinksResponse> res = folders.stream()
+                .map(folder -> {
+                    List<FoldersLinks> flist = foldersLinksService.findByFolders(folder);
+                    List<Links> links = linksService.selectTop4LinksByCreateTime(flist);
+                    return OneFoldersAllLinksResponse.of(folder, links);
+                })
+                .toList();
+
+        return ResponseEntity.ok(res);
+    }
+
+
 
 
 

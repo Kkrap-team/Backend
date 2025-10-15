@@ -102,4 +102,12 @@ public class FoldersService {
         return foldersRepository.findTopByScrapCountSince(since, limit);
     }
 
+    public List<Folders> searchTop10VisibleByFolderName(String keyword) {
+        return foldersRepository.searchTop10VisibleByFolderName(keyword);
+    }
+
+    public List<Folders> searchAllVisibleByFolderNameLike(String keyword) {
+        return foldersRepository.searchAllVisibleByFolderNameLike(keyword);
+    }
+
 }
