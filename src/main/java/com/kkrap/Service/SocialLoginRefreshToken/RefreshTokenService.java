@@ -24,13 +24,6 @@ public class RefreshTokenService {
         refreshTokenRepository.save(token);
     }
 
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByRefreshToken(token);
-    }
-
-    public void deleteByUser(Users users) {
-        refreshTokenRepository.deleteByUser(users);
-    }
     public void validateStoredRefreshToken(Long userId, String refreshToken) {
         RefreshToken stored = refreshTokenRepository.findByUserUserId(userId)
                 .orElseThrow(() -> UnauthorizedException.of("해당 유저의 refresh token이 존재하지 않습니다."));

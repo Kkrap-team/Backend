@@ -9,14 +9,11 @@ import com.kkrap.RequestDTO.LinksTitleUpdateRequest;
 import com.kkrap.RequestDTO.MoveLinkToAnotherFolders;
 import com.kkrap.ResponseDTO.LinksCreateResponse;
 import com.kkrap.ResponseDTO.LinksResponse;
-import com.kkrap.Service.FoldersDocument.FoldersDocumentManagerService;
 import com.kkrap.Service.Users.UsersService;
 import com.kkrap.Util.LinkMetadataExtractor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 

@@ -34,7 +34,6 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
 
-    // 생성자, builder 등 생략
     private RefreshToken() {};
 
     public RefreshToken(String token, Users user) {

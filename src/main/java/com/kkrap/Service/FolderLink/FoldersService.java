@@ -76,11 +76,6 @@ public class FoldersService {
         return foldersRepository.sumScrapCountByUser(users);
     }
 
-    public List<Folders> findByVisibleTrue(){
-        return foldersRepository.findByVisibleTrue();
-    }
-
-
     void foldersSameMove(){
         throw FoldersSameMoveException.of("같은 폴더로 이동할 수 없습니다.");
     }

@@ -64,14 +64,4 @@ public class JwtUtil {
 
         return Long.parseLong(claims.getSubject());
     }
-
-    public Date getExpiration(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getExpiration();
-    }
 }

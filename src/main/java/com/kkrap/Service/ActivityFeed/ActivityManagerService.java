@@ -22,7 +22,6 @@ public class ActivityManagerService {
     private final ActivityFeedService activityFeedService;
     private final FoldersService foldersService;
     private final FoldersLinksService foldersLinksService;
-    private final LinksService linksService;
 
     private final FollowsService followsService;
 
@@ -31,14 +30,12 @@ public class ActivityManagerService {
             ActivityFeedService activityFeedService,
             FoldersService foldersService,
             FoldersLinksService foldersLinksService,
-            LinksService linksService,
             FollowsService followsService
     ){
         this.usersService = usersService;
         this.activityFeedService = activityFeedService;
         this.foldersService = foldersService;
         this.foldersLinksService = foldersLinksService;
-        this.linksService = linksService;
         this.followsService = followsService;
     }
     public ResponseEntity<List<FeedFolderResponse>> getFeedForUser(Long userId) {
@@ -46,8 +43,6 @@ public class ActivityManagerService {
         List<Long> followingIds = followsService.findFollowingIdsByFollowerId(Userme.getUserId());
 
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(90);
-//        List<ActivityFeed> feeds = activityFeedService
-//                .findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(followingIds, oneWeekAgo);
         List<ActivityFeed> feeds = activityFeedService
                 .findByActorUserIdInAndCreatedAtAfterOrderByCreatedAtDesc(
                         followingIds,
@@ -68,10 +63,6 @@ public class ActivityManagerService {
             FeedFolderResponse response = FeedFolderResponse.of(feed, folder, thumbnail, favicon);
             result.add(response);
         }
-
         return ResponseEntity.ok(result);
     }
-
-
-
 }

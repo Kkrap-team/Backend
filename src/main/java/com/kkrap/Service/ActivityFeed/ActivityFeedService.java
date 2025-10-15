@@ -20,9 +20,6 @@ public class ActivityFeedService {
         activityFeedRepository.deleteAllByFolderId(folderId);
     }
 
-    public void saveAll(List<ActivityFeed> feedList){
-        activityFeedRepository.saveAll(feedList);
-    }
 
     public void save(ActivityFeed feed){
         activityFeedRepository.save(feed);

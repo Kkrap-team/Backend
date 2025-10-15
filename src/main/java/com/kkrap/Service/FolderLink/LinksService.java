@@ -54,32 +54,11 @@ public class LinksService {
         }
     }
 
-    //삭제 대상만 필터링
-    public List<FoldersLinks> filterFoldersLinksByLinkIds(List<FoldersLinks> foldersLinksList, List<Long> linkIdList) {
-        return foldersLinksList.stream()
-                .filter(fl -> linkIdList.contains(fl.getLinks().getLinkId()))
-                .collect(Collectors.toList());
-    }
-
-
-    //링크들 삭제
-    public void deleteAllByIds(List<Long> linkIds) {
-        for (Long linkId : linkIds) {
-            deleteById(linkId);
-        }
-    }
-
-
-
     public Links save(Links links){
         return linksRepository.save(links);
     }
     public Links findById(Long linkId){
         return linksRepository.findById(linkId).orElseThrow(() -> LinksNotFoundException.of("링크를 찾을 수 없습니다"));
     }
-    public void deleteById(Long linkId){
-        linksRepository.deleteById(linkId);
-    }
-
 
 }
