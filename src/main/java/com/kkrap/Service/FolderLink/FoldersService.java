@@ -6,6 +6,7 @@ import com.kkrap.Exception.FoldersNotFoundException;
 import com.kkrap.Exception.FoldersSameMoveException;
 import com.kkrap.Repository.FoldersRepository;
 import com.kkrap.RequestDTO.FoldersCreateRequest;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -103,6 +104,14 @@ public class FoldersService {
 
     public List<Folders> searchAllVisibleByFolderNameLike(String keyword) {
         return foldersRepository.searchAllVisibleByFolderNameLike(keyword);
+    }
+
+    void incrementViewCountById(Long folderId){
+        foldersRepository.incrementViewCountById(folderId);
+    }
+
+    void incrementScrapCountById(Long folderId){
+        foldersRepository.incrementScrapCountById(folderId);
     }
 
 }

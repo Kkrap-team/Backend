@@ -16,10 +16,11 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
 
     List<Folders> findByUserUserId(Long userId);
 
-    @Modifying
-    @Transactional
     @Query("UPDATE Folders f SET f.viewCount = f.viewCount + 1 WHERE f.folderId = :folderId")
     void incrementViewCountById(@Param("folderId") Long folderId);
+
+    @Query("UPDATE Folders f SET f.scrapCount = f.scrapCount + 1 WHERE f.folderId = :folderId")
+    void incrementScrapCountById(@Param("folderId") Long folderId);
 
     List<Folders> findByUserUserIdAndVisibleTrue(Long userId);
 
@@ -30,9 +31,6 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
     Long sumScrapCountByUser(@Param("user") Users user);
 
 
-    @Modifying
-    @Query("UPDATE Folders f SET f.scrapCount = f.scrapCount + :increment WHERE f.folderId = :folderId")
-    void incrementScrapCount(@Param("folderId") Long folderId, @Param("increment") Long increment);
 
     List<Folders> findByVisibleTrue();
 

@@ -148,6 +148,8 @@ public class FoldersManagerService {
             List<FoldersLinks> folderLinksList = foldersLinksService.findByFolders(folder);
             List<Links> linksList = linksService.selectLinksByCreateTime(folderLinksList);
 
+            foldersService.incrementViewCountById(folderId);
+
             return ResponseEntity.ok(OneFoldersAllLinksResponse.of(folder, linksList));
         }
 
@@ -257,6 +259,8 @@ public class FoldersManagerService {
                 log.error("[Scrap] 링크 저장 실패 linkUrl={} reason={}", link.getLinkUrl(), e.getMessage(), e);
             }
         });
+
+        foldersService.incrementScrapCountById(foldersScrapRequest.getSourceFolderId());
 
         return ResponseEntity.ok(
                 OneFoldersAllLinksResponse.of(newFolder, newLinks)
