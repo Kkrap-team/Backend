@@ -1,7 +1,6 @@
 package com.kkrap.Controller;
 
 import com.kkrap.Controller.Spec.FoldersAPISpec;
-import com.kkrap.ElasticSearch.FoldersDocument;
 import com.kkrap.RequestDTO.*;
 
 import com.kkrap.ResponseDTO.*;

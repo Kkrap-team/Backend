@@ -1,12 +1,10 @@
 package com.kkrap.Controller.Spec;
 
 
-import com.kkrap.ElasticSearch.FoldersDocument;
-import com.kkrap.ResponseDTO.ElasticSearchRankingResponse;
+import com.kkrap.ResponseDTO.RankingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +36,7 @@ public interface FoldersDocumentAPISpec {
 
     @GetMapping("/noauth/rankings")
     @Operation(summary = "주간 랭킹 조회", description = "viewCount, scrapCount Top10 반환")
-    ResponseEntity<ElasticSearchRankingResponse> getWeeklyRankings();
+    ResponseEntity<RankingResponse> getWeeklyRankings();
 
     @GetMapping("/noauth/main")
     @Operation(summary = "비회원 main page 폴더 둘러보기", description = "viewCount, scrapCount 각 Top 25개 섞어서 50개 반환 14일 이내에 꺼만 반환")

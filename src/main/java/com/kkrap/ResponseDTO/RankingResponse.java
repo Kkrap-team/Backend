@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ElasticSearchRankingResponse {
+public class RankingResponse {
     private List<FoldersDocument> topViewCount;
     private List<FoldersDocument> topscrapCount;
 }

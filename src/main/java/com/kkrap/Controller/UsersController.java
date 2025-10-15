@@ -22,20 +22,17 @@ public class UsersController implements UsersAPISpec{
 
 
     @Override
-//    @Timed(value = "http.users.getUserProfile", extraTags = {"controller","Users","endpoint","GET /users/{userId}"})
     public ResponseEntity<UsersProfileResponse> getUserProfileToken(Authentication authentication) {
         Long userId = Long.parseLong(authentication.getName());
         return usersManagerService.getUserProfile(userId);
     }
 
     @Override
-//    @Timed(value = "http.users.getFoldersUserProfile", extraTags = {"controller","Users","endpoint","GET /users/{userId}/folders"})
     public ResponseEntity<FoldersUserProfileResponse> getFoldersUserProfile(Authentication authentication,  Long targetUserId) {
         return usersManagerService.getFoldersUserProfile(targetUserId);
     }
 
     @Override
-//    @Timed(value = "http.users.updateUserProfile", extraTags = {"controller","Users","endpoint","PATCH /users/{userId}/profile"})
     public ResponseEntity<UsersProfileResponse> updateUserProfile(Authentication authentication, ProfileUpdateRequest request) {
         Long userId = Long.parseLong(authentication.getName());
         return usersManagerService.updateUserProfile(userId, request.getNickname(), request.getBio());
@@ -48,7 +45,6 @@ public class UsersController implements UsersAPISpec{
 //     }
 
     @Override
-//    @Timed(value = "http.users.isNicknameDuplicate", extraTags = {"controller","Users","endpoint","GET /users/check-nickname"})
     public ResponseEntity<MessageResponse> isNicknameDuplicate(Authentication authentication, String nickname) {
               return usersManagerService.checkNicknameAvailable(nickname);
     }

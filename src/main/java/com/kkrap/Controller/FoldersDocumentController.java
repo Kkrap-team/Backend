@@ -2,11 +2,10 @@ package com.kkrap.Controller;
 
 import com.kkrap.Controller.Spec.FoldersDocumentAPISpec;
 import com.kkrap.ElasticSearch.FoldersDocument;
-import com.kkrap.ResponseDTO.ElasticSearchRankingResponse;
+import com.kkrap.ResponseDTO.RankingResponse;
 import com.kkrap.Service.FoldersDocument.FoldersDocumentManagerService;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,7 +49,7 @@ public class FoldersDocumentController implements FoldersDocumentAPISpec {
     }
 
     @Override
-    public ResponseEntity<ElasticSearchRankingResponse> getWeeklyRankings() {
+    public ResponseEntity<RankingResponse> getWeeklyRankings() {
         return ResponseEntity.ok(foldersDocumentManagerService.getWeeklyRankings());
     }
 

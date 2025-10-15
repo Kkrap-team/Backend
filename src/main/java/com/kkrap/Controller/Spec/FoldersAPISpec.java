@@ -1,6 +1,5 @@
 package com.kkrap.Controller.Spec;
 
-import com.kkrap.ElasticSearch.FoldersDocument;
 import com.kkrap.RequestDTO.*;
 import com.kkrap.ResponseDTO.*;
 import io.swagger.v3.oas.annotations.Operation;

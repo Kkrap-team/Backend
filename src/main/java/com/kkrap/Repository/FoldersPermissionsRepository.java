@@ -23,8 +23,6 @@ public interface FoldersPermissionsRepository extends JpaRepository<FoldersPermi
     List<FoldersPermissions> findByInvitedUserId(Long invitedUserId);
 
     // 특정 폴더가 누구와 공유되었는지 조회
-    List<FoldersPermissions> findByFolder(Folders folder);
-
     Optional<FoldersPermissions> findByFolderAndInvitedUserId(Folders folder, Long invitedUserId);
 
     @Query("select fp.invitedUserId from FoldersPermissions fp where fp.folder.folderId = :folderId")

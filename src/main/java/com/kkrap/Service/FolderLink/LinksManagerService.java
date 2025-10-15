@@ -29,18 +29,13 @@ public class LinksManagerService {
 
     private final FoldersLinksService foldersLinksService;
 
-    private final FoldersDocumentManagerService foldersDocumentManagerService;
-
 
     public LinksManagerService(UsersService usersService, FoldersService foldersService,
-                               LinksService linksService, FoldersLinksService foldersLinksService,
-                               FoldersDocumentManagerService foldersDocumentManagerService){
+                               LinksService linksService, FoldersLinksService foldersLinksService){
         this.usersService = usersService;
         this.foldersService = foldersService;
         this.linksService = linksService;
         this.foldersLinksService = foldersLinksService;
-        this.foldersDocumentManagerService = foldersDocumentManagerService;
-
     }
     @Transactional
     public ResponseEntity<LinksCreateResponse> createLinkAndAssignToFolders(Long userId, LinksCreateRequest linksCreateRequest){
@@ -51,11 +46,6 @@ public class LinksManagerService {
         links = linksService.save(links); // 3. 링크 저장
         foldersLinksService.save(FoldersLinks.of(folders, links, userId)); //폴더 링크에 삽입 -> folders_links에 넣어야 됨
 
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override public void afterCommit() {
-                foldersDocumentManagerService.updateFolderDocumentById(linksCreateRequest.getFoldersId());
-            }
-        });
 
         return ResponseEntity.ok(LinksCreateResponse.of(links, linksCreateRequest.getFoldersId()));
     }
@@ -78,11 +68,6 @@ public class LinksManagerService {
                 foldersLinksService.delete(fl);// folders_links 삭제
             }
         }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override public void afterCommit() {
-                foldersDocumentManagerService.updateFolderDocumentById(foldersId);
-            }
-        });
 
         return ResponseEntity.ok(LinksDeleteRequest.of(foldersId, deleteLinkIdList));
     }
@@ -123,14 +108,6 @@ public class LinksManagerService {
         } else {
             sourceRow.setFolders(target);
         }
-        Long sourceId = source.getFolderId();
-        Long targetId = target.getFolderId();
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override public void afterCommit() {
-                foldersDocumentManagerService.updateFolderDocumentById(sourceId);
-                foldersDocumentManagerService.updateFolderDocumentById(targetId);
-            }
-        });
 
         return ResponseEntity.ok(LinksResponse.of(link));
     }
