@@ -36,7 +36,6 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
 
     List<Folders> findByVisibleTrue();
 
-    // com.kkrap.Repository.FoldersRepository
     @Query(value = """
     SELECT f.*
     FROM folders f
@@ -54,6 +53,36 @@ public interface FoldersRepository extends JpaRepository<Folders, Long> {
             @Param("cursorId") Long cursorId,
             @Param("limitPlusOne") int limitPlusOne
     );
+
+
+    //스크랩순, 조회수순
+    @Query(value = """
+    SELECT f.*
+    FROM folders f
+    WHERE f.visible = true
+      AND f.create_time >= :since
+    ORDER BY f.view_count DESC, f.folder_id DESC
+    LIMIT :limit
+    """, nativeQuery = true)
+    List<Folders> findTopByViewCountSince(
+            @Param("since") java.time.LocalDateTime since,
+            @Param("limit") int limit
+    );
+
+    @Query(value = """
+    SELECT f.*
+    FROM folders f
+    WHERE f.visible = true
+      AND f.create_time >= :since
+    ORDER BY f.scrap_count DESC, f.folder_id DESC
+    LIMIT :limit
+    """, nativeQuery = true)
+    List<Folders> findTopByScrapCountSince(
+            @Param("since") java.time.LocalDateTime since,
+            @Param("limit") int limit
+    );
+
+
 
 
 }

@@ -72,4 +72,15 @@ public interface FoldersAPISpec {
             @RequestParam(required = false) String cursor
     );
 
+    @GetMapping("/noauth/rankings")
+    @Operation(
+            summary = "최근 90일 랭킹",
+            description = "최근 90일 내 생성된 공개 폴더 중 조회수/스크랩수 Top10 반환"
+    )
+    ResponseEntity<FoldersRankingResponse> get90dFoldersRankings();
+
+
+
+
+
 }

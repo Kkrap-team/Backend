@@ -94,4 +94,12 @@ public class FoldersService {
         return foldersRepository.fetchVisibleFoldersPageGlobal(cursorTime, cursorId, limitPlusOne);
     }
 
+    public List<Folders> findTopByViewCountSince(LocalDateTime since, int limit) {
+        return foldersRepository.findTopByViewCountSince(since, limit);
+    }
+
+    public List<Folders> findTopByScrapCountSince(LocalDateTime since, int limit) {
+        return foldersRepository.findTopByScrapCountSince(since, limit);
+    }
+
 }

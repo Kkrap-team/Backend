@@ -277,7 +277,7 @@ public class FoldersManagerService {
         boolean hasNext = folders.size() > limit;
         if (hasNext) folders = folders.subList(0, Math.toIntExact(limit));
 
-        // 폴더별 링크 조회
+        // 폴더별 링크 1개 조회
         List<OneFoldersAllLinksResponse> res = folders.stream()
                 .map(folder -> {
                     List<FoldersLinks> flist = foldersLinksService.findByFolders(folder);
@@ -288,6 +288,38 @@ public class FoldersManagerService {
 
         return ResponseEntity.ok(res);
     }
+
+
+    public ResponseEntity<FoldersRankingResponse> get90dFoldersRankings() {
+        // 기준 시각: 현재로부터 90일 전
+        LocalDateTime since = LocalDateTime.now().minusDays(90);
+        int limit = 10;
+
+        // 폴더 뽑기 (조회수 Top10 / 스크랩수 Top10)
+        List<Folders> viewTop = foldersService.findTopByViewCountSince(since, limit);
+        List<Folders> scrapTop = foldersService.findTopByScrapCountSince(since, limit);
+
+        // 각 폴더별 링크 하나 추출
+        List<OneFoldersAllLinksResponse> topViewDto = viewTop.stream()
+                .map(folder -> {
+                    List<FoldersLinks> flist = foldersLinksService.findByFolders(folder);
+                    List<Links> links = linksService.selectTop1LinksByCreateTime(flist);
+                    return OneFoldersAllLinksResponse.of(folder, links);
+                })
+                .toList();
+
+        List<OneFoldersAllLinksResponse> topScrapDto = scrapTop.stream()
+                .map(folder -> {
+                    List<FoldersLinks> flist = foldersLinksService.findByFolders(folder);
+                    List<Links> links = linksService.selectTop4LinksByCreateTime(flist);
+                    return OneFoldersAllLinksResponse.of(folder, links);
+                })
+                .toList();
+
+        // 응답 조립
+        return ResponseEntity.ok(FoldersRankingResponse.of(topViewDto, topScrapDto));
+    }
+
 
 
 

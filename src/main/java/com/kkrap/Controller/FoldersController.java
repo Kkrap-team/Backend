@@ -75,4 +75,9 @@ public class FoldersController implements FoldersAPISpec {
         Long userId = Long.parseLong(authentication.getName());
         return foldersManagerService.scrollVisibleFolders(userId, size, cursor);
     }
+
+    @Override
+    public ResponseEntity<FoldersRankingResponse> get90dFoldersRankings() {
+        return foldersManagerService.get90dFoldersRankings();
+    }
 }
